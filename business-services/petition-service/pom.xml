@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -9,12 +9,11 @@
         <groupId>com.cyclonercm</groupId>
         <artifactId>cyclone-parent</artifactId>
         <version>1.0.0</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <artifactId>petition-service</artifactId>
     <name>Petition Service</name>
-    <description>Test Automation for Petition Management Operations</description>
+    <description>Test Automation for Petition Management</description>
 
     <dependencies>
         <dependency>
@@ -24,6 +23,7 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -34,8 +34,20 @@
             <artifactId>extentreports</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-testng</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
         </dependency>
     </dependencies>
 </project>

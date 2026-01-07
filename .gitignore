@@ -1,12 +1,22 @@
+############################
 # IDEs
+############################
 .idea/
 .vscode/
 *.iml
 *.iws
 *.ipr
-.DS_Store
 
-# Build outputs
+############################
+# OS
+############################
+.DS_Store
+Thumbs.db
+desktop.ini
+
+############################
+# Java / Maven
+############################
 target/
 build/
 dist/
@@ -14,78 +24,111 @@ dist/
 *.jar
 *.war
 *.ear
+.mvn/
 
-# Maven
+############################
+# Maven metadata
+############################
 pom.xml.tag
 pom.xml.releaseBackup
+pom.xml.versionsBackup
 release.properties
+dependency-reduced-pom.xml
 
-# Test Reports & Generated Files
+############################
+# Test Automation Outputs
+############################
+test-output/
 reports/
+logs/
 screenshots/
 videos/
-logs/
 generated-reports/
+
+############################
+# Reporting Tools
+############################
 allure-results/
 allure-report/
+extent-reports/
+extent-report/
+**/ExtentReport.html
 
-# Test Data (if needed locally)
+############################
+# Selenium / Browser Artifacts
+############################
+*.har
+
+############################
+# Test Data (local only)
+############################
 test-data/downloads/
 test-data/uploads/
 
-# Environment & Configuration
+############################
+# Environment & Secrets
+############################
 .env
 .env.local
 *.local.properties
 config.local.xml
 
-# Node & NPM (if dashboards use Node)
+############################
+# Node / Frontend (if used)
+############################
 node_modules/
 npm-debug.log
 yarn-error.log
+pnpm-debug.log
 
-# Temporary files
+############################
+# Temp / Backup
+############################
 *.tmp
-*.log
 *.swp
 *.swo
 *~
+*.bak
 
-# OS
-.DS_Store
-Thumbs.db
-desktop.ini
-
+############################
 # Database
+############################
 *.db
 *.sqlite
 
+############################
 # Docker
+############################
 .docker
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-.pytest_cache/
-
-# Ruby
-Gemfile.lock
-
-# Gradle (if used)
-.gradle/
-gradle/
-
-# Jenkins
-workspace/
-
-# SonarQube
-.sonarqube/
-
-# Docker volumes (usually ignored)
 docker/volumes/*
 !docker/volumes/.gitkeep
 
-# Reporting generated folders
+############################
+# Python (AI tooling)
+############################
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+############################
+# Ruby
+############################
+Gemfile.lock
+
+############################
+# Gradle
+############################
+.gradle/
+gradle/
+
+############################
+# CI / Quality Tools
+############################
+workspace/
+.sonarqube/
+
+############################
+# Reporting Hub (generated)
+############################
 reporting-hub/src/generated-reports/*
 !reporting-hub/src/generated-reports/.gitkeep

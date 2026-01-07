@@ -19,6 +19,7 @@ public class AuthenticationPage {
     private final By versionText = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/div/div/div/form/div/div[7]/div[1]/span");
     private final By userIdField = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/div/div/div/form/div/div[2]/div[2]/div/input");
     private final By passwordField = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/div/div/div/form/div/div[3]/div/div/p-password/div/input");
+    private final By eyeButton = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/div/div/div/form/div/div[3]/div/div/p-password/div/i");
     private final By signInButton = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/div/div/div/form/div/div[4]/button");
     private final By forgotPasswordButton = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/div/div/div/form/div/div[6]/a");
     private final By passwordResetLabel = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/div/div/div/form/div/div[2]/div[1]");
