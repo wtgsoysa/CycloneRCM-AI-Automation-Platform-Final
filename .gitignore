@@ -1,0 +1,91 @@
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.DS_Store
+
+# Build outputs
+target/
+build/
+dist/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+release.properties
+
+# Test Reports & Generated Files
+reports/
+screenshots/
+videos/
+logs/
+generated-reports/
+allure-results/
+allure-report/
+
+# Test Data (if needed locally)
+test-data/downloads/
+test-data/uploads/
+
+# Environment & Configuration
+.env
+.env.local
+*.local.properties
+config.local.xml
+
+# Node & NPM (if dashboards use Node)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Temporary files
+*.tmp
+*.log
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Database
+*.db
+*.sqlite
+
+# Docker
+.docker
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Ruby
+Gemfile.lock
+
+# Gradle (if used)
+.gradle/
+gradle/
+
+# Jenkins
+workspace/
+
+# SonarQube
+.sonarqube/
+
+# Docker volumes (usually ignored)
+docker/volumes/*
+!docker/volumes/.gitkeep
+
+# Reporting generated folders
+reporting-hub/src/generated-reports/*
+!reporting-hub/src/generated-reports/.gitkeep
