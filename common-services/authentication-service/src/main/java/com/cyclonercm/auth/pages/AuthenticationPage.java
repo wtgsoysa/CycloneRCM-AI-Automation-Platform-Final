@@ -39,6 +39,7 @@ public class AuthenticationPage {
     private final By temporaryPasswordSendValidationMessage= By.xpath("/html/body/ng-component/div/div/aeliusmd-login/ui-message/p-toast[3]/div/p-toastitem/div/div/div/div/div/p");
     private final By forgotPasswordUserIDErrorValidationMessage= By.xpath("/html/body/ng-component/div/div/aeliusmd-login/ui-message/p-toast[3]/div/p-toastitem/div/div/div/div");
 
+    private final By errorToast = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/ui-message/p-toast[5]/div/p-toastitem[2]/div/div/div/div/div/p");
 
     //----- Dashboard Page -----
     private final By dashboardsystemLabel = By.xpath("/html/body/ng-component/div/div/div[1]/div/div[1]/a/img[1]");
@@ -97,6 +98,10 @@ public class AuthenticationPage {
         return driver.findElement(dashboardsystemLabel).isDisplayed();
     }
 
+    public String errorToastMessageText(){
+        return driver.findElement(errorToast).getText().trim();
+    }
+
     public void clickForgotPasswordButton() {
         driver.findElement(forgotPasswordButton).click();
     }
@@ -121,16 +126,23 @@ public class AuthenticationPage {
         return (Boolean) driver.findElement(passwordValidationMessage).isDisplayed();
     }
 
-    public Boolean isDisplayForgotPasswordUserIDValidationMessageText() {
-        return (Boolean) driver.findElement(forgotPasswordUserIDValidationMessage).isDisplayed();
+    public String isDisplayForgotPasswordUserIDValidationMessageText() {
+        return driver.findElement(forgotPasswordUserIDValidationMessage).getText();
     }
 
     public String getForgotPasswordUser() {
         return driver.findElement(forgotPasswordUserIDErrorValidationMessage).getText();
     }
 
+    public void togglePasswordVisibility(){
+        driver.findElement(eyeButton).click();
+    }
+
+
+
     public void clickLogoutButton() {
         driver.findElement(logoutButton).click();
     }
+
 
 }
