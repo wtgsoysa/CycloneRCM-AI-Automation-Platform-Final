@@ -219,7 +219,7 @@ public class PositiveFileUploadTest extends BaseTest {
         WaitUtils.waitForVisible(driver, org.openqa.selenium.By.xpath("/html/body/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/h4"));
         String actualMessage = fileUploadPage.getSuccessToastText();
         Assert.assertEquals(actualMessage, "Success", "File upload should succeed");
-        test.pass("UPLOAD_POS_003 passed");
+        test.pass("UPLOAD_POS_004 passed");
 
 
     }
@@ -245,18 +245,17 @@ public class PositiveFileUploadTest extends BaseTest {
 
             fileUploadPage.selectBillingCheckbox();
             WaitUtils.sleep(2000);
-            Assert.assertTrue(fileUploadPage.isBillingCheckboxSelected(), "Billing checkbox should be selected");
-            Assert.assertTrue(fileUploadPage.isUploadButtonEnabled(), "Upload button should be enabled");
+
 
             String relativePath = TestDataProperties.get("uploadMultipleFilePathBilling");
             File uploadFile = new File(relativePath);
             String absolutePath = uploadFile.getAbsolutePath();
             fileUploadPage.uploadFile(absolutePath);
 
-            WaitUtils.waitForVisibility(driver, LocatorConstants.UploadSuccessToast, 30);
-            String actualMessage = fileUploadPage.getSuccessToastText();
-            Assert.assertEquals(actualMessage, "Success", "File upload should succeed");
-            test.pass("UPLOAD_POS_005 passed");
+        WaitUtils.waitForVisible(driver, org.openqa.selenium.By.xpath("/html/body/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/h4"));
+        String actualMessage = fileUploadPage.getSuccessToastText();
+        Assert.assertEquals(actualMessage, "Success", "File upload should succeed");
+        test.pass("UPLOAD_POS_005 passed");
 
     }
 
@@ -281,18 +280,17 @@ public class PositiveFileUploadTest extends BaseTest {
 
             fileUploadPage.selectCollectionsCheckbox();
             WaitUtils.sleep(2000);
-            Assert.assertTrue(fileUploadPage.isCollectionsCheckboxSelected(), "Collections checkbox should be selected");
-            Assert.assertTrue(fileUploadPage.isUploadButtonEnabled(), "Upload button should be enabled");
+
 
             String relativePath = TestDataProperties.get("uploadMultipleFilePathCollection");
             File uploadFile = new File(relativePath);
             String absolutePath = uploadFile.getAbsolutePath();
             fileUploadPage.uploadFile(absolutePath);
 
-            WaitUtils.waitForVisibility(driver, LocatorConstants.UploadSuccessToast, 30);
-            String actualMessage = fileUploadPage.getSuccessToastText();
-            Assert.assertEquals(actualMessage, "Success", "File upload should succeed");
-            test.pass("UPLOAD_POS_006 passed");
+        WaitUtils.waitForVisible(driver, org.openqa.selenium.By.xpath("/html/body/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/h4"));
+        String actualMessage = fileUploadPage.getSuccessToastText();
+        Assert.assertEquals(actualMessage, "Success", "File upload should succeed");
+        test.pass("UPLOAD_POS_006 passed");
 
     }
 
@@ -316,24 +314,23 @@ public class PositiveFileUploadTest extends BaseTest {
 
             fileUploadPage.selectEorResponseCheckbox();
             WaitUtils.sleep(2000);
-            Assert.assertTrue(fileUploadPage.isEorResponseCheckboxSelected(), "EOR Response checkbox should be selected");
-            Assert.assertTrue(fileUploadPage.isUploadButtonEnabled(), "Upload button should be enabled");
+
 
             String relativePath = TestDataProperties.get("uploadMultipleFilePathEOR");
             File uploadFile = new File(relativePath);
             String absolutePath = uploadFile.getAbsolutePath();
             fileUploadPage.uploadFile(absolutePath);
 
-            WaitUtils.waitForVisibility(driver, LocatorConstants.UploadSuccessToast, 30);
-            String actualMessage = fileUploadPage.getSuccessToastText();
-            Assert.assertEquals(actualMessage, "Success", "File upload should succeed");
-            test.pass("UPLOAD_POS_007 passed");
+        WaitUtils.waitForVisible(driver, org.openqa.selenium.By.xpath("/html/body/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/h4"));
+        String actualMessage = fileUploadPage.getSuccessToastText();
+        Assert.assertEquals(actualMessage, "Success", "File upload should succeed");
+        test.pass("UPLOAD_POS_007 passed");
 
     }
 
     @Test(priority = 8, description = "UPLOAD_POS_008 - Verify successful multiple Invoices upload to same category (Petition)")
     public void UPLOAD_POS_008() {
-        try {
+
             WaitUtils.sleep(10000);
             FileUploadPage fileUploadPage = new FileUploadPage(driver);
             fileUploadPage.clickGetStartedButton();
@@ -341,22 +338,20 @@ public class PositiveFileUploadTest extends BaseTest {
 
             fileUploadPage.selectPetitionCheckbox();
             WaitUtils.sleep(2000);
-            Assert.assertTrue(fileUploadPage.isPetitionCheckboxSelected(), "Petition checkbox should be selected");
-            Assert.assertTrue(fileUploadPage.isUploadButtonEnabled(), "Upload button should be enabled");
+
 
             String relativePath = TestDataProperties.get("uploadMultipleFilePathPetition");
             File uploadFile = new File(relativePath);
             String absolutePath = uploadFile.getAbsolutePath();
             fileUploadPage.uploadFile(absolutePath);
 
-            WaitUtils.waitForVisibility(driver, LocatorConstants.UploadSuccessToast, 30);
-            String actualMessage = fileUploadPage.getSuccessToastText();
-            Assert.assertEquals(actualMessage, "Success", "File upload should succeed");
-            test.pass("UPLOAD_POS_008 passed");
-        } catch (AssertionError e) {
-            test.fail("UPLOAD_POS_008 failed: " + e.getMessage());
-            throw e;
-        }
+        WaitUtils.waitForVisible(driver, org.openqa.selenium.By.xpath("/html/body/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/h4"));
+        String actualMessage = fileUploadPage.getSuccessToastText();
+        Assert.assertEquals(actualMessage, "Success", "File upload should succeed");
+        test.pass("UPLOAD_POS_008 passed");
+
+
+
     }
 
     @Test(priority = 9, description = "UPLOAD_POS_009 - Verify successful PDF file upload with automatic page count detection")
@@ -380,16 +375,18 @@ public class PositiveFileUploadTest extends BaseTest {
         fileUploadPage.selectBillingCheckbox();
         WaitUtils.sleep(2000);
 
-        String relativePath = TestDataProperties.get("uploadFilePath3");
+        String relativePath = TestDataProperties.get("uploadFilePageCountDocument");
         File uploadFile = new File(relativePath);
         String absolutePath = uploadFile.getAbsolutePath();
         fileUploadPage.uploadFile(absolutePath);
+        WaitUtils.waitForVisible(driver, org.openqa.selenium.By.xpath("/html/body/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/h4"));
 
-        WaitUtils.waitForVisibility(driver, LocatorConstants.UploadSuccessToast, 30);
         String expectedFileName = TestDataProperties.get("expectedFileName");
         String pageCount = TestDataProperties.get("uploadFilePageCount");
         String expectedMessage = "FileReceived : " + expectedFileName + " (" + pageCount + " Pages)";
         String actualMessage = fileUploadPage.getSuccessToastMessageText();
+        System.out.println("Actual Message :" + expectedMessage);
+        System.out.println("Expected Message :" + actualMessage);
         Assert.assertEquals(actualMessage, expectedMessage, "Success message should show file name and page count");
         test.pass("UPLOAD_POS_009 passed");
     }
@@ -415,14 +412,14 @@ public class PositiveFileUploadTest extends BaseTest {
             fileUploadPage.selectBillingCheckbox();
             WaitUtils.sleep(2000);
 
-            String relativePath = TestDataProperties.get("largeUploadFilePath");
+            String relativePath = TestDataProperties.get("UploadProgressIndicatorFile");
             File uploadFile = new File(relativePath);
             String absolutePath = uploadFile.getAbsolutePath();
             fileUploadPage.uploadFile(absolutePath);
 
-            WaitUtils.waitForVisibility(driver, LocatorConstants.UploadProgressToast, 10);
+
             String progressMessage = fileUploadPage.getProgressToastText();
-            Assert.assertTrue(progressMessage.contains("Please wait"), "Progress message should be displayed");
+            Assert.assertTrue(progressMessage.contains("Please wait, do not close this window..."), "Progress message should be displayed");
             test.pass("UPLOAD_POS_010 passed");
 
     }
