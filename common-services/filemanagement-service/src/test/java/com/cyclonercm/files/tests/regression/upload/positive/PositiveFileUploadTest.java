@@ -248,7 +248,7 @@ public class PositiveFileUploadTest extends BaseTest {
             Assert.assertTrue(fileUploadPage.isBillingCheckboxSelected(), "Billing checkbox should be selected");
             Assert.assertTrue(fileUploadPage.isUploadButtonEnabled(), "Upload button should be enabled");
 
-            String relativePath = TestDataProperties.get("uploadFilePath3");
+            String relativePath = TestDataProperties.get("uploadMultipleFilePathBilling");
             File uploadFile = new File(relativePath);
             String absolutePath = uploadFile.getAbsolutePath();
             fileUploadPage.uploadFile(absolutePath);
@@ -284,7 +284,7 @@ public class PositiveFileUploadTest extends BaseTest {
             Assert.assertTrue(fileUploadPage.isCollectionsCheckboxSelected(), "Collections checkbox should be selected");
             Assert.assertTrue(fileUploadPage.isUploadButtonEnabled(), "Upload button should be enabled");
 
-            String relativePath = TestDataProperties.get("uploadFilePath3");
+            String relativePath = TestDataProperties.get("uploadMultipleFilePathCollection");
             File uploadFile = new File(relativePath);
             String absolutePath = uploadFile.getAbsolutePath();
             fileUploadPage.uploadFile(absolutePath);
@@ -319,7 +319,7 @@ public class PositiveFileUploadTest extends BaseTest {
             Assert.assertTrue(fileUploadPage.isEorResponseCheckboxSelected(), "EOR Response checkbox should be selected");
             Assert.assertTrue(fileUploadPage.isUploadButtonEnabled(), "Upload button should be enabled");
 
-            String relativePath = TestDataProperties.get("uploadFilePath3");
+            String relativePath = TestDataProperties.get("uploadMultipleFilePathEOR");
             File uploadFile = new File(relativePath);
             String absolutePath = uploadFile.getAbsolutePath();
             fileUploadPage.uploadFile(absolutePath);
@@ -344,7 +344,7 @@ public class PositiveFileUploadTest extends BaseTest {
             Assert.assertTrue(fileUploadPage.isPetitionCheckboxSelected(), "Petition checkbox should be selected");
             Assert.assertTrue(fileUploadPage.isUploadButtonEnabled(), "Upload button should be enabled");
 
-            String relativePath = TestDataProperties.get("uploadFilePath3");
+            String relativePath = TestDataProperties.get("uploadMultipleFilePathPetition");
             File uploadFile = new File(relativePath);
             String absolutePath = uploadFile.getAbsolutePath();
             fileUploadPage.uploadFile(absolutePath);
