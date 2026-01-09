@@ -37,19 +37,19 @@ public class FileUploadPage {
     private final By billingExpandArrow = By.xpath("//label[text()='Billing']/ancestor::div[1]//button[contains(@aria-label, 'expand') or contains(@class, 'arrow') or contains(@class, 'toggle')]");
     private final By billingFolderContainer = By.xpath("//label[text()='Billing']/ancestor::*[contains(@class, 'folder-item') or contains(@class, 'tree-node')][1]");
 
-    private final By collectionsCheckbox = By.xpath("//label[normalize-space(text())='Collections']/preceding-sibling::input[@type='checkbox']");
+    private final By collectionsCheckbox = By.xpath("//div[@aria-label='Collections']//div[@class='p-checkbox-box']");
     private final By collectionsLabel = By.xpath("//label[normalize-space(text())='Collections']");
     private final By collectionsIcon = By.xpath("//label[text()='Collections']/preceding-sibling::*[contains(@class, 'icon') or name()='svg' or name()='i']");
     private final By collectionsExpandArrow = By.xpath("//label[text()='Collections']/ancestor::div[1]//button[contains(@aria-label, 'expand') or contains(@class, 'arrow')]");
     private final By collectionsFolderContainer = By.xpath("//label[text()='Collections']/ancestor::*[contains(@class, 'folder-item') or contains(@class, 'tree-node')][1]");
 
-    private final By eorResponseCheckbox = By.xpath("//label[normalize-space(text())='EOR Response']/preceding-sibling::input[@type='checkbox']");
+    private final By eorResponseCheckbox = By.xpath("//div[@aria-label='EOR Response']//div[@class='p-checkbox-box']");
     private final By eorResponseLabel = By.xpath("//label[normalize-space(text())='EOR Response']");
     private final By eorResponseIcon = By.xpath("//label[text()='EOR Response']/preceding-sibling::*[contains(@class, 'icon') or name()='svg' or name()='i']");
     private final By eorResponseExpandArrow = By.xpath("//label[text()='EOR Response']/ancestor::div[1]//button[contains(@aria-label, 'expand') or contains(@class, 'arrow')]");
     private final By eorResponseFolderContainer = By.xpath("//label[text()='EOR Response']/ancestor::*[contains(@class, 'folder-item') or contains(@class, 'tree-node')][1]");
 
-    private final By petitionCheckbox = By.xpath("//label[normalize-space(text())='Petition']/preceding-sibling::input[@type='checkbox']");
+    private final By petitionCheckbox = By.xpath("//div[@aria-label='Petition']//div[@class='p-checkbox-box']");
     private final By petitionLabel = By.xpath("//label[normalize-space(text())='Petition']");
     private final By petitionIcon = By.xpath("//label[text()='Petition']/preceding-sibling::*[contains(@class, 'icon') or name()='svg' or name()='i']");
     private final By petitionExpandArrow = By.xpath("//label[text()='Petition']/ancestor::div[1]//button[contains(@class, 'arrow') or contains(@class, 'toggle')]");
