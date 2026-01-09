@@ -31,7 +31,7 @@ public class FileUploadPage {
     private final By folderTreeContainer = By.xpath("//div[@role='tree' or contains(@class, 'tree') or contains(@class, 'folder-list')]");
     private final By folderTreeRoot = By.xpath("//div[@role='tree']/*[1] | //ul[contains(@class, 'tree-root')]");
 
-    private final By billingCheckbox = By.xpath("//div[@aria-label='Billing']//div[@class='p-checkbox-box']");
+    private final By billingCheckbox = By.xpath("/html/body/ng-component/p-dialog/div/div/div[2]/aeliusmd-file-upload/div/div/div/div/form/div/div/div[2]/div/div/p-tree/div/div/ul/p-treenode[1]/li/div/div/div");
     private final By billingLabel = By.xpath("//label[normalize-space(text())='Billing']");
     private final By billingIcon = By.xpath("//label[text()='Billing']/preceding-sibling::*[contains(@class, 'icon') or name()='svg' or name()='i']");
     private final By billingExpandArrow = By.xpath("//label[text()='Billing']/ancestor::div[1]//button[contains(@aria-label, 'expand') or contains(@class, 'arrow') or contains(@class, 'toggle')]");
