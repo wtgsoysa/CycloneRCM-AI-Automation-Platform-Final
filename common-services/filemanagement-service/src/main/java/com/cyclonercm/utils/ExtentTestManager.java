@@ -1,0 +1,20 @@
+package com.cyclonercm.utils;
+
+import com.aventstack.extentreports.ExtentTest;
+
+public class ExtentTestManager {
+
+    private static final ThreadLocal<ExtentTest> extentTestThreadLocal = new ThreadLocal<>();
+
+    public static void setTest(ExtentTest test) {
+        extentTestThreadLocal.set(test);
+    }
+
+    public static ExtentTest getTest() {
+        return extentTestThreadLocal.get();
+    }
+
+    public static void removeTest() {
+        extentTestThreadLocal.remove();
+    }
+}
