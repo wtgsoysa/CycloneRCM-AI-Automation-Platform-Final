@@ -132,3 +132,5 @@ workspace/
 ############################
 reporting-hub/src/generated-reports/*
 !reporting-hub/src/generated-reports/.gitkeep
+
+nul

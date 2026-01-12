@@ -43,7 +43,6 @@ public class PositiveAuthenticationTest extends BaseTest {
             throw e;
         }
 
-
     }
 
     @Test(priority = 1, description = "SMOKE_AU_001 - Verify user can successfully login with valid User Id and Password")
