@@ -35,7 +35,7 @@ public class AuthenticationPage {
     private final By invalidCredentialsToast = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/ui-message/p-toast[3]/div/p-toastitem");
     private final By userIdValidationMessage = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/ui-message/p-toast[3]/div/p-toastitem/div/div/div/div");
     private final By passwordValidationMessage = By.xpath("/html/body/ng-component/div/div/aeliusmd-login/ui-message/p-toast[3]/div/p-toastitem/div/div/div/div");
-    private final By forgotPasswordUserIDValidationMessage= By.xpath("/html/body/ng-component/div/div/aeliusmd-login/ui-message/p-toast[3]/div/p-toastitem/div/div/div/div");
+    private final By forgotPasswordUserIDValidationMessage= By.xpath("/html/body/ng-component/div/div/aeliusmd-login/ui-message/p-toast[3]/div/p-toastitem/div/div/div/div/div/p");
     private final By temporaryPasswordSendValidationMessage= By.xpath("/html/body/ng-component/div/div/aeliusmd-login/ui-message/p-toast[3]/div/p-toastitem/div/div/div/div/div/p");
     private final By forgotPasswordUserIDErrorValidationMessage= By.xpath("/html/body/ng-component/div/div/aeliusmd-login/ui-message/p-toast[3]/div/p-toastitem/div/div/div/div");
 
