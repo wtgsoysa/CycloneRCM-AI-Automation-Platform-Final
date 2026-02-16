@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="File Management Smoke Suite" parallel="false">
+
+    <!-- Centralized Report Listener for Consolidated Reporting -->
+    <listeners>
+        <listener class-name="com.cyclonercm.reporting.CentralizedReportListener"/>
+    </listeners>
+
+    <test name="File Management Smoke">
+        <classes>
+            <class name="com.cyclonercm.files.tests.smoke.upload.FileuploadTest"/>
+        </classes>
+    </test>
+
+</suite>
