@@ -55,6 +55,13 @@ public class FileUploadPage {
     private final By petitionExpandArrow = By.xpath("//label[text()='Petition']/ancestor::div[1]//button[contains(@class, 'arrow') or contains(@class, 'toggle')]");
     private final By petitionFolderContainer = By.xpath("//label[text()='Petition']/ancestor::*[contains(@class, 'folder-item') or contains(@class, 'tree-node')][1]");
 
+    private final By interpreterCheckbox = By.xpath("/html/body/ng-component/p-dialog/div/div/div[2]/aeliusmd-file-upload/div/div/div/div/form/div/div/div[2]/div/div/p-tree/div/div/ul/p-treenode[4]/li/div/div");
+    private final By interpreterLabel = By.xpath("/html/body/ng-component/p-dialog/div/div/div[2]/aeliusmd-file-upload/div/div/div/div/form/div/div/div[2]/div/div/p-tree/div/div/ul/p-treenode[4]/li/div/span[2]/span");
+    private final By interpreterIcon = By.xpath("//label[text()='Interpreter']/preceding-sibling::*[contains(@class, 'icon') or name()='svg' or name()='i']");
+    private final By interpreterExpandArrow = By.xpath("//label[text()='Interpreter']/ancestor::div[1]//button[contains(@class, 'arrow') or contains(@class, 'toggle')]");
+    private final By interpreterFolderContainer = By.xpath("//label[text()='Interpreter']/ancestor::*[contains(@class, 'folder-item') or contains(@class, 'tree-node')][1]");
+
+
     private final By allFolderCheckboxes = By.xpath("//input[@type='checkbox' and ancestor::*[contains(@class, 'tree') or @role='tree']]");
     private final By allFolderLabels = By.xpath("//label[ancestor::*[contains(@class, 'tree') or @role='tree']]");
     private final By allFolderIcons = By.xpath("//*[(contains(@class, 'icon') or name()='svg') and ancestor::*[contains(@class, 'tree')]]");
@@ -183,6 +190,10 @@ public class FileUploadPage {
 
     public void selectBillingCheckbox() {
         driver.findElement(billingCheckbox).click();
+    }
+
+    public void selectInterpreterCheckbox() {
+        driver.findElement(interpreterCheckbox).click();
     }
 
     public void selectCollectionsCheckbox() {
