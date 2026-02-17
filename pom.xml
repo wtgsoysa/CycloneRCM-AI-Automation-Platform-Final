@@ -140,7 +140,7 @@
     <modules>
         <module>ai-core</module>
         <module>shared-libraries/core-framework</module>
-        <module>business-services/billing-service</module>
+        <module>business-services/dms-billing-service</module>
         <module>business-services/petition-service</module>
         <module>common-services/authentication-service</module>
         <module>common-services/filemanagement-service</module>

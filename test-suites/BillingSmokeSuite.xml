@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Billing Service Smoke Suite" parallel="false">
+
+    <test name="Billing Authentication Smoke Tests">
+        <classes>
+            <class name="com.cyclonercm.billing.tests.smoke.AuthenticationTest"/>
+        </classes>
+    </test>
+
+</suite>
