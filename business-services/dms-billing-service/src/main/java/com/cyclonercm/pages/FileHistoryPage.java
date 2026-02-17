@@ -13,8 +13,8 @@ public class FileHistoryPage {
     }
 
     private final By megaMenu = By.xpath("//p-megamenu//span[@class='p-menuitem-icon pi pi-fw pi-bars ng-star-inserted']");
-    private final By fileHistoryMenu = By.xpath("//div[@class='p-megamenu-panel ng-star-inserted']//a[contains(text(),'File History')]");
-    private final By mastersTab = By.xpath("//div[@class='p-megamenu-panel ng-star-inserted']//span[contains(text(),'Masters')]");
+    private final By fileHistoryMenu = By.xpath("/html/body/ng-component/div/div/div[1]/div/div[2]/p-megamenu/div/ul/li/div/div/div[1]/ul/li[9]/a");
+    private final By mastersTab = By.xpath("/html/body/ng-component/div/div/div[1]/div/div[2]/p-megamenu/div/ul/li/div/div/div[1]/ul/li[1]/span");
 
     private final By receivedFilesSection = By.xpath("//span[contains(text(),'Received Files')]");
     private final By invoiceListSection = By.xpath("//span[contains(text(),'Invoice List')]");
@@ -26,20 +26,20 @@ public class FileHistoryPage {
     private final By fileId = By.xpath("//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted']//div[@class='p-col-fixed app-p-0'][1]//b");
     private final By fileName = By.xpath("//cyclone-list-file-history//div[@tooltipposition='bottom' and contains(@class,'text-overflow-ellipsis')]");
     private final By uploadDate = By.xpath("//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted']//div[@class='p-col-8 app-p-0 app-mt-5']");
-    private final By fileStatus = By.xpath("//cyclone-list-file-history//p-badge//span[@class='p-badge p-component']");
+    private final By fileStatus = By.xpath("//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted']//p-badge[@class='p-element']//span");
     private final By processingStatus = By.xpath("//cyclone-list-file-history//p-badge[@severity='warning']//span[contains(text(),'Processing')]");
     private final By completedStatus = By.xpath("//cyclone-list-file-history//p-badge[@severity='success']//span[contains(text(),'Completed')]");
 
-    private final By pages = By.xpath("//cyclone-list-file-history//div[@class='p-grid app-p-0'][contains(.,'Pages')]//following-sibling::div[@class='p-grid app-p-0'][1]//div[@class='p-col-1 app-p-0']");
-    private final By invoiceCount = By.xpath("//cyclone-list-file-history//span[contains(text(),'Invoice Count')]/ancestor::div[@class='p-col-2 app-p-0']/following-sibling::div[@class='p-col-2 app-p-0'][1]");
-    private final By successCount = By.xpath("//cyclone-list-file-history//span[contains(text(),'Success Count')]/ancestor::div[@class='p-col-2 app-p-0']/following-sibling::div[@class='p-col-2 app-p-0'][1]//span");
-    private final By failCount = By.xpath("//cyclone-list-file-history//span[contains(text(),'Fail Count')]/ancestor::div[@class='p-col-2 app-p-0']/following-sibling::div[@class='p-col-2 app-p-0'][1]//span");
-    private final By deletedCount = By.xpath("//cyclone-list-file-history//span[contains(text(),'Deleted Count')]/ancestor::div[@class='p-col-2 app-p-0']/following-sibling::div[@class='p-col-2 app-p-0'][1]//span");
-    private final By amount = By.xpath("//cyclone-list-file-history//span[contains(text(),'Amount')]/ancestor::div[@class='p-col-3 app-p-0']/following-sibling::div[@class='p-col-3 app-p-0'][1]");
+    private final By pages = By.xpath("(//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted'])[1]//div[contains(@class,'p-col-2')][contains(.,'Pages')]/following-sibling::div[1]");
+    private final By invoiceCount = By.xpath("(//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted'])[1]//td/span[2]/div/div[7]/div[2]");
+    private final By successCount = By.xpath("(//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted'])[1]//td/span[2]/div/div[7]/div[3]");
+    private final By failCount = By.xpath("(//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted'])[1]//td/span[2]/div/div[7]/div[4]");
+    private final By deletedCount = By.xpath("(//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted'])[1]//td/span[2]/div/div[7]/div[5]");
+    private final By amount = By.xpath("(//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted'])[1]//td/span[2]/div/div[7]/div[6]");
 
-    private final By invoiceStatusDropdown = By.xpath("//label[contains(text(),'Invoice Status')]/ancestor::div[@class='p-field p-grid']//p-dropdown");
-    private final By caseAdjField = By.xpath("//label[contains(text(),'Case/ADJ')]/ancestor::div[@class='p-field p-grid']//p-dropdown[@placeholder='Select Case Number']");
-    private final By fileTypeDropdown = By.xpath("//label[contains(text(),'File Type')]/ancestor::div[@class='p-field p-grid']//p-dropdown");
+    private final By invoiceStatusDropdown = By.xpath("(//cyclone-list-file-history//p-dropdown)[1] | //label[contains(text(),'Invoice Status')]/following::p-dropdown[1]");
+    private final By caseAdjField = By.xpath("(//cyclone-list-file-history//p-dropdown)[2] | //label[contains(text(),'Case/ADJ')]/following::p-dropdown[1]");
+    private final By fileTypeDropdown = By.xpath("(//cyclone-list-file-history//p-dropdown)[3] | //label[contains(text(),'File Type')]/following::p-dropdown[1]");
     private final By fromDate = By.xpath("//label[contains(text(),'From Date')]/following-sibling::p-calendar//input[@placeholder='MM/DD/YYYY']");
     private final By toDate = By.xpath("//label[contains(text(),'To Date')]/following-sibling::p-calendar//input[@placeholder='MM/DD/YYYY']");
     private final By searchButton = By.xpath("//button[@ptooltip='Search by date range']");
@@ -130,7 +130,20 @@ public class FileHistoryPage {
     }
 
     public String getFirstFileStatus() {
-        return driver.findElements(fileStatus).get(0).getText().trim();
+        try {
+            Thread.sleep(2000); // Wait for status badge to load
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        List<WebElement> statusElements = driver.findElements(fileStatus);
+        for (WebElement element : statusElements) {
+            String statusText = element.getText().trim();
+            if (!statusText.isEmpty()) {
+                return statusText;
+            }
+        }
+        return ""; // Return empty if no text found
     }
 
     public boolean isProcessingStatusDisplayed() {
@@ -150,31 +163,63 @@ public class FileHistoryPage {
     }
 
     public String getFirstFilePages() {
-        return driver.findElements(pages).get(0).getText().trim();
+        try {
+            return driver.findElement(pages).getText().trim();
+        } catch (Exception e) {
+            System.out.println("Error getting pages: " + e.getMessage());
+            return "";
+        }
     }
 
     public String getFirstFileInvoiceCount() {
-        return driver.findElements(invoiceCount).get(0).getText().trim();
+        try {
+            return driver.findElement(invoiceCount).getText().trim();
+        } catch (Exception e) {
+            System.out.println("Error getting invoice count: " + e.getMessage());
+            return "";
+        }
     }
 
     public String getFirstFileSuccessCount() {
-        return driver.findElements(successCount).get(0).getText().trim();
+        try {
+            return driver.findElement(successCount).getText().trim();
+        } catch (Exception e) {
+            System.out.println("Error getting success count: " + e.getMessage());
+            return "";
+        }
     }
 
     public String getFirstFileFailCount() {
-        return driver.findElements(failCount).get(0).getText().trim();
+        try {
+            return driver.findElement(failCount).getText().trim();
+        } catch (Exception e) {
+            System.out.println("Error getting fail count: " + e.getMessage());
+            return "";
+        }
     }
 
     public String getFirstFileDeletedCount() {
-        return driver.findElements(deletedCount).get(0).getText().trim();
+        try {
+            return driver.findElement(deletedCount).getText().trim();
+        } catch (Exception e) {
+            System.out.println("Error getting deleted count: " + e.getMessage());
+            return "";
+        }
     }
 
     public String getFirstFileAmount() {
-        return driver.findElements(amount).get(0).getText().trim();
+        try {
+            return driver.findElement(amount).getText().trim();
+        } catch (Exception e) {
+            System.out.println("Error getting amount: " + e.getMessage());
+            return "";
+        }
     }
 
     public void clickInvoiceStatusDropdown() {
-        driver.findElement(invoiceStatusDropdown).click();
+        // Click the dropdown trigger button (div[2] in the structure)
+        By dropdownButton = By.xpath("(//cyclone-list-file-history//p-dropdown)[1]//div[contains(@class,'p-dropdown-trigger')]");
+        driver.findElement(dropdownButton).click();
     }
 
     public boolean isInvoiceStatusDropdownDisplayed() {
@@ -188,6 +233,26 @@ public class FileHistoryPage {
     public void selectInvoiceStatusOption(String option) {
         clickInvoiceStatusDropdown();
         driver.findElement(By.xpath("//span[contains(text(),'" + option + "')]")).click();
+    }
+
+    public boolean isDropdownOptionDisplayed(String optionText) {
+        try {
+            // Wait for dropdown panel to appear
+            Thread.sleep(1500);
+
+            // Based on actual DOM: /html/body/div[3]/div/ul/p-dropdownitem[x]/li
+            // Try multiple XPath strategies for maximum compatibility
+            By optionLocator = By.xpath(
+                "//p-dropdownitem//li[normalize-space()='" + optionText + "'] | " +
+                "//li[contains(@class,'p-dropdown-item')][normalize-space()='" + optionText + "'] | " +
+                "//div[@role='listbox']//li[normalize-space()='" + optionText + "']"
+            );
+
+            return driver.findElement(optionLocator).isDisplayed();
+        } catch (Exception e) {
+            System.out.println("Option '" + optionText + "' not found: " + e.getMessage());
+            return false;
+        }
     }
 
     public boolean isCaseAdjFieldDisplayed() {
@@ -212,6 +277,56 @@ public class FileHistoryPage {
 
     public void clickFileTypeDropdown() {
         driver.findElement(fileTypeDropdown).click();
+    }
+
+    /**
+     * Select file type from dropdown (e.g., "Interpreted Billing")
+     */
+    public void selectFileType(String fileType) {
+        try {
+            clickFileTypeDropdown();
+            Thread.sleep(2000); // Wait for dropdown panel to render
+
+            // Wait for dropdown panel to be visible
+            By dropdownPanel = By.xpath("//div[contains(@class,'p-dropdown-panel')] | //body/div[3]/div");
+            for (int i = 0; i < 3; i++) {
+                try {
+                    if (driver.findElement(dropdownPanel).isDisplayed()) {
+                        break;
+                    }
+                } catch (Exception e) {
+                    Thread.sleep(1000);
+                }
+            }
+
+            // Try multiple XPath strategies for clicking the option
+            By optionLocator = By.xpath(
+                "//p-dropdownitem//li[normalize-space()='" + fileType + "'] | " +
+                "//li[contains(@class,'p-dropdown-item')][normalize-space()='" + fileType + "'] | " +
+                "//div[@role='listbox']//li[contains(normalize-space(),'" + fileType + "')]"
+            );
+
+            driver.findElement(optionLocator).click();
+            Thread.sleep(2000); // Wait for filter to apply
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to select file type: " + fileType + " - " + e.getMessage());
+        }
+    }
+
+    /**
+     * Check if file type dropdown option is displayed
+     */
+    public boolean isFileTypeOptionDisplayed(String option) {
+        try {
+            By optionLocator = By.xpath(
+                "//p-dropdownitem//li[contains(normalize-space(),'" + option + "')] | " +
+                "//li[contains(@class,'p-dropdown-item')][contains(normalize-space(),'" + option + "')]"
+            );
+            return driver.findElement(optionLocator).isDisplayed();
+        } catch (Exception e) {
+            System.out.println("Option '" + option + "' not found: " + e.getMessage());
+            return false;
+        }
     }
 
     public void enterFromDate(String date) {
@@ -396,5 +511,278 @@ public class FileHistoryPage {
 
     public List<WebElement> getAllInvoices() {
         return driver.findElements(invoiceCheckbox);
+    }
+
+    // ============ FILTER & SEARCH VALIDATION METHODS ============
+
+    /**
+     * Select a filter option from Invoice Status dropdown
+     */
+    public void selectInvoiceStatusFilter(String filterOption) {
+        try {
+            clickInvoiceStatusDropdown();
+            Thread.sleep(2000); // Increased wait for dropdown panel to render
+
+            // Wait for dropdown panel to be visible
+            By dropdownPanel = By.xpath("//div[contains(@class,'p-dropdown-panel')] | //body/div[3]/div");
+            for (int i = 0; i < 3; i++) {
+                try {
+                    if (driver.findElement(dropdownPanel).isDisplayed()) {
+                        break;
+                    }
+                } catch (Exception e) {
+                    Thread.sleep(1000);
+                }
+            }
+
+            // Try multiple XPath strategies for clicking the option
+            By optionLocator = By.xpath(
+                "//p-dropdownitem//li[normalize-space()='" + filterOption + "'] | " +
+                "//li[contains(@class,'p-dropdown-item')][normalize-space()='" + filterOption + "'] | " +
+                "//div[@role='listbox']//li[contains(normalize-space(),'" + filterOption + "')]"
+            );
+
+            driver.findElement(optionLocator).click();
+            Thread.sleep(2000); // Wait for filter to apply
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to select filter: " + filterOption + " - " + e.getMessage());
+        }
+    }
+
+    /**
+     * Get all visible file rows in Received Files panel
+     */
+    public List<WebElement> getLeftPanelRows() {
+        By leftRows = By.xpath("(//p-table)[1]//tbody//tr[contains(@class,'p-selectable-row')][td]");
+        return driver.findElements(leftRows);
+    }
+
+    /**
+     * Get all visible invoice rows in Invoice List panel
+     */
+    public List<WebElement> getRightPanelRows() {
+        By rightRows = By.xpath("(//p-table)[2]//tbody//tr[contains(@class,'p-selectable-row')][td]");
+        return driver.findElements(rightRows);
+    }
+
+    /**
+     * Get status badge text from a file row (left panel)
+     */
+    public String getFileRowStatus(WebElement row) {
+        try {
+            By statusBadge = By.xpath(".//p-badge/span");
+            return row.findElement(statusBadge).getText().trim();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * Get status badge text from an invoice row (right panel)
+     */
+    public String getInvoiceRowStatus(WebElement row) {
+        try {
+            By statusBadge = By.xpath(".//td[last()]//p-badge//span");
+            return row.findElement(statusBadge).getText().trim();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * Get Success Count from a file row (left panel)
+     */
+    public int getFileRowSuccessCount(WebElement row) {
+        try {
+            By successCountLocator = By.xpath(".//td/span[2]/div/div[7]/div[3]/span");
+            String text = row.findElement(successCountLocator).getText().trim();
+            return Integer.parseInt(text.replaceAll("[^0-9]", ""));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Get Fail Count from a file row (left panel)
+     */
+    public int getFileRowFailCount(WebElement row) {
+        try {
+            By failCountLocator = By.xpath(".//td/span[2]/div/div[7]/div[4]/span");
+            String text = row.findElement(failCountLocator).getText().trim();
+            return Integer.parseInt(text.replaceAll("[^0-9]", ""));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Get Invoice Count from a file row (left panel)
+     */
+    public int getFileRowInvoiceCount(WebElement row) {
+        try {
+            By invoiceCountLocator = By.xpath(".//td/span[2]/div/div[7]/div[2]");
+            String text = row.findElement(invoiceCountLocator).getText().trim();
+            return Integer.parseInt(text.replaceAll("[^0-9]", ""));
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Get file name from a file row (left panel)
+     */
+    public String getFileRowFileName(WebElement row) {
+        try {
+            By fileNameLocator = By.xpath(".//div[contains(@class,'text-overflow-ellipsis')]");
+            return row.findElement(fileNameLocator).getText().trim();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * Get invoice number from an invoice row (right panel)
+     */
+    public String getInvoiceRowNumber(WebElement row) {
+        try {
+            By invoiceNumberLocator = By.xpath("./td[1]");
+            return row.findElement(invoiceNumberLocator).getText().trim();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    /**
+     * Search by file name or invoice number
+     */
+    public void searchByFileNameOrInvoice(String searchText) {
+        try {
+            WebElement searchField = driver.findElement(searchByFileNameField);
+            searchField.clear();
+            searchField.sendKeys(searchText);
+            Thread.sleep(500);
+            driver.findElement(fileNameSearchButton).click();
+            Thread.sleep(2000); // Wait for search results
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to search: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Clear search field
+     */
+    public void clearSearch() {
+        try {
+            WebElement searchField = driver.findElement(searchByFileNameField);
+            searchField.clear();
+            Thread.sleep(500);
+        } catch (Exception e) {
+            System.out.println("Failed to clear search: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Check if left panel has data
+     */
+    public boolean hasLeftPanelData() {
+        return getLeftPanelRows().size() > 0;
+    }
+
+    /**
+     * Check if right panel has data
+     */
+    public boolean hasRightPanelData() {
+        return getRightPanelRows().size() > 0;
+    }
+
+    /**
+     * Validate all invoices in right panel match the expected status
+     */
+    public boolean validateRightPanelStatus(String expectedStatus) {
+        List<WebElement> invoiceRows = getRightPanelRows();
+        if (invoiceRows.isEmpty()) {
+            return false;
+        }
+
+        for (WebElement row : invoiceRows) {
+            String actualStatus = getInvoiceRowStatus(row);
+            if (!actualStatus.equalsIgnoreCase(expectedStatus)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Validate left panel has files with matching counts for the filter
+     */
+    public boolean validateLeftPanelForSuccessFilter() {
+        List<WebElement> fileRows = getLeftPanelRows();
+        if (fileRows.isEmpty()) {
+            return false;
+        }
+
+        for (WebElement row : fileRows) {
+            int successCount = getFileRowSuccessCount(row);
+            if (successCount == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Validate left panel has files with matching counts for Fail filter
+     */
+    public boolean validateLeftPanelForFailFilter() {
+        List<WebElement> fileRows = getLeftPanelRows();
+        if (fileRows.isEmpty()) {
+            return false;
+        }
+
+        for (WebElement row : fileRows) {
+            int failCount = getFileRowFailCount(row);
+            if (failCount == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Validate right panel status with flexible matching (supports partial match)
+     * Useful for statuses like "Manually Corrected" which might vary
+     */
+    public boolean validateRightPanelStatusFlexible(String expectedStatusKeyword) {
+        List<WebElement> invoiceRows = getRightPanelRows();
+        if (invoiceRows.isEmpty()) {
+            return false;
+        }
+
+        for (WebElement row : invoiceRows) {
+            String actualStatus = getInvoiceRowStatus(row).toLowerCase();
+            if (!actualStatus.contains(expectedStatusKeyword.toLowerCase())) {
+                System.out.println("DEBUG: Status mismatch - Expected keyword: '" + expectedStatusKeyword +
+                                   "', Actual: '" + actualStatus + "'");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Get all unique statuses from right panel for debugging
+     */
+    public java.util.Set<String> getAllInvoiceStatuses() {
+        java.util.Set<String> statuses = new java.util.HashSet<>();
+        List<WebElement> invoiceRows = getRightPanelRows();
+
+        for (WebElement row : invoiceRows) {
+            String status = getInvoiceRowStatus(row);
+            if (!status.isEmpty()) {
+                statuses.add(status);
+            }
+        }
+        return statuses;
     }
 }

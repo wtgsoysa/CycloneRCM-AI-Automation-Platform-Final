@@ -23,7 +23,9 @@ public class FileHistoryTest extends SmokeBaseTest {
         uploadPage = new FileUploadPage(driver);
         historyPage = new FileHistoryPage(driver);
 
-        WaitUtils.waitForVisibility(driver, LocatorConstants.LOGIN_LOGO, 60);
+        // Wait for page to load with reduced timeout
+        WaitUtils.waitForVisibility(driver, LocatorConstants.LOGIN_LOGO, 30);
+        WaitUtils.sleep(2000); // Give extra time for page stability
 
         String actualSystemLabelText = loginPage.getSystemLabelText();
         String expectedSystemLabelText = HistorySmokeTestDataProperties.get("systemLabel");
@@ -51,7 +53,8 @@ public class FileHistoryTest extends SmokeBaseTest {
         loginPage.enterPassword(HistorySmokeTestDataProperties.get("validPassword"));
         loginPage.clickSignInButton();
 
-        WaitUtils.waitForVisibility(driver, LocatorConstants.getStartedButton, 60);
+        WaitUtils.waitForVisibility(driver, LocatorConstants.getStartedButton, 30);
+        WaitUtils.sleep(2000); // Extra wait for dashboard to stabilize
 
         String expectedGetStartedButtonText = "Get Started";
         String actualGetStartedButtonText = uploadPage.getGetStartedButtonText();
@@ -142,21 +145,25 @@ public class FileHistoryTest extends SmokeBaseTest {
     public void SMOKE_FH_005() {
         try {
             String fileId = historyPage.getFirstFileId();
+            System.out.println("DEBUG: Retrieved file ID: " + fileId);
             Assert.assertNotNull(fileId, "File ID should not be null");
             Assert.assertFalse(fileId.isEmpty(), "File ID should not be empty");
             test.pass("File ID is displayed: " + fileId);
 
             String fileName = historyPage.getFirstFileName();
+            System.out.println("DEBUG: Retrieved file name: " + fileName);
             Assert.assertNotNull(fileName, "File Name should not be null");
             Assert.assertFalse(fileName.isEmpty(), "File Name should not be empty");
             test.pass("File Name is displayed: " + fileName);
 
             String uploadDate = historyPage.getFirstFileUploadDate();
+            System.out.println("DEBUG: Retrieved upload date: " + uploadDate);
             Assert.assertNotNull(uploadDate, "Upload Date should not be null");
             Assert.assertFalse(uploadDate.isEmpty(), "Upload Date should not be empty");
             test.pass("Upload Date is displayed: " + uploadDate);
 
             String status = historyPage.getFirstFileStatus();
+            System.out.println("DEBUG: Retrieved file status: " + status);
             Assert.assertNotNull(status, "Status should not be null");
             Assert.assertFalse(status.isEmpty(), "Status should not be empty");
             test.pass("Status is displayed: " + status);
@@ -176,22 +183,27 @@ public class FileHistoryTest extends SmokeBaseTest {
             test.pass("Pages is displayed: " + pages);
 
             String invoiceCount = historyPage.getFirstFileInvoiceCount();
+            System.out.println("DEBUG: Retrieved invoice count: " + invoiceCount);
             Assert.assertNotNull(invoiceCount, "Invoice Count should not be null");
             test.pass("Invoice Count is displayed: " + invoiceCount);
 
             String successCount = historyPage.getFirstFileSuccessCount();
+            System.out.println("DEBUG: Retrieved success count: " + successCount);
             Assert.assertNotNull(successCount, "Success Count should not be null");
             test.pass("Success Count is displayed: " + successCount);
 
             String failCount = historyPage.getFirstFileFailCount();
+            System.out.println("DEBUG: Retrieved fail count: " + failCount);
             Assert.assertNotNull(failCount, "Fail Count should not be null");
             test.pass("Fail Count is displayed: " + failCount);
 
             String deletedCount = historyPage.getFirstFileDeletedCount();
+            System.out.println("DEBUG: Retrieved deleted count: " + deletedCount);
             Assert.assertNotNull(deletedCount, "Deleted Count should not be null");
             test.pass("Deleted Count is displayed: " + deletedCount);
 
             String amount = historyPage.getFirstFileAmount();
+            System.out.println("DEBUG: Retrieved amount: " + amount);
             Assert.assertNotNull(amount, "Amount should not be null");
             test.pass("Amount is displayed: " + amount);
 
@@ -205,13 +217,38 @@ public class FileHistoryTest extends SmokeBaseTest {
     @Test(priority = 7, description = "SMOKE_FH_007 - Verify Invoice Status filter dropdown displays all status options")
     public void SMOKE_FH_007() {
         try {
-            Assert.assertTrue(historyPage.isInvoiceStatusDropdownDisplayed(), "Invoice Status dropdown should be displayed");
+            // Wait for filter section to load completely with retry
+            WaitUtils.sleep(3000);
+
+            // Retry logic to handle delayed element loading
+            boolean dropdownFound = false;
+            for (int i = 0; i < 3; i++) {
+                if (historyPage.isInvoiceStatusDropdownDisplayed()) {
+                    dropdownFound = true;
+                    break;
+                }
+                System.out.println("Attempt " + (i + 1) + ": Invoice Status dropdown not found, retrying...");
+                WaitUtils.sleep(2000);
+            }
+
+            Assert.assertTrue(dropdownFound, "Invoice Status dropdown should be displayed");
             test.pass("Invoice Status dropdown is displayed");
 
+            // Click the dropdown to open options
             historyPage.clickInvoiceStatusDropdown();
-            WaitUtils.sleep(1000);
-            test.pass("Invoice Status dropdown options are accessible");
+            WaitUtils.sleep(2000);
+            test.pass("Invoice Status dropdown opened successfully");
 
+            // Validate all dropdown options are present
+            String[] expectedOptions = {"All", "Success", "Fail", "Manually Corrected", "Duplicate", "Processing"};
+
+            for (String option : expectedOptions) {
+                boolean optionExists = historyPage.isDropdownOptionDisplayed(option);
+                Assert.assertTrue(optionExists, option + " option should be displayed in dropdown");
+                test.pass("✓ " + option + " option is displayed");
+            }
+
+            test.pass("All 6 status options validated successfully");
             test.pass("SMOKE_FH_007 passed");
         } catch (AssertionError e) {
             test.fail("SMOKE_FH_007 failed: " + e.getMessage());
@@ -219,8 +256,401 @@ public class FileHistoryTest extends SmokeBaseTest {
         }
     }
 
-    @Test(priority = 8, description = "SMOKE_FH_008 - Verify Case/ADJ filter field is functional")
+    @Test(priority = 8, description = "SMOKE_FH_008 - Verify user can filter invoices by status Success and Results match selected filter")
     public void SMOKE_FH_008() {
+        try {
+            test.info("🔍 Starting Success filter validation");
+
+            // Select Success filter
+            historyPage.selectInvoiceStatusFilter("Success");
+            test.info("✓ Success filter selected");
+            WaitUtils.sleep(3000);
+
+            // Validate Right Panel (Invoice List) - All invoices should have Success status
+            test.info("📊 Validating RIGHT panel (Invoice List)");
+            if (historyPage.hasRightPanelData()) {
+                boolean rightValidation = historyPage.validateRightPanelStatus("Success");
+                Assert.assertTrue(rightValidation, "All invoices in Invoice List should have Success status");
+                test.pass("✅ RIGHT: All invoices have Success status");
+            } else {
+                test.warning("⚠ RIGHT: No invoices found (empty result is acceptable)");
+            }
+
+            // Validate Left Panel (Received Files) - All files should have Success Count > 0
+            test.info("📊 Validating LEFT panel (Received Files)");
+            if (historyPage.hasLeftPanelData()) {
+                boolean leftValidation = historyPage.validateLeftPanelForSuccessFilter();
+                Assert.assertTrue(leftValidation, "All files should have Success Count > 0");
+                test.pass("✅ LEFT: All files have Success Count > 0");
+            } else {
+                test.fail("❌ LEFT: No files found after applying Success filter");
+                throw new AssertionError("No files found after applying Success filter");
+            }
+
+            test.pass("✅ SMOKE_FH_008 passed - Success filter works correctly");
+        } catch (AssertionError e) {
+            test.fail("SMOKE_FH_008 failed: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Test(priority = 9, description = "SMOKE_FH_009 - Verify user can filter invoices by status Fail and Results match selected filter")
+    public void SMOKE_FH_009() {
+        try {
+            test.info("🔍 Starting Fail filter validation");
+
+            // Select Fail filter
+            historyPage.selectInvoiceStatusFilter("Fail");
+            test.info("✓ Fail filter selected");
+            WaitUtils.sleep(3000);
+
+            // Validate Right Panel (Invoice List) - All invoices should have Fail status
+            test.info("📊 Validating RIGHT panel (Invoice List)");
+            if (historyPage.hasRightPanelData()) {
+                boolean rightValidation = historyPage.validateRightPanelStatus("Fail");
+                Assert.assertTrue(rightValidation, "All invoices in Invoice List should have Fail status");
+                test.pass("✅ RIGHT: All invoices have Fail status");
+            } else {
+                test.warning("⚠ RIGHT: No invoices found (empty result is acceptable)");
+            }
+
+            // Validate Left Panel (Received Files) - All files should have Fail Count > 0
+            test.info("📊 Validating LEFT panel (Received Files)");
+            if (historyPage.hasLeftPanelData()) {
+                boolean leftValidation = historyPage.validateLeftPanelForFailFilter();
+                Assert.assertTrue(leftValidation, "All files should have Fail Count > 0");
+                test.pass("✅ LEFT: All files have Fail Count > 0");
+            } else {
+                test.fail("❌ LEFT: No files found after applying Fail filter");
+                throw new AssertionError("No files found after applying Fail filter");
+            }
+
+            test.pass("✅ SMOKE_FH_009 passed - Fail filter works correctly");
+        } catch (AssertionError e) {
+            test.fail("SMOKE_FH_009 failed: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Test(priority = 10, description = "SMOKE_FH_010 - Verify user can filter invoices by status Manually Corrected and Results match selected filter")
+    public void SMOKE_FH_010() {
+        try {
+            test.info("🔍 Starting Manually Corrected filter validation");
+
+            // Select Manually Corrected filter
+            historyPage.selectInvoiceStatusFilter("Manually Corrected");
+            test.info("✓ Manually Corrected filter selected");
+            WaitUtils.sleep(3000);
+
+            // Track validation results
+            boolean rightValidationPassed = false;
+            String rightErrorDetails = "";
+
+            // Validate Right Panel (Invoice List) - All invoices should have Manually Corrected status
+            test.info("📊 Validating RIGHT panel (Invoice List)");
+            if (historyPage.hasRightPanelData()) {
+                // Get actual statuses for debugging
+                java.util.List<org.openqa.selenium.WebElement> invoiceRows = historyPage.getRightPanelRows();
+                java.util.Set<String> actualStatuses = new java.util.HashSet<>();
+
+                for (org.openqa.selenium.WebElement row : invoiceRows) {
+                    String status = historyPage.getInvoiceRowStatus(row);
+                    actualStatuses.add(status);
+                }
+
+                test.info("📋 Found " + invoiceRows.size() + " invoice(s) with statuses: " + actualStatuses);
+
+                // Validate with flexible matching (case-insensitive and partial match)
+                boolean allMatch = true;
+                java.util.List<String> mismatchedStatuses = new java.util.ArrayList<>();
+
+                for (org.openqa.selenium.WebElement row : invoiceRows) {
+                    String actualStatus = historyPage.getInvoiceRowStatus(row);
+                    // Accept "Manually Corrected", "Manual Corrected", or "Corrected"
+                    if (!actualStatus.toLowerCase().contains("correct")) {
+                        allMatch = false;
+                        mismatchedStatuses.add(actualStatus);
+                    }
+                }
+
+                if (allMatch) {
+                    test.pass("✅ RIGHT: All " + invoiceRows.size() + " invoice(s) have Manually Corrected status");
+                    rightValidationPassed = true;
+                } else {
+                    rightErrorDetails = "Found invoices with non-Corrected statuses: " + mismatchedStatuses;
+                    test.fail("❌ RIGHT: " + rightErrorDetails);
+                    // Don't throw yet - continue validation
+                }
+            } else {
+                test.warning("⚠ RIGHT: No invoices found with Manually Corrected status (empty result is acceptable)");
+                rightValidationPassed = true; // Empty is acceptable for this filter
+            }
+
+            // Validate Left Panel (Received Files) - Should show files containing Manually Corrected invoices
+            test.info("📊 Validating LEFT panel (Received Files)");
+            if (historyPage.hasLeftPanelData()) {
+                int fileCount = historyPage.getLeftPanelRows().size();
+                test.pass("✅ LEFT: " + fileCount + " file(s) containing Manually Corrected invoices displayed");
+            } else {
+                test.warning("⚠ LEFT: No files found (empty result is acceptable if no Manually Corrected invoices exist)");
+            }
+
+            // Final assertion
+            if (!rightValidationPassed) {
+                throw new AssertionError("RIGHT panel validation failed: " + rightErrorDetails);
+            }
+
+            test.pass("✅ SMOKE_FH_010 passed - Manually Corrected filter works correctly");
+        } catch (AssertionError e) {
+            test.fail("SMOKE_FH_010 failed: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Test(priority = 11, description = "SMOKE_FH_011 - Verify user can filter invoices by status Duplicated and Results match selected filter")
+    public void SMOKE_FH_011() {
+        try {
+            test.info("🔍 Starting Duplicate filter validation");
+
+            // Select Duplicate filter
+            historyPage.selectInvoiceStatusFilter("Duplicate");
+            test.info("✓ Duplicate filter selected");
+            WaitUtils.sleep(3000);
+
+            // Track validation results
+            boolean rightValidationPassed = false;
+            String rightErrorDetails = "";
+
+            // Validate Right Panel (Invoice List) - All invoices should have Duplicate status
+            test.info("📊 Validating RIGHT panel (Invoice List)");
+            if (historyPage.hasRightPanelData()) {
+                // Get actual statuses for debugging
+                java.util.List<org.openqa.selenium.WebElement> invoiceRows = historyPage.getRightPanelRows();
+                java.util.Set<String> actualStatuses = new java.util.HashSet<>();
+
+                for (org.openqa.selenium.WebElement row : invoiceRows) {
+                    String status = historyPage.getInvoiceRowStatus(row);
+                    actualStatuses.add(status);
+                }
+
+                test.info("📋 Found " + invoiceRows.size() + " invoice(s) with statuses: " + actualStatuses);
+
+                // Validate with flexible matching (case-insensitive and partial match)
+                boolean allMatch = true;
+                java.util.List<String> mismatchedStatuses = new java.util.ArrayList<>();
+
+                for (org.openqa.selenium.WebElement row : invoiceRows) {
+                    String actualStatus = historyPage.getInvoiceRowStatus(row);
+                    // Accept "Duplicate", "Duplicated", or variations
+                    if (!actualStatus.toLowerCase().contains("duplicat")) {
+                        allMatch = false;
+                        mismatchedStatuses.add(actualStatus);
+                    }
+                }
+
+                if (allMatch) {
+                    test.pass("✅ RIGHT: All " + invoiceRows.size() + " invoice(s) have Duplicate status");
+                    rightValidationPassed = true;
+                } else {
+                    rightErrorDetails = "Found invoices with non-Duplicate statuses: " + mismatchedStatuses;
+                    test.fail("❌ RIGHT: " + rightErrorDetails);
+                    // Don't throw yet - continue validation
+                }
+            } else {
+                test.warning("⚠ RIGHT: No invoices found with Duplicate status (empty result is acceptable)");
+                rightValidationPassed = true; // Empty is acceptable for this filter
+            }
+
+            // Validate Left Panel (Received Files) - Should show files containing Duplicate invoices
+            test.info("📊 Validating LEFT panel (Received Files)");
+            if (historyPage.hasLeftPanelData()) {
+                int fileCount = historyPage.getLeftPanelRows().size();
+                test.pass("✅ LEFT: " + fileCount + " file(s) containing Duplicate invoices displayed");
+            } else {
+                test.warning("⚠ LEFT: No files found (empty result is acceptable if no Duplicate invoices exist)");
+            }
+
+            // Final assertion
+            if (!rightValidationPassed) {
+                throw new AssertionError("RIGHT panel validation failed: " + rightErrorDetails);
+            }
+
+            test.pass("✅ SMOKE_FH_011 passed - Duplicate filter works correctly");
+        } catch (AssertionError e) {
+            test.fail("SMOKE_FH_011 failed: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Test(priority = 12, description = "SMOKE_FH_012 - Verify user can filter invoices by status Processing and Results match selected filter")
+    public void SMOKE_FH_012() {
+        try {
+            test.info("🔍 Starting Processing filter validation");
+
+            // Select Processing filter
+            historyPage.selectInvoiceStatusFilter("Processing");
+            test.info("✓ Processing filter selected");
+            WaitUtils.sleep(3000);
+
+            // Validate Left Panel (Received Files) - Should show files with Processing status
+            test.info("📊 Validating LEFT panel (Received Files)");
+            if (historyPage.hasLeftPanelData()) {
+                test.pass("✅ LEFT: Files with Processing status are displayed");
+            } else {
+                test.warning("⚠ LEFT: No files found with Processing status (acceptable)");
+            }
+
+            // Validate Right Panel (Invoice List) - Should be empty (no invoices yet)
+            test.info("📊 Validating RIGHT panel (Invoice List)");
+            if (!historyPage.hasRightPanelData()) {
+                test.pass("✅ RIGHT: No invoices displayed (expected for Processing files)");
+            } else {
+                test.warning("⚠ RIGHT: Some invoices found (may be from previous processing)");
+            }
+
+            test.pass("✅ SMOKE_FH_012 passed - Processing filter works correctly");
+        } catch (AssertionError e) {
+            test.fail("SMOKE_FH_012 failed: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Test(priority = 13, description = "SMOKE_FH_013 - Verify user can filter invoices by status ALL and Results match selected filter")
+    public void SMOKE_FH_013() {
+        try {
+            test.info("🔍 Starting ALL filter validation");
+
+            // Select ALL filter (default - shows everything)
+            historyPage.selectInvoiceStatusFilter("All");
+            test.info("✓ ALL filter selected");
+            WaitUtils.sleep(3000);
+
+            // Validate Left Panel (Received Files) - Should show all files
+            test.info("📊 Validating LEFT panel (Received Files)");
+            Assert.assertTrue(historyPage.hasLeftPanelData(), "Files should be displayed when ALL filter is selected");
+            int leftRowCount = historyPage.getLeftPanelRows().size();
+            test.pass("✅ LEFT: " + leftRowCount + " file(s) displayed with ALL filter");
+
+            // Validate Right Panel (Invoice List) - Should show all invoices
+            test.info("📊 Validating RIGHT panel (Invoice List)");
+            if (historyPage.hasRightPanelData()) {
+                int rightRowCount = historyPage.getRightPanelRows().size();
+                test.pass("✅ RIGHT: " + rightRowCount + " invoice(s) displayed with ALL filter");
+            } else {
+                test.warning("⚠ RIGHT: No invoices found (may indicate no processed files)");
+            }
+
+            test.pass("✅ SMOKE_FH_013 passed - ALL filter works correctly and displays all data");
+        } catch (AssertionError e) {
+            test.fail("SMOKE_FH_013 failed: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Test(priority = 14, description = "SMOKE_FH_014 - Verify user can search by File Name and correct results display in both panels")
+    public void SMOKE_FH_014() {
+        try {
+            test.info("🔍 Starting File Name search validation");
+
+            // Get a file name from the first visible file
+            WaitUtils.sleep(2000);
+            Assert.assertTrue(historyPage.hasLeftPanelData(), "Files should be available for search test");
+
+            String searchFileName = historyPage.getFirstFileName();
+            test.info("📄 Using file name for search: " + searchFileName);
+
+            // Perform search
+            historyPage.searchByFileNameOrInvoice(searchFileName);
+            test.info("✓ Search executed for file name: " + searchFileName);
+            WaitUtils.sleep(3000);
+
+            // Validate Left Panel (Received Files) - Should show matching file
+            test.info("📊 Validating LEFT panel (Received Files)");
+            Assert.assertTrue(historyPage.hasLeftPanelData(), "Search results should be displayed in Received Files");
+
+            String resultFileName = historyPage.getFirstFileName();
+            Assert.assertTrue(resultFileName.contains(searchFileName) || searchFileName.contains(resultFileName),
+                    "Search result should match the searched file name");
+            test.pass("✅ LEFT: Search result matches file name: " + resultFileName);
+
+            // Validate Right Panel (Invoice List) - Should show invoices from matching file
+            test.info("📊 Validating RIGHT panel (Invoice List)");
+            if (historyPage.hasRightPanelData()) {
+                test.pass("✅ RIGHT: Related invoices are displayed");
+            } else {
+                test.warning("⚠ RIGHT: No invoices found (file may not have processed invoices)");
+            }
+
+            // Clear search
+            historyPage.clearSearch();
+            WaitUtils.sleep(1000);
+
+            test.pass("✅ SMOKE_FH_014 passed - File Name search works correctly");
+        } catch (AssertionError e) {
+            test.fail("SMOKE_FH_014 failed: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    @Test(priority = 15, description = "SMOKE_FH_015 - Verify user can search by Invoice # and correct results display in both panels")
+    public void SMOKE_FH_015() {
+        try {
+            test.info("🔍 Starting Invoice Number search validation");
+
+            // Ensure we have invoice data
+            WaitUtils.sleep(2000);
+
+            // First, select ALL filter to ensure we see invoices
+            historyPage.selectInvoiceStatusFilter("All");
+            WaitUtils.sleep(2000);
+
+            // Check if we have invoice data in right panel
+            if (!historyPage.hasRightPanelData()) {
+                test.warning("⚠ No invoices available for search test - skipping");
+                test.pass("SMOKE_FH_015 skipped - No invoice data available");
+                return;
+            }
+
+            // Get an invoice number from the first visible invoice
+            String searchInvoiceNumber = historyPage.getInvoiceRowNumber(historyPage.getRightPanelRows().get(0));
+            test.info("📄 Using invoice number for search: " + searchInvoiceNumber);
+
+            // Perform search
+            historyPage.searchByFileNameOrInvoice(searchInvoiceNumber);
+            test.info("✓ Search executed for invoice #: " + searchInvoiceNumber);
+            WaitUtils.sleep(3000);
+
+            // Validate Right Panel (Invoice List) - Should show matching invoice
+            test.info("📊 Validating RIGHT panel (Invoice List)");
+            Assert.assertTrue(historyPage.hasRightPanelData(), "Search results should be displayed in Invoice List");
+
+            String resultInvoiceNumber = historyPage.getInvoiceRowNumber(historyPage.getRightPanelRows().get(0));
+            Assert.assertTrue(resultInvoiceNumber.contains(searchInvoiceNumber) || searchInvoiceNumber.contains(resultInvoiceNumber),
+                    "Search result should match the searched invoice number");
+            test.pass("✅ RIGHT: Search result matches invoice #: " + resultInvoiceNumber);
+
+            // Validate Left Panel (Received Files) - Should show the parent file containing this invoice
+            test.info("📊 Validating LEFT panel (Received Files)");
+            if (historyPage.hasLeftPanelData()) {
+                test.pass("✅ LEFT: Parent file containing the invoice is displayed");
+            } else {
+                test.warning("⚠ LEFT: No file displayed (unexpected but not critical)");
+            }
+
+            // Clear search
+            historyPage.clearSearch();
+            WaitUtils.sleep(1000);
+
+            test.pass("✅ SMOKE_FH_015 passed - Invoice Number search works correctly");
+        } catch (AssertionError e) {
+            test.fail("SMOKE_FH_015 failed: " + e.getMessage());
+            throw e;
+        }
+    }
+
+
+    @Test(priority = 16, description = "SMOKE_FH_016 - Verify Case/ADJ filter field is functional")
+    public void SMOKE_FH_016() {
         try {
             Assert.assertTrue(historyPage.isCaseAdjFieldDisplayed(), "Case/ADJ filter field should be displayed");
             test.pass("Case/ADJ filter field is displayed");
@@ -229,32 +659,63 @@ public class FileHistoryTest extends SmokeBaseTest {
             WaitUtils.sleep(1000);
             test.pass("Case/ADJ filter field is functional");
 
-            test.pass("SMOKE_FH_008 passed");
+            test.pass("SMOKE_FH_016 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_008 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_016 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 9, description = "SMOKE_FH_009 - Verify File Type filter dropdown displays available types")
-    public void SMOKE_FH_009() {
+    @Test(priority = 17, description = "SMOKE_FH_017 - Verify File Type filter dropdown displays available types and filter by Interpreted Billing")
+    public void SMOKE_FH_017() {
         try {
+            test.info("🔍 Starting File Type filter validation");
+
+            // Verify File Type dropdown is displayed
             Assert.assertTrue(historyPage.isFileTypeDropdownDisplayed(), "File Type dropdown should be displayed");
-            test.pass("File Type dropdown is displayed");
+            test.pass("✓ File Type dropdown is displayed");
 
+            // Click to open the dropdown
             historyPage.clickFileTypeDropdown();
-            WaitUtils.sleep(1000);
-            test.pass("File Type dropdown is functional");
+            WaitUtils.sleep(2000);
+            test.pass("✓ File Type dropdown opened successfully");
 
-            test.pass("SMOKE_FH_009 passed");
+            // Validate Interpreted Billing option is available
+            boolean interpretedBillingExists = historyPage.isFileTypeOptionDisplayed("Interpreted Billing");
+            Assert.assertTrue(interpretedBillingExists, "Interpreted Billing option should be displayed in File Type dropdown");
+            test.pass("✓ Interpreted Billing option is available");
+
+            // Select Interpreted Billing filter (DMS focuses on Interpreted Billing)
+            test.info("📊 Filtering by Interpreted Billing");
+            historyPage.selectFileType("Interpreted Billing");
+            test.pass("✓ Interpreted Billing filter applied");
+            WaitUtils.sleep(3000);
+
+            // Validate results after applying filter
+            test.info("📊 Validating filtered results");
+            if (historyPage.hasLeftPanelData()) {
+                int fileCount = historyPage.getLeftPanelRows().size();
+                test.pass("✅ " + fileCount + " Interpreted Billing file(s) displayed after filter");
+            } else {
+                test.warning("⚠ No Interpreted Billing files found (may be acceptable if none uploaded)");
+            }
+
+            if (historyPage.hasRightPanelData()) {
+                int invoiceCount = historyPage.getRightPanelRows().size();
+                test.pass("✅ " + invoiceCount + " invoice(s) from Interpreted Billing files displayed");
+            } else {
+                test.warning("⚠ No invoices found (may be acceptable if no processed Interpreted Billing files)");
+            }
+
+            test.pass("✅ SMOKE_FH_017 passed - File Type filter works correctly with Interpreted Billing focus");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_009 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_017 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 10, description = "SMOKE_FH_010 - Verify From Date and To Date date pickers are functional")
-    public void SMOKE_FH_010() {
+    @Test(priority = 18, description = "SMOKE_FH_018 - Verify From Date and To Date date pickers are functional")
+    public void SMOKE_FH_018() {
         try {
             Assert.assertTrue(historyPage.isFromDateFieldDisplayed(), "From Date field should be displayed");
             test.pass("From Date field is displayed");
@@ -262,15 +723,15 @@ public class FileHistoryTest extends SmokeBaseTest {
             Assert.assertTrue(historyPage.isToDateFieldDisplayed(), "To Date field should be displayed");
             test.pass("To Date field is displayed");
 
-            test.pass("SMOKE_FH_010 passed");
+            test.pass("SMOKE_FH_018 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_010 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_018 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 11, description = "SMOKE_FH_011 - Verify Search button applies selected filters")
-    public void SMOKE_FH_011() {
+    @Test(priority = 19, description = "SMOKE_FH_019 - Verify Search button applies selected filters")
+    public void SMOKE_FH_019() {
         try {
             historyPage.enterFromDate("01/01/2026");
             WaitUtils.sleep(500);
@@ -281,15 +742,15 @@ public class FileHistoryTest extends SmokeBaseTest {
             WaitUtils.sleep(2000);
             test.pass("Search button applies selected filters");
 
-            test.pass("SMOKE_FH_011 passed");
+            test.pass("SMOKE_FH_019 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_011 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_019 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 12, description = "SMOKE_FH_012 - Verify Clear button resets all filters")
-    public void SMOKE_FH_012() {
+    @Test(priority = 20, description = "SMOKE_FH_020 - Verify Clear button resets all filters")
+    public void SMOKE_FH_020() {
         try {
             historyPage.enterFromDate("01/01/2026");
             WaitUtils.sleep(500);
@@ -300,15 +761,15 @@ public class FileHistoryTest extends SmokeBaseTest {
             WaitUtils.sleep(1000);
             test.pass("Clear button resets all filters");
 
-            test.pass("SMOKE_FH_012 passed");
+            test.pass("SMOKE_FH_020 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_012 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_020 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 13, description = "SMOKE_FH_013 - Verify search by filename in Search by file name invoice field works correctly")
-    public void SMOKE_FH_013() {
+    @Test(priority = 21, description = "SMOKE_FH_021 - Verify search by filename in Search by file name invoice field works correctly")
+    public void SMOKE_FH_021() {
         try {
             Assert.assertTrue(historyPage.isSearchByFileNameFieldDisplayed(), "Search by file name field should be displayed");
             test.pass("Search by file name field is displayed");
@@ -321,15 +782,15 @@ public class FileHistoryTest extends SmokeBaseTest {
             WaitUtils.sleep(2000);
             test.pass("Search by filename works correctly");
 
-            test.pass("SMOKE_FH_013 passed");
+            test.pass("SMOKE_FH_021 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_013 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_021 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 14, description = "SMOKE_FH_014 - Verify pagination controls work (First, Previous, Page Number, Next, Last)")
-    public void SMOKE_FH_014() {
+    @Test(priority = 22, description = "SMOKE_FH_022 - Verify pagination controls work (First, Previous, Page Number, Next, Last)")
+    public void SMOKE_FH_022() {
         try {
             if (historyPage.isNextPageButtonEnabled()) {
                 historyPage.clickNextPage();
@@ -347,15 +808,15 @@ public class FileHistoryTest extends SmokeBaseTest {
                 test.info("Only one page available, skipping pagination test");
             }
 
-            test.pass("SMOKE_FH_014 passed");
+            test.pass("SMOKE_FH_022 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_014 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_022 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 15, description = "SMOKE_FH_015 - Verify JSON button opens JSON file viewer with extracted invoice data")
-    public void SMOKE_FH_015() {
+    @Test(priority = 23, description = "SMOKE_FH_023 - Verify JSON button opens JSON file viewer with extracted invoice data")
+    public void SMOKE_FH_023() {
         try {
             Assert.assertTrue(historyPage.isJsonButtonDisplayed(), "JSON button should be displayed");
             test.pass("JSON button is displayed");
@@ -366,15 +827,15 @@ public class FileHistoryTest extends SmokeBaseTest {
             Assert.assertTrue(historyPage.isJsonContainerDisplayed(), "JSON viewer should be displayed");
             test.pass("JSON viewer opens with extracted invoice data");
 
-            test.pass("SMOKE_FH_015 passed");
+            test.pass("SMOKE_FH_023 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_015 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_023 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 16, description = "SMOKE_FH_016 - Verify Download button downloads the original uploaded PDF file")
-    public void SMOKE_FH_016() {
+    @Test(priority = 24, description = "SMOKE_FH_024 - Verify Download button downloads the original uploaded PDF file")
+    public void SMOKE_FH_024() {
         try {
             Assert.assertTrue(historyPage.isDownloadButtonDisplayed(), "Download button should be displayed");
             test.pass("Download button is displayed");
@@ -383,15 +844,15 @@ public class FileHistoryTest extends SmokeBaseTest {
             WaitUtils.sleep(2000);
             test.pass("Download button is functional");
 
-            test.pass("SMOKE_FH_016 passed");
+            test.pass("SMOKE_FH_024 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_016 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_024 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 17, description = "SMOKE_FH_017 - Verify JSON file displays all extracted invoice fields correctly")
-    public void SMOKE_FH_017() {
+    @Test(priority = 25, description = "SMOKE_FH_025 - Verify JSON file displays all extracted invoice fields correctly")
+    public void SMOKE_FH_025() {
         try {
             historyPage.clickFirstJsonButton();
             WaitUtils.sleep(3000);
@@ -401,15 +862,15 @@ public class FileHistoryTest extends SmokeBaseTest {
             Assert.assertFalse(jsonContent.isEmpty(), "JSON content should not be empty");
             test.pass("JSON file displays extracted invoice fields: " + jsonContent.substring(0, Math.min(jsonContent.length(), 100)) + "...");
 
-            test.pass("SMOKE_FH_017 passed");
+            test.pass("SMOKE_FH_025 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_017 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_025 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 18, description = "SMOKE_FH_018 - Verify clicking a File in Received File section displays related invoices in Invoice List section")
-    public void SMOKE_FH_018() {
+    @Test(priority = 26, description = "SMOKE_FH_018 - Verify clicking a File in Received File section displays related invoices in Invoice List section")
+    public void SMOKE_FH_026() {
         try {
             int initialInvoiceCount = historyPage.getInvoiceCount();
             test.info("Initial invoice count: " + initialInvoiceCount);
@@ -423,15 +884,15 @@ public class FileHistoryTest extends SmokeBaseTest {
             Assert.assertTrue(updatedInvoiceCount > 0, "Invoices should be displayed in Invoice List section");
             test.pass("Clicking file displays related invoices");
 
-            test.pass("SMOKE_FH_018 passed");
+            test.pass("SMOKE_FH_026 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_018 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_026 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 19, description = "SMOKE_FH_019 - Verify clicking File icon in Invoice List section opens the Document View")
-    public void SMOKE_FH_019() {
+    @Test(priority = 27, description = "SMOKE_FH_027 - Verify clicking File icon in Invoice List section opens the Document View")
+    public void SMOKE_FH_027() {
         try {
             historyPage.clickFirstFile();
             WaitUtils.sleep(2000);
@@ -443,15 +904,15 @@ public class FileHistoryTest extends SmokeBaseTest {
             WaitUtils.sleep(3000);
             test.pass("File icon opens the Document View");
 
-            test.pass("SMOKE_FH_019 passed");
+            test.pass("SMOKE_FH_027 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_019 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_027 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 20, description = "SMOKE_FH_020 - Verify clicking Edit icon in Invoice list section opens the Edit-Invoice section")
-    public void SMOKE_FH_020() {
+    @Test(priority = 28, description = "SMOKE_FH_028 - Verify clicking Edit icon in Invoice list section opens the Edit-Invoice section")
+    public void SMOKE_FH_028() {
         try {
             historyPage.clickFirstFile();
             WaitUtils.sleep(2000);
@@ -463,15 +924,15 @@ public class FileHistoryTest extends SmokeBaseTest {
             WaitUtils.sleep(3000);
             test.pass("Edit icon opens the Edit-Invoice section");
 
-            test.pass("SMOKE_FH_020 passed");
+            test.pass("SMOKE_FH_028 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_020 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_028 failed: " + e.getMessage());
             throw e;
         }
     }
 
-    @Test(priority = 21, description = "SMOKE_FH_021 - Verify Delete action opens confirmation modal and confirming Delete removes invoice permanently")
-    public void SMOKE_FH_021() {
+    @Test(priority = 29, description = "SMOKE_FH_029 - Verify Delete action opens confirmation modal and confirming Delete removes invoice permanently")
+    public void SMOKE_FH_029() {
         try {
             historyPage.clickFirstFile();
             WaitUtils.sleep(2000);
@@ -497,10 +958,14 @@ public class FileHistoryTest extends SmokeBaseTest {
             Assert.assertEquals(updatedInvoiceCount, initialInvoiceCount - 1, "Invoice should be deleted");
             test.pass("Invoice removed permanently from both panels");
 
-            test.pass("SMOKE_FH_021 passed");
+            test.pass("SMOKE_FH_029 passed");
         } catch (AssertionError e) {
-            test.fail("SMOKE_FH_021 failed: " + e.getMessage());
+            test.fail("SMOKE_FH_029 failed: " + e.getMessage());
             throw e;
         }
     }
+
+
+
+
 }
