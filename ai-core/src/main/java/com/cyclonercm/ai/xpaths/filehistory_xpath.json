@@ -1,0 +1,69 @@
+{
+  "module": "FileHistory",
+  "navigation": {
+    "megaMenu": "//p-megamenu//span[@class='p-menuitem-icon pi pi-fw pi-bars ng-star-inserted']",
+    "fileHistoryMenu": "//div[@class='p-megamenu-panel ng-star-inserted']//a[contains(text(),'File History')]"
+  },
+  "sections": {
+    "receivedFilesSection": "//span[contains(text(),'Received Files')]",
+    "invoiceListSection": "//span[contains(text(),'Invoice List')]"
+  },
+  "header": {
+    "totalFileCount": "//strong[contains(text(),'Total File Count:')]"
+  },
+  "fileRow": {
+    "fileCard": "//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted']",
+    "fileId": "//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted']//div[@class='p-col-fixed app-p-0'][1]//b",
+    "fileName": "//cyclone-list-file-history//div[@tooltipposition='bottom' and contains(@class,'text-overflow-ellipsis')]",
+    "uploadDate": "//cyclone-list-file-history//tr[@class='p-element p-selectable-row ng-star-inserted']//div[@class='p-col-8 app-p-0 app-mt-5']",
+    "status": "//cyclone-list-file-history//p-badge//span[@class='p-badge p-component']",
+    "processingStatus": "//cyclone-list-file-history//p-badge[@severity='warning']//span[contains(text(),'Processing')]",
+    "completedStatus": "//cyclone-list-file-history//p-badge[@severity='success']//span[contains(text(),'Completed')]"
+  },
+  "fileDetails": {
+    "pages": "//cyclone-list-file-history//div[@class='p-grid app-p-0'][contains(.,'Pages')]//following-sibling::div[@class='p-grid app-p-0'][1]//div[@class='p-col-1 app-p-0']",
+    "invoiceCount": "//cyclone-list-file-history//span[contains(text(),'Invoice Count')]/ancestor::div[@class='p-col-2 app-p-0']/following-sibling::div[@class='p-col-2 app-p-0'][1]",
+    "successCount": "//cyclone-list-file-history//span[contains(text(),'Success Count')]/ancestor::div[@class='p-col-2 app-p-0']/following-sibling::div[@class='p-col-2 app-p-0'][1]//span",
+    "failCount": "//cyclone-list-file-history//span[contains(text(),'Fail Count')]/ancestor::div[@class='p-col-2 app-p-0']/following-sibling::div[@class='p-col-2 app-p-0'][1]//span",
+    "deletedCount": "//cyclone-list-file-history//span[contains(text(),'Deleted Count')]/ancestor::div[@class='p-col-2 app-p-0']/following-sibling::div[@class='p-col-2 app-p-0'][1]//span",
+    "amount": "//cyclone-list-file-history//span[contains(text(),'Amount')]/ancestor::div[@class='p-col-3 app-p-0']/following-sibling::div[@class='p-col-3 app-p-0'][1]"
+  },
+  "filters": {
+    "invoiceStatusDropdown": "//label[contains(text(),'Invoice Status')]/ancestor::div[@class='p-field p-grid']//p-dropdown",
+    "invoiceStatusOptions": {
+      "all": "//p-dropdownitem//span[contains(text(),'All')]",
+      "success": "//p-dropdownitem//span[contains(text(),'Success')]",
+      "fail": "//p-dropdownitem//span[contains(text(),'Fail')]",
+      "manuallyCorrected": "//p-dropdownitem//span[contains(text(),'Manually Corrected')]",
+      "duplicate": "//p-dropdownitem//span[contains(text(),'Duplicate')]",
+      "processing": "//p-dropdownitem//span[contains(text(),'Processing')]"
+    },
+    "caseAdjField": "//label[contains(text(),'Case/ADJ')]/ancestor::div[@class='p-field p-grid']//p-dropdown[@placeholder='Select Case Number']",
+    "fileTypeDropdown": "//label[contains(text(),'File Type')]/ancestor::div[@class='p-field p-grid']//p-dropdown",
+    "fromDate": "//label[contains(text(),'From Date')]/following-sibling::p-calendar//input[@placeholder='MM/DD/YYYY']",
+    "toDate": "//label[contains(text(),'To Date')]/following-sibling::p-calendar//input[@placeholder='MM/DD/YYYY']",
+    "searchButton": "//button[@ptooltip='Search by date range']",
+    "clearButton": "//button[@ptooltip='Clear date search']",
+    "searchByFileNameField": "//input[@placeholder='Search by file name invoice #']"
+  },
+  "pagination": {
+    "first": "//p-paginator[@styleclass='p-paginator-top']//button[contains(@class,'p-paginator-first')]",
+    "previous": "//p-paginator[@styleclass='p-paginator-top']//button[contains(@class,'p-paginator-prev')]",
+    "pageNumber": "//p-paginator[@styleclass='p-paginator-top']//button[contains(@class,'p-paginator-page') and contains(@class,'p-highlight')]",
+    "next": "//p-paginator[@styleclass='p-paginator-top']//button[contains(@class,'p-paginator-next')]",
+    "last": "//p-paginator[@styleclass='p-paginator-top']//button[contains(@class,'p-paginator-last')]"
+  },
+  "actions": {
+    "jsonButton": "//button[@ptooltip='View JSON File' and contains(text(),'JSON')]",
+    "downloadButton": "//button[@ptooltip='View Uploaded File' and @icon='pi pi-file']",
+    "invoiceFileIcon": "//cyclone-invoice-history-list//button[@ptooltip='View Invoice' and @icon='pi pi-file']",
+    "invoiceEditIcon": "//cyclone-invoice-history-list//button[@ptooltip='Edit Invoice' and @icon='pi pi-pencil']",
+    "invoiceDeleteIcon": "//cyclone-invoice-history-list//button[@ptooltip='Delete Invoice' and @icon='pi pi-trash']",
+    "deleteConfirmModal": "//p-confirmdialog[@header='Confirm Delete']",
+    "confirmDeleteButton": "//p-confirmdialog[@header='Confirm Delete']//button[contains(@class,'p-confirm-dialog-accept')]"
+  },
+  "jsonViewer": {
+    "jsonContainer": "//p-dialog[@header='View Documents']//div[@class='p-dialog-content']",
+    "jsonFields": "//p-dialog[@header='View Documents']//pre | //p-dialog[@header='View Documents']//code"
+  }
+}
