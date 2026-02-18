@@ -12,8 +12,30 @@ public class DriverFactory {
         if (driver.get() == null) {
             WebDriverManager.chromedriver().setup();
             ChromeOptions opts = new ChromeOptions();
+
+            // Window settings
             opts.addArguments("--start-maximized");
-            // remove headless for visibility in debugging; enable if CI needed
+
+            // Stability settings to prevent crashes
+            opts.addArguments("--disable-blink-features=AutomationControlled");
+            opts.addArguments("--disable-dev-shm-usage");
+            opts.addArguments("--no-sandbox");
+            opts.addArguments("--disable-gpu");
+            opts.addArguments("--disable-extensions");
+            opts.addArguments("--disable-infobars");
+            opts.addArguments("--disable-notifications");
+            opts.addArguments("--remote-allow-origins=*");
+
+            // Performance settings
+            opts.addArguments("--disable-software-rasterizer");
+            opts.addArguments("--disable-background-networking");
+            opts.addArguments("--disable-default-apps");
+            opts.addArguments("--disable-sync");
+
+            // Prevent detection
+            opts.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+            opts.setExperimentalOption("useAutomationExtension", false);
+
             driver.set(new ChromeDriver(opts));
         }
     }
