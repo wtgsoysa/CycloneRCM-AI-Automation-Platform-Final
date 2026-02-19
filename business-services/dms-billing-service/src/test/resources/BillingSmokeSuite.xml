@@ -7,4 +7,10 @@
         </classes>
     </test>
 
+    <test name="Daily Billing Smoke Tests">
+        <classes>
+            <class name="com.cyclonercm.billing.tests.smoke.DailyBillingTest"/>
+        </classes>
+    </test>
+
 </suite>
