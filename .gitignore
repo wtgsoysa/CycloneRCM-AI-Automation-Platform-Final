@@ -40,6 +40,7 @@ dependency-reduced-pom.xml
 ############################
 test-output/
 reports/
+consolidated-reports/
 logs/
 screenshots/
 videos/
