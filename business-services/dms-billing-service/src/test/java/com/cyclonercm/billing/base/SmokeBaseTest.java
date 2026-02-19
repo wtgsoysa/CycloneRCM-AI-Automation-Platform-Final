@@ -24,19 +24,47 @@ public class SmokeBaseTest {
 
     @BeforeMethod(alwaysRun = true)
     public void setUp(Method method) {
-        // Step 1: Initialize browser and open target URL
-        DriverFactory.initDriver();
-        driver = DriverFactory.getDriver();
-        driver.get(ConfigReader.get("SmokeTestBaseUrl"));
+        // Step 1: Initialize browser and open target URL with retry
+        int maxRetries = 3;
+        int attempt = 0;
+        boolean success = false;
 
-        // Step 2: Wait for full page load
-        WaitUtils.waitUntilPageIsFullyLoaded(driver);
+        while (attempt < maxRetries && !success) {
+            try {
+                DriverFactory.initDriver();
+                driver = DriverFactory.getDriver();
+                driver.get(ConfigReader.get("SmokeTestBaseUrl"));
 
-        // Step 3: Wait extra 5 seconds for animations/components to settle
-        WaitUtils.sleep(10000);
+                // Step 2: Wait for full page load
+                WaitUtils.waitUntilPageIsFullyLoaded(driver);
+                success = true;
+            } catch (Exception e) {
+                attempt++;
+                System.out.println("Browser initialization attempt " + attempt + " failed: " + e.getMessage());
+
+                // Clean up failed driver
+                try {
+                    DriverFactory.quitDriver();
+                } catch (Exception ignored) {}
+
+                if (attempt >= maxRetries) {
+                    throw new RuntimeException("Failed to initialize browser after " + maxRetries + " attempts", e);
+                }
+
+                // Wait before retry
+                WaitUtils.sleep(3000);
+            }
+        }
+
+        // Step 3: Wait extra time for animations/components to settle
+        WaitUtils.sleep(5000);
 
         // Step 4: Capture full-page screenshot before test execution
-        ScreenshotUtil.captureFullPageScreenshot(driver, method.getName());
+        try {
+            ScreenshotUtil.captureFullPageScreenshot(driver, method.getName());
+        } catch (Exception e) {
+            System.out.println("Warning: Failed to capture screenshot: " + e.getMessage());
+        }
 
         // Step 5: Initialize Extent Report if null
         if (extent == null) {
