@@ -390,8 +390,6 @@ public class DailyBillingTest extends SmokeBaseTest {
             WaitUtils.waitForVisibility(driver, LocatorConstants.DailyBillingLabel, 60);
             System.out.println("✓ Daily Billing page loaded");
 
-
-
             String caseNumber = DailyBillingTestDataProperties.get("caseNumber");
             // Apply filter with case number
             dailyBillingPage.setCaseFilter(caseNumber);

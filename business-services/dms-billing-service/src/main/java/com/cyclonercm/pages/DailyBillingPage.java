@@ -117,15 +117,15 @@ public class DailyBillingPage {
 
         private final By caseFilter = By.xpath("/html/body/div[2]/div[1]/div/input");
         private final By caseFilterClearButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[2]/p-dropdown/div/i");
-        private final By caseDropDownButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[3]/p-dropdown/div/div[2]");
+        private final By caseDropDownButton = By.xpath("//p-dropdown[@placeholder='Case #']//div[contains(@class,'p-dropdown-trigger')]");
         // Use flexible locators that find whichever p-dropdown overlay panel is currently visible
         private final By caseSearchBar = By.xpath("/html/body/div[3]/div[1]/div/input");
         private final By caseSelector  = By.xpath("/html/body/div[3]/div[2]/ul/p-dropdownitem");
 
-        private final By applicantFilter = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[4]/p-dropdown/div/input");
-        private final By claimAdminFilter = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[5]/p-dropdown/div/input");
+        private final By applicantFilter = By.xpath("//p-dropdown[@placeholder='Applicant']//input[@type='text']");
+        private final By claimAdminFilter = By.xpath("//p-dropdown[@placeholder='Claim Admin']//input[@type='text']");
         private final By claimAdminClearButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[4]/p-dropdown/div/i");
-        private final By invoiceNumberFilter = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[5]/div/div/span/input");
+        private final By invoiceNumberFilter = By.xpath("//input[@placeholder='Search by inv #']");
 
         //Checkbox
         private final By checkbox = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-table/div/div/table/tbody/tr[3]/td[1]/div");
