@@ -124,6 +124,12 @@
             <artifactId>authentication-service</artifactId>
             <version>1.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.cyclonercm</groupId>
+            <artifactId>ai-core</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

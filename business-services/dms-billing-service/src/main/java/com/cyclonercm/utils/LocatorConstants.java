@@ -21,7 +21,7 @@ public class LocatorConstants {
     public static final By UploadProgressToast = By.xpath("//p-toast[@position='top-right']//div[contains(@class,'ui-toast-message')]");
 
     public static final By BillingMenu = By.xpath("/html/body/ng-component/div/div/div[1]/div/div[2]/button[4]");
-    public static final By DailyBillingLabel = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-toolbar/div/div[1]/span/b");
+    public static final By DailyBillingLabel = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-toolbar/div/div[1]");
     public static final By Dos = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[2]/td/b");
 
 }

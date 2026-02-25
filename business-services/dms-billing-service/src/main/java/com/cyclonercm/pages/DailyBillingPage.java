@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.cyclonercm.ai.agents.SelfHealingAgent; // ← ADD THIS IMPORT
 
 public class DailyBillingPage {
 
@@ -18,10 +19,12 @@ public class DailyBillingPage {
         //region ======================== DRIVER & CONSTRUCTOR ========================
         private WebDriver driver;
         private WebDriverWait wait;
+        private SelfHealingAgent healer;
 
-        public DailyBillingPage(WebDriver driver) {
+    public DailyBillingPage(WebDriver driver) {
             this.driver = driver;
             this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.healer = new SelfHealingAgent(driver);
         }
 
         //-------- Helper Methods ---------
@@ -68,7 +71,7 @@ public class DailyBillingPage {
         private final By billingMenu = By.xpath("/html/body/ng-component/div/div/div[1]/div/div[2]/button[4]");
         private final By billingDropdown = By.xpath("/html/body/ng-component/div/div/div[1]/div/div[2]/p-menu[1]/div");
         private final By dailyBillingOption = By.xpath("/html/body/ng-component/div/div/div[1]/div/div[2]/p-menu[1]/div/ul/li[1]/a");
-        private final By dailyBillingLogo = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[1]/p-toolbar/div/div[1]/span/b");
+        private final By dailyBillingLogo = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-toolbar/div/div[1]/span/b");
 
         //-------- Navigation Methods ---------
         public Boolean isBillingMenuDisplayed() {
@@ -112,23 +115,35 @@ public class DailyBillingPage {
         private final By dosFilter = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[1]/p-dropdown/div/input");
         private final By dosClearButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[1]/p-dropdown/div/i");
         private final By dosDropDownButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[2]/p-dropdown/div/div[2]");
+        // Flexible: targets the currently-visible p-dropdown-panel (works regardless of body div index)
+        private final By activeDropdownSearchBar = By.xpath("//div[contains(@class,'p-dropdown-panel') and not(contains(@style,'display: none'))]//div[contains(@class,'p-dropdown-filter-container')]//input");
+        private final By activeDropdownFirstItem = By.xpath("//div[contains(@class,'p-dropdown-panel') and not(contains(@style,'display: none'))]//ul[contains(@class,'p-dropdown-items')]/p-dropdownitem/li");
+        // Keep legacy aliases for DOS (use flexible panel locators in methods instead)
         private final By dosSearchBar = By.xpath("/html/body/div[2]/div[1]/div/input");
         private final By dosSelector = By.xpath("/html/body/div[2]/div[2]/ul/p-dropdownitem/li");
 
         private final By caseFilter = By.xpath("/html/body/div[2]/div[1]/div/input");
         private final By caseFilterClearButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[2]/p-dropdown/div/i");
-        private final By caseDropDownButton = By.xpath("//p-dropdown[@placeholder='Case #']//div[contains(@class,'p-dropdown-trigger')]");
-        // Use flexible locators that find whichever p-dropdown overlay panel is currently visible
+        private final By caseDropDownButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[3]/p-dropdown/div/div[2]");
         private final By caseSearchBar = By.xpath("/html/body/div[3]/div[1]/div/input");
-        private final By caseSelector  = By.xpath("/html/body/div[3]/div[2]/ul/p-dropdownitem");
+        private final By caseSelector  = By.xpath("/html/body/div[3]/div[2]/ul/p-dropdownitem/li");
 
-        private final By applicantFilter = By.xpath("//p-dropdown[@placeholder='Applicant']//input[@type='text']");
+        // Applicant filter — use flexible visible-panel locators (body div index is unreliable)
+        private final By applicantDropdown = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[4]/p-dropdown/div/div[2]");
+        // applicantFilter and applicantDropdownlist resolved dynamically via activeDropdownSearchBar / activeDropdownFirstItem
+        private final By applicantFilter = By.xpath("//div[contains(@class,'p-dropdown-panel') and not(contains(@style,'display: none'))]//div[contains(@class,'p-dropdown-filter-container')]//input");
+        private final By applicantDropdownlist = By.xpath("//div[contains(@class,'p-dropdown-panel') and not(contains(@style,'display: none'))]//ul[contains(@class,'p-dropdown-items')]/p-dropdownitem/li");
+        // Claim Admin is the 5th p-dropdown in the toolbar (div[5])
+        private final By claimAdminDropDownButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[5]/p-dropdown/div/div[2]");
         private final By claimAdminFilter = By.xpath("//p-dropdown[@placeholder='Claim Admin']//input[@type='text']");
-        private final By claimAdminClearButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[4]/p-dropdown/div/i");
+        private final By claimAdminClearButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[5]/p-dropdown/div/i");
+        // Invoice number search — div[6] in the toolbar is the "Search by inv #" text input
+        private final By invoiceNumberSearchInput = By.xpath(
+            "/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[6]/div/div/span/input");
         private final By invoiceNumberFilter = By.xpath("//input[@placeholder='Search by inv #']");
 
         //Checkbox
-        private final By checkbox = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-table/div/div/table/tbody/tr[3]/td[1]/div");
+        private final By checkbox = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[1]/div/p-checkbox");
         private final By informationMessageModal = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/p-dialog/div/div/div[2]/div");
 
         //========== FILTER METHODS ==========
@@ -153,7 +168,7 @@ public class DailyBillingPage {
                 // Find the DOS dropdown button
                 WebElement dosDropdown = driver.findElement(dosDropDownButton);
 
-                // Scroll element into view
+                // Scroll element into center of viewport
                 org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
                 js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", dosDropdown);
                 WaitUtils.sleep(500);
@@ -163,34 +178,24 @@ public class DailyBillingPage {
                     new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
                 clickWait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(dosDropDownButton));
 
-                // Try normal click first
-                boolean clicked = false;
+                // Try normal click first; fall back to JavaScript click if intercepted
                 try {
                     dosDropdown.click();
-                    clicked = true;
                     System.out.println("✓ DOS dropdown clicked (normal click)");
                 } catch (org.openqa.selenium.ElementClickInterceptedException e) {
                     System.out.println("⚠ Normal click intercepted, trying JavaScript click...");
-                    // Fallback to JavaScript click
                     js.executeScript("arguments[0].click();", dosDropdown);
-                    clicked = true;
                     System.out.println("✓ DOS dropdown clicked (JavaScript click)");
                 }
 
-                if (!clicked) {
-                    throw new RuntimeException("Failed to click DOS dropdown");
-                }
-
-                // Wait for dropdown menu to appear
-                WaitUtils.sleep(2000);
-
-                // Wait for search bar to be visible and clickable
+                // Wait for the currently-visible dropdown panel's search bar to appear
+                // Uses flexible class-based XPath — immune to absolute body div[N] index changes
                 org.openqa.selenium.support.ui.WebDriverWait searchWait =
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
-                searchWait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(dosSearchBar));
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+                searchWait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(activeDropdownSearchBar));
 
                 // Type in the search bar
-                WebElement searchBar = driver.findElement(dosSearchBar);
+                WebElement searchBar = driver.findElement(activeDropdownSearchBar);
                 searchBar.clear();
                 searchBar.sendKeys(dos);
                 System.out.println("✓ Entered DOS value: " + dos);
@@ -201,15 +206,14 @@ public class DailyBillingPage {
                 // Wait for the first option to be clickable
                 org.openqa.selenium.support.ui.WebDriverWait selectorWait =
                     new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
-                selectorWait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(dosSelector));
+                selectorWait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(activeDropdownFirstItem));
 
                 // Click the first matching option
-                WebElement option = driver.findElement(dosSelector);
+                WebElement option = driver.findElement(activeDropdownFirstItem);
                 try {
                     option.click();
                     System.out.println("✓ DOS option selected");
                 } catch (org.openqa.selenium.ElementClickInterceptedException e) {
-                    // Fallback to JavaScript click
                     js.executeScript("arguments[0].click();", option);
                     System.out.println("✓ DOS option selected (JavaScript click)");
                 }
@@ -229,34 +233,338 @@ public class DailyBillingPage {
             driver.findElement(dosClearButton).click();
         }
 
-    public void setCaseFilter(String caseNumber) {
-        //driver.findElement(caseFilterClearButton);
-        driver.findElement(caseDropDownButton).click();
-        WaitUtils.sleep(2000);
-        driver.findElement(caseSearchBar).sendKeys(caseNumber);
-        WaitUtils.sleep(3000);
-        driver.findElement(caseSelector).click();
-    }
+        public void setCaseFilter(String caseNumber) {
+            try {
+                System.out.println("Setting Case filter to: " + caseNumber);
+
+                // Wait for page to fully stabilize after navigation
+                WaitUtils.sleep(2000);
+
+                // Wait for any overlays or loading indicators to disappear
+                try {
+                    org.openqa.selenium.support.ui.WebDriverWait overlayWait =
+                        new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                    overlayWait.until(org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated(
+                        By.xpath("//div[contains(@class,'p-component-overlay')]")
+                    ));
+                } catch (Exception e) {
+                    // No overlay found, continue
+                }
+
+                // Target the parent div of the dropdown trigger (not the inner span)
+                WebElement caseDropdown = driver.findElement(caseDropDownButton);
+
+                // Scroll element into center of viewport to avoid sticky header interception
+                org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+                js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", caseDropdown);
+                WaitUtils.sleep(500);
+
+                // Wait for element to be clickable
+                org.openqa.selenium.support.ui.WebDriverWait clickWait =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                clickWait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(caseDropDownButton));
+
+                // Try normal click first; fall back to JavaScript click if intercepted
+                try {
+                    caseDropdown.click();
+                    System.out.println("✓ Case dropdown clicked (normal click)");
+                } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+                    System.out.println("⚠ Normal click intercepted, trying JavaScript click...");
+                    js.executeScript("arguments[0].click();", caseDropdown);
+                    System.out.println("✓ Case dropdown clicked (JavaScript click)");
+                }
+
+                // Wait for the visible dropdown panel's search bar to appear (flexible - no absolute body div index)
+                org.openqa.selenium.support.ui.WebDriverWait searchWait =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+                searchWait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(activeDropdownSearchBar));
+
+                // Type in the search bar
+                WebElement searchBar = driver.findElement(activeDropdownSearchBar);
+                searchBar.clear();
+                searchBar.sendKeys(caseNumber);
+                System.out.println("✓ Entered Case value: " + caseNumber);
+
+                // Wait for search results to load
+                WaitUtils.sleep(2000);
+
+                // Wait for the first option to be clickable
+                org.openqa.selenium.support.ui.WebDriverWait selectorWait =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                selectorWait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(activeDropdownFirstItem));
+
+                // Click the first matching option
+                WebElement option = driver.findElement(activeDropdownFirstItem);
+                try {
+                    option.click();
+                    System.out.println("✓ Case option selected");
+                } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+                    js.executeScript("arguments[0].click();", option);
+                    System.out.println("✓ Case option selected (JavaScript click)");
+                }
+
+                // Wait for filter to be applied
+                WaitUtils.sleep(2000);
+                System.out.println("✓ Case filter applied successfully");
+
+            } catch (Exception e) {
+                System.err.println("❌ Failed to set Case filter: " + e.getMessage());
+                throw new RuntimeException("Failed to set Case filter", e);
+            }
+        }
+
+
 
         public void setApplicantFilter(String applicantName) {
-            driver.findElement(applicantFilter).sendKeys(applicantName);
+            try {
+                System.out.println("Setting Applicant filter to: " + applicantName);
+
+                // Wait for page to fully stabilize
+                WaitUtils.sleep(2000);
+
+                // Wait for any overlays or loading indicators to disappear
+                try {
+                    org.openqa.selenium.support.ui.WebDriverWait overlayWait =
+                        new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                    overlayWait.until(org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated(
+                        By.xpath("//div[contains(@class,'p-component-overlay')]")
+                    ));
+                } catch (Exception e) {
+                    // No overlay found, continue
+                }
+
+                // Find the Applicant dropdown trigger div and scroll into center of viewport
+                WebElement applicantDropdownEl = driver.findElement(applicantDropdown);
+                org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+                js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", applicantDropdownEl);
+                WaitUtils.sleep(500);
+
+                // Wait for element to be clickable
+                org.openqa.selenium.support.ui.WebDriverWait clickWait =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                clickWait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(applicantDropdown));
+
+                // Try normal click first; fall back to JavaScript click if intercepted
+                try {
+                    applicantDropdownEl.click();
+                    System.out.println("✓ Applicant dropdown clicked (normal click)");
+                } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+                    System.out.println("⚠ Normal click intercepted, trying JavaScript click...");
+                    js.executeScript("arguments[0].click();", applicantDropdownEl);
+                    System.out.println("✓ Applicant dropdown clicked (JavaScript click)");
+                }
+
+                // Wait for the currently-visible dropdown panel's search bar to appear
+                // Uses flexible class-based XPath — immune to absolute body div[N] index changes
+                org.openqa.selenium.support.ui.WebDriverWait searchWait =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+                searchWait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(activeDropdownSearchBar));
+
+                // Type in the search bar
+                WebElement searchBar = driver.findElement(activeDropdownSearchBar);
+                searchBar.clear();
+                searchBar.sendKeys(applicantName);
+                System.out.println("✓ Entered Applicant value: " + applicantName);
+
+                // Wait for search results to load
+                WaitUtils.sleep(2000);
+
+                // Wait for the first option to be clickable
+                org.openqa.selenium.support.ui.WebDriverWait selectorWait =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                selectorWait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(activeDropdownFirstItem));
+
+                // Click the first matching option
+                WebElement option = driver.findElement(activeDropdownFirstItem);
+                try {
+                    option.click();
+                    System.out.println("✓ Applicant option selected");
+                } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+                    js.executeScript("arguments[0].click();", option);
+                    System.out.println("✓ Applicant option selected (JavaScript click)");
+                }
+
+                // Wait for filter to be applied
+                WaitUtils.sleep(2000);
+                System.out.println("✓ Applicant filter applied successfully");
+
+            } catch (Exception e) {
+                System.err.println("❌ Failed to set Applicant filter: " + e.getMessage());
+                throw new RuntimeException("Failed to set Applicant filter", e);
+            }
         }
 
         public void setClaimAdminFilter(String claimAdmin) {
-            WaitUtils.sleep(2000);
-            driver.findElement(claimAdminFilter).sendKeys(claimAdmin);
+            try {
+                System.out.println("Setting Claim Admin filter to: " + claimAdmin);
+
+                // Wait for page to fully stabilize
+                WaitUtils.sleep(2000);
+
+                // Wait for any overlays or loading indicators to disappear
+                try {
+                    org.openqa.selenium.support.ui.WebDriverWait overlayWait =
+                        new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                    overlayWait.until(org.openqa.selenium.support.ui.ExpectedConditions.invisibilityOfElementLocated(
+                        By.xpath("//div[contains(@class,'p-component-overlay')]")
+                    ));
+                } catch (Exception e) {
+                    // No overlay found, continue
+                }
+
+                // Find the Claim Admin dropdown trigger div and scroll into center of viewport
+                WebElement claimAdminDropdownEl = driver.findElement(claimAdminDropDownButton);
+                org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+                js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", claimAdminDropdownEl);
+                WaitUtils.sleep(500);
+
+                // Wait for element to be clickable
+                org.openqa.selenium.support.ui.WebDriverWait clickWait =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                clickWait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(claimAdminDropDownButton));
+
+                // Try normal click first; fall back to JavaScript click if intercepted
+                try {
+                    claimAdminDropdownEl.click();
+                    System.out.println("✓ Claim Admin dropdown clicked (normal click)");
+                } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+                    System.out.println("⚠ Normal click intercepted, trying JavaScript click...");
+                    js.executeScript("arguments[0].click();", claimAdminDropdownEl);
+                    System.out.println("✓ Claim Admin dropdown clicked (JavaScript click)");
+                }
+
+                // Wait for the currently-visible dropdown panel's search bar to appear
+                // Uses flexible class-based XPath — immune to absolute body div[N] index changes
+                org.openqa.selenium.support.ui.WebDriverWait searchWait =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(15));
+                searchWait.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(activeDropdownSearchBar));
+
+                // Type in the search bar
+                WebElement searchBar = driver.findElement(activeDropdownSearchBar);
+                searchBar.clear();
+                searchBar.sendKeys(claimAdmin);
+                System.out.println("✓ Entered Claim Admin value: " + claimAdmin);
+
+                // Wait for search results to load
+                WaitUtils.sleep(2000);
+
+                // Wait for the first option to be clickable
+                org.openqa.selenium.support.ui.WebDriverWait selectorWait =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                selectorWait.until(org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable(activeDropdownFirstItem));
+
+                // Click the first matching option
+                WebElement option = driver.findElement(activeDropdownFirstItem);
+                try {
+                    option.click();
+                    System.out.println("✓ Claim Admin option selected");
+                } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+                    js.executeScript("arguments[0].click();", option);
+                    System.out.println("✓ Claim Admin option selected (JavaScript click)");
+                }
+
+                // Wait for filter to be applied
+                WaitUtils.sleep(2000);
+                System.out.println("✓ Claim Admin filter applied successfully");
+
+            } catch (Exception e) {
+                System.err.println("❌ Failed to set Claim Admin filter: " + e.getMessage());
+                throw new RuntimeException("Failed to set Claim Admin filter", e);
+            }
         }
 
         public void setInvoiceNumberFilter(String invoiceNumber) {
-            driver.findElement(invoiceNumberFilter).sendKeys(invoiceNumber);
+            try {
+                System.out.println("Searching invoice number: " + invoiceNumber);
+
+                // Wait for page to stabilize
+                WaitUtils.sleep(1500);
+
+                // Try the exact XPath first, fall back to placeholder-based locator
+                By searchLocator;
+                java.util.List<WebElement> exactInputs = driver.findElements(invoiceNumberSearchInput);
+                if (!exactInputs.isEmpty()) {
+                    searchLocator = invoiceNumberSearchInput;
+                } else {
+                    searchLocator = invoiceNumberFilter;
+                }
+
+                // Wait for the search input to be visible
+                org.openqa.selenium.support.ui.WebDriverWait w =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                w.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(searchLocator));
+
+                WebElement searchInput = driver.findElement(searchLocator);
+
+                // Scroll into view
+                org.openqa.selenium.JavascriptExecutor js = (org.openqa.selenium.JavascriptExecutor) driver;
+                js.executeScript("arguments[0].scrollIntoView({behavior: 'auto', block: 'center'});", searchInput);
+                WaitUtils.sleep(300);
+
+                // Click to focus
+                try {
+                    searchInput.click();
+                } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+                    js.executeScript("arguments[0].click();", searchInput);
+                }
+
+                // Clear any existing value and type the invoice number
+                searchInput.clear();
+                searchInput.sendKeys(invoiceNumber);
+                System.out.println("✓ Invoice number entered: " + invoiceNumber);
+
+                // Wait for auto-load: Angular re-renders the table as you type, which causes
+                // StaleElementReferenceException if we hold a reference to the old element.
+                // Use WebDriverWait with ignoring StaleElementReferenceException so retries are
+                // handled automatically — never call isDisplayed() on a cached element reference.
+                System.out.println("⏳ Waiting for search results to auto-load...");
+                By resultRow = By.xpath(
+                    "/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[2]/span/u");
+                By resultRowFlex = By.xpath(
+                    "//billing-list//p-table//tbody/tr/td[2]/span/u");
+
+                boolean resultFound = false;
+
+                // Primary wait — exact XPath, up to 10 s, stale refs retried automatically
+                try {
+                    org.openqa.selenium.support.ui.WebDriverWait resultWait =
+                        new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                    resultWait.ignoring(org.openqa.selenium.StaleElementReferenceException.class);
+                    resultWait.until(org.openqa.selenium.support.ui.ExpectedConditions
+                        .visibilityOfElementLocated(resultRow));
+                    System.out.println("✓ Search result row appeared (exact XPath)");
+                    resultFound = true;
+                } catch (Exception ignored) {}
+
+                // Fallback wait — flexible XPath
+                if (!resultFound) {
+                    try {
+                        org.openqa.selenium.support.ui.WebDriverWait resultWait =
+                            new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(5));
+                        resultWait.ignoring(org.openqa.selenium.StaleElementReferenceException.class);
+                        resultWait.until(org.openqa.selenium.support.ui.ExpectedConditions
+                            .visibilityOfElementLocated(resultRowFlex));
+                        System.out.println("✓ Search result row appeared (flex XPath)");
+                        resultFound = true;
+                    } catch (Exception ignored) {}
+                }
+
+                if (!resultFound) {
+                    System.out.println("⚠ Search result row did not appear within wait — proceeding with validation");
+                }
+
+            } catch (Exception e) {
+                System.err.println("❌ Failed to search invoice number: " + e.getMessage());
+                throw new RuntimeException("Failed to search invoice number", e);
+            }
         }
 
         //========== VALIDATION LOCATORS ==========
         private final By dosFilterValue = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[2]/td/b");
         private final By caseFilterValue = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-table/div/div/table/tbody/tr[1]/td/b/span[4]/span");
-        private final By applicantFilterValue = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-table/div/div/table/tbody/tr[1]/td/b/span[1]");
+        private final By applicantFilterValue = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[1]/td/b/span[1]");
         private final By claimAdminFilterValue = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-table/div/div/table/tbody/tr[1]/td/b/span[3]");
-        private final By invoiceNumberFilterValue = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-table/div/div/table/tbody/tr[3]/td[2]/span/u");
+        private final By invoiceNumberFilterValue = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[2]/span/u");
 
         //========== VALIDATION METHODS ==========
         public String getDosFilterValue() {
@@ -273,41 +581,67 @@ public class DailyBillingPage {
 
         public String getCaseFilterValue() {
             try {
-                // Strategy 1: Try to get the selected label of the Case p-dropdown in the filter toolbar
+                // Strategy 1: Read case number from the table result header row.
+                // After applying the Case filter, the first group-header row contains the case number
+                // in span[4]/span  e.g. "ADJ20701219"
+                By caseFromTableResult = By.xpath(
+                    "/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[1]/td/b/span[4]/span");
+                try {
+                    org.openqa.selenium.support.ui.WebDriverWait w =
+                        new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                    w.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(caseFromTableResult));
+                    String val = driver.findElement(caseFromTableResult).getText().trim();
+                    if (!val.isEmpty()) {
+                        System.out.println("✓ Case filter value from table result span[4]/span: " + val);
+                        return val;
+                    }
+                } catch (Exception ignored) {}
+
+                // Strategy 2: Broader — any span[4]/span in the first group-header td/b
+                By caseFromTableFlex = By.xpath(
+                    "//billing-list//p-table//tbody/tr[1]/td/b/span[4]/span");
+                try {
+                    java.util.List<WebElement> spans = driver.findElements(caseFromTableFlex);
+                    if (!spans.isEmpty()) {
+                        String val = spans.get(0).getText().trim();
+                        if (!val.isEmpty()) {
+                            System.out.println("✓ Case filter value from table flex span[4]/span: " + val);
+                            return val;
+                        }
+                    }
+                } catch (Exception ignored) {}
+
+                // Strategy 3: Read all span[4] text (without inner span) as fallback
+                By caseFromTableSpan4 = By.xpath(
+                    "//billing-list//p-table//tbody/tr[1]/td/b/span[last()]");
+                try {
+                    java.util.List<WebElement> spans = driver.findElements(caseFromTableSpan4);
+                    for (WebElement span : spans) {
+                        String val = span.getText().trim();
+                        // Case numbers typically start with ADJ, WC, HOWC etc.
+                        if (!val.isEmpty() && (val.startsWith("ADJ") || val.startsWith("WC") || val.startsWith("HOWC") || val.matches("[A-Z]{2,}\\d+.*"))) {
+                            System.out.println("✓ Case filter value from table last span: " + val);
+                            return val;
+                        }
+                    }
+                } catch (Exception ignored) {}
+
+                // Strategy 4: Read from the Case p-dropdown selected label in the toolbar (div[3])
                 By caseDropdownSelectedLabel = By.xpath(
                     "/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[3]/p-dropdown//span[contains(@class,'p-dropdown-label') and not(contains(@class,'p-placeholder'))]");
                 try {
                     java.util.List<WebElement> labels = driver.findElements(caseDropdownSelectedLabel);
                     if (!labels.isEmpty()) {
                         String val = labels.get(0).getText().trim();
-                        if (!val.isEmpty() && !val.equals("Select")) {
+                        if (!val.isEmpty() && !val.equals("Select") && !val.equalsIgnoreCase("Case#")) {
                             System.out.println("✓ Case filter value from dropdown label: " + val);
                             return val;
                         }
                     }
                 } catch (Exception ignored) {}
 
-                // Strategy 2: Try flexible p-dropdown label for case dropdown
-                By caseDropdownFlexLabel = By.xpath(
-                    "(//billing-app//p-toolbar//p-dropdown)[2]//span[contains(@class,'p-dropdown-label') and not(contains(@class,'p-placeholder'))]");
-                try {
-                    java.util.List<WebElement> labels = driver.findElements(caseDropdownFlexLabel);
-                    if (!labels.isEmpty()) {
-                        String val = labels.get(0).getText().trim();
-                        if (!val.isEmpty() && !val.equals("Select")) {
-                            System.out.println("✓ Case filter value from flex dropdown label: " + val);
-                            return val;
-                        }
-                    }
-                } catch (Exception ignored) {}
-
-                // Strategy 3: Try the original table row XPath
-                org.openqa.selenium.support.ui.WebDriverWait w =
-                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
-                w.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(caseFilterValue));
-                String val = driver.findElement(caseFilterValue).getText().trim();
-                System.out.println("✓ Case filter value from table row: " + val);
-                return val;
+                System.err.println("❌ Could not retrieve Case filter value from any strategy");
+                return "";
             } catch (Exception e) {
                 System.err.println("❌ Could not retrieve Case filter value: " + e.getMessage());
                 return "";
@@ -315,15 +649,163 @@ public class DailyBillingPage {
         }
 
         public String getApplicantFilterValue() {
-            return driver.findElement(applicantFilterValue).getText().trim();
+            try {
+                // Strategy 1: Read applicant name from table result header row.
+                // After applying the Applicant filter, the first group-header row's span[1]
+                // contains the applicant name  e.g. "LEWIS CASTRO"
+                By applicantFromTable = By.xpath(
+                    "/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[1]/td/b/span[1]");
+                try {
+                    org.openqa.selenium.support.ui.WebDriverWait w =
+                        new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                    w.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(applicantFromTable));
+                    String val = driver.findElement(applicantFromTable).getText().trim();
+                    if (!val.isEmpty()) {
+                        System.out.println("✓ Applicant filter value from table result span[1]: " + val);
+                        return val;
+                    }
+                } catch (Exception ignored) {}
+
+                // Strategy 2: Flexible — any first span in first header row's bold text
+                By applicantFromTableFlex = By.xpath(
+                    "//billing-list//p-table//tbody/tr[1]/td/b/span[1]");
+                try {
+                    java.util.List<WebElement> spans = driver.findElements(applicantFromTableFlex);
+                    if (!spans.isEmpty()) {
+                        String val = spans.get(0).getText().trim();
+                        if (!val.isEmpty()) {
+                            System.out.println("✓ Applicant filter value from table flex span[1]: " + val);
+                            return val;
+                        }
+                    }
+                } catch (Exception ignored) {}
+
+                // Strategy 3: Read from the Applicant p-dropdown selected label in the toolbar (div[4])
+                By applicantDropdownLabel = By.xpath(
+                    "/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[4]/p-dropdown//span[contains(@class,'p-dropdown-label') and not(contains(@class,'p-placeholder'))]");
+                try {
+                    java.util.List<WebElement> labels = driver.findElements(applicantDropdownLabel);
+                    if (!labels.isEmpty()) {
+                        String val = labels.get(0).getText().trim();
+                        if (!val.isEmpty() && !val.equals("Select") && !val.equalsIgnoreCase("Applicant")) {
+                            System.out.println("✓ Applicant filter value from dropdown label: " + val);
+                            return val;
+                        }
+                    }
+                } catch (Exception ignored) {}
+
+                System.err.println("❌ Could not retrieve Applicant filter value from any strategy");
+                return "";
+            } catch (Exception e) {
+                System.err.println("❌ Could not retrieve Applicant filter value: " + e.getMessage());
+                return "";
+            }
         }
 
         public String getClaimAdminFilterValue() {
-            return driver.findElement(claimAdminFilterValue).getText().trim();
+            try {
+                // Wait for the table to refresh after filter is applied
+                WaitUtils.sleep(2000);
+
+                // Strategy 1: Read claim admin name from table result header row (div[3] table).
+                // After applying Claim Admin filter, the first group-header row's span[3]
+                // contains the claim admin name  e.g. "OHIO CASUALTY"
+                By claimAdminFromTable3 = By.xpath(
+                    "/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[1]/td/b/span[3]");
+                try {
+                    org.openqa.selenium.support.ui.WebDriverWait w =
+                        new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                    w.until(org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated(claimAdminFromTable3));
+                    String val = driver.findElement(claimAdminFromTable3).getText().trim();
+                    if (!val.isEmpty()) {
+                        System.out.println("✓ Claim Admin filter value from table div[3] span[3]: " + val);
+                        return val;
+                    }
+                } catch (Exception ignored) {}
+
+                // Strategy 2: Fallback to div[2] table span[3]
+                By claimAdminFromTable2 = By.xpath(
+                    "/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-table/div/div/table/tbody/tr[1]/td/b/span[3]");
+                try {
+                    java.util.List<WebElement> spans = driver.findElements(claimAdminFromTable2);
+                    if (!spans.isEmpty() && spans.get(0).isDisplayed()) {
+                        String val = spans.get(0).getText().trim();
+                        if (!val.isEmpty()) {
+                            System.out.println("✓ Claim Admin filter value from table div[2] span[3]: " + val);
+                            return val;
+                        }
+                    }
+                } catch (Exception ignored) {}
+
+                // Strategy 3: Flexible — any span[3] in first group-header row
+                By claimAdminFromTableFlex = By.xpath(
+                    "//billing-list//p-table//tbody/tr[1]/td/b/span[3]");
+                try {
+                    java.util.List<WebElement> spans = driver.findElements(claimAdminFromTableFlex);
+                    if (!spans.isEmpty()) {
+                        String val = spans.get(0).getText().trim();
+                        if (!val.isEmpty()) {
+                            System.out.println("✓ Claim Admin filter value from table flex span[3]: " + val);
+                            return val;
+                        }
+                    }
+                } catch (Exception ignored) {}
+
+                // Strategy 4: Read from the Claim Admin p-dropdown selected label in the toolbar (div[5])
+                By claimAdminDropdownLabel = By.xpath(
+                    "/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[1]/div/div[5]/p-dropdown//span[contains(@class,'p-dropdown-label') and not(contains(@class,'p-placeholder'))]");
+                try {
+                    java.util.List<WebElement> labels = driver.findElements(claimAdminDropdownLabel);
+                    if (!labels.isEmpty()) {
+                        String val = labels.get(0).getText().trim();
+                        if (!val.isEmpty() && !val.equalsIgnoreCase("Claim Admin")) {
+                            System.out.println("✓ Claim Admin filter value from dropdown label: " + val);
+                            return val;
+                        }
+                    }
+                } catch (Exception ignored) {}
+
+                System.err.println("❌ Could not retrieve Claim Admin filter value from any strategy");
+                return "";
+            } catch (Exception e) {
+                System.err.println("❌ Could not retrieve Claim Admin filter value: " + e.getMessage());
+                return "";
+            }
         }
 
         public String getInvoiceNumberFilterValue() {
-            return driver.findElement(invoiceNumberFilterValue).getText().trim();
+            try {
+                // Primary: exact XPath — div[3] table, tr[3]/td[2]/span/u (underlined invoice # link)
+                // Ignore StaleElementReferenceException — Angular re-renders the table after search
+                org.openqa.selenium.support.ui.WebDriverWait w =
+                    new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(10));
+                w.ignoring(org.openqa.selenium.StaleElementReferenceException.class);
+                w.until(org.openqa.selenium.support.ui.ExpectedConditions
+                    .visibilityOfElementLocated(invoiceNumberFilterValue));
+                String val = driver.findElement(invoiceNumberFilterValue).getText().trim();
+                if (!val.isEmpty()) {
+                    System.out.println("✓ Invoice number from table result: " + val);
+                    return val;
+                }
+
+                // Fallback: flexible — any underlined span inside td[2] in any result row
+                By flexLocator = By.xpath(
+                    "//billing-list//p-table//tbody/tr/td[2]/span/u");
+                java.util.List<WebElement> links = driver.findElements(flexLocator);
+                if (!links.isEmpty()) {
+                    String flex = links.get(0).getText().trim();
+                    if (!flex.isEmpty()) {
+                        System.out.println("✓ Invoice number from flex table result: " + flex);
+                        return flex;
+                    }
+                }
+
+                System.err.println("❌ Could not retrieve invoice number from search result");
+                return "";
+            } catch (Exception e) {
+                System.err.println("❌ Could not retrieve invoice number filter value: " + e.getMessage());
+                return "";
+            }
         }
 
         //========== UTILITY METHODS ==========
@@ -362,8 +844,8 @@ public class DailyBillingPage {
         //========== COUNT VALIDATION LOCATORS & METHODS ==========
 
         // Locators for header counts
-        private final By totalRecordCountLabel = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[1]/p-toolbar/div/div[2]/div/div/span[1]/strong");
-        private final By eamsNonVerifiedCountLabel = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[1]/p-toolbar/div/div[2]/div/div/span[3]/strong");
+        private final By totalRecordCountLabel = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-toolbar/div/div[2]/div/div/span[1]/strong");
+        private final By eamsNonVerifiedCountLabel = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-toolbar/div/div[2]/div/div/span[3]/strong");
 
         // Locators for table rows and statuses
         //private final By allTableRows = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-table/div/div/table/tbody/tr[3]");
@@ -643,7 +1125,7 @@ public class DailyBillingPage {
         //========== SMOKE_DB_008 - Report View Locators & Methods ==========
 
         // Locators for report view functionality
-        private final By firstInvoiceCheckbox = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-table/div/div/table/tbody/tr[3]/td[1]/div");
+        private final By firstInvoiceCheckbox = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[1]/div/p-checkbox");
         private final By hcfaButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[2]/cyclone-billing-print-option/div/div/div/div/div/div/div/div[2]/p-inputswitch/div/span");
         private final By reportViewButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[2]/cyclone-billing-print-option/div/div/div/div/div/div/button[6]");
         private final By reportViewModal = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[2]/cyclone-billing-print-option/p-dialog/div/div/div[2]/cyclone-reporting-board/div/form/div/div[2]");
@@ -889,7 +1371,7 @@ public class DailyBillingPage {
                             System.out.println("   Row " + (i + 1) + " Status: " + statusText);
 
                             // Check if this invoice is EAMS Verified or EAMS Not Verified
-                            if (statusText.equals("EAMS Verified") || statusText.equals("EAMS Not Verified")) {
+                            if (statusText.equals("EAMS Verified") || statusText.equals("EAMS Not Verified") || statusText.equals("Multiple Carrier")) {
                                 System.out.println("✓ Found EAMS processed invoice: " + statusText);
 
                                 // Try to get the comment from the same cell (td[5])
@@ -967,15 +1449,15 @@ public class DailyBillingPage {
          */
         public boolean isValidEamsComment(String comment) {
             String[] validComments = {
-                    "Carrier and Address Match, Billed to Carrier on Invoice/EAMS",
-                    "Name Match, Address Mismatch; Replace Invoice Address with Address at EAMS; Billed to Carrier on Invoice/EAMS",
-                    "Address Match, Name Mismatch; Replace Invoice Name with Name at EAMS; Billed to Carrier on Invoice/EAMS",
-                    "No Carrier in EAMS; Billed to Carrier on Invoice",
+                    "Carrier and Address Match; Billed to Carrier on EAMS",
+                    "Name Match, Address Mismatch; Replace Invoice Address with Address at EAMS; Billed to Carrier on EAMS ",
+                    "Address Match, Name Mismatch; Replace Invoice Name with Name at EAMS; Billed to Carrier on EAMS",
+                    "No Carrier in EAMS",
                     "No Carrier on Invoice; Billed to Carrier on EAMS",
                     "No Carrier on Invoice or EAMS; Billed to Single Employer",
                     "No Carrier on Invoice or EAMS; Billed to Multiple Employers",
-                    "Invoice Data and EAMS Data Mismatch; Created Multiple Invoices ;Billed to EAMS Carrier",
-                    "Invoice Data and EAMS Data Mismatch; Created Multiple Invoices ;Billed to Invoice Carrier"
+                    "Invoice Data and EAMS Data Mismatch; (Billed to EAMS Carrier)",
+                    "Invoice Data and EAMS Data Mismatch; Created Multiple Invoices (Billed to EAMS Carrier)"
             };
 
             for (String validComment : validComments) {
@@ -1439,7 +1921,7 @@ public class DailyBillingPage {
                             String statusText = statusBadge.getText().trim();
 
                             // Check if this invoice is "Not Verified"
-                            if (statusText.equals("Not Verified")) {
+                            if (statusText.equals("EAMS Not Verified")) {
                                 System.out.println("✓ Found 'Not Verified' invoice at row " + (i + 1));
 
                                 // Find and click the checkbox in column 1 (td[1])
@@ -1523,148 +2005,158 @@ public class DailyBillingPage {
             }
         }
 
-        /**
-         * SMOKE_DB_010: Validate ALL invoices in the table
-         * Returns a Map with validation results and counts
-         */
-        public Map<String, Object> validateAllInvoicesEamsComments() {
-            Map<String, Object> result = new HashMap<>();
+    public Map<String, Object> validateAllInvoicesEamsComments() {
 
-            int totalInvoices = 0;
-            int eamsVerifiedCount = 0;
-            int eamsNotVerifiedCount = 0;
-            int notVerifiedCount = 0;
-            int validationErrors = 0;
+        Map<String, Object> result = new HashMap<>();
 
-            try {
-                WaitUtils.sleep(3000); // Wait for table to load
+        int totalInvoices = 0;
+        int eamsVerifiedCount = 0;
+        int eamsNotVerifiedCount = 0;
+        int multipleCarrierCount = 0;
+        int noCarrierInEamsCount = 0;
+        int notVerifiedCount = 0;
 
-                // Find all table rows in tbody
-                By allTableRows = By.xpath("//p-table//tbody/tr[contains(@class, 'ng-star-inserted')]");
-                List<WebElement> rows = driver.findElements(allTableRows);
+        try {
 
-                System.out.println("📊 Validating " + rows.size() + " rows in the table");
-                System.out.println("═══════════════════════════════════════════════════════════");
+            WaitUtils.sleep(3000);
 
-                // Iterate through each row
-                for (int i = 0; i < rows.size(); i++) {
-                    try {
-                        WebElement row = rows.get(i);
+            By allTableRows = By.xpath("//p-table//tbody/tr[contains(@class,'ng-star-inserted')]");
+            List<WebElement> rows = driver.findElements(allTableRows);
 
-                        // Try to find status badge in column 5 (td[5])
+            System.out.println("📊 Validating " + rows.size() + " rows in the table");
+            System.out.println("═══════════════════════════════════════════════════════════");
+
+            for (int i = 0; i < rows.size(); i++) {
+
+                try {
+
+                    WebElement row = rows.get(i);
+                    WebElement statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
+                    String statusText = statusBadge.getText().trim();
+
+                    totalInvoices++;
+                    System.out.println("\n📋 Row " + (i + 1) + " - Status: " + statusText);
+
+                    boolean requiresComment = false;
+
+                    // ======================
+                    // STATUS COUNT LOGIC
+                    // ======================
+
+                    if (statusText.equals("EAMS Verified")) {
+                        eamsVerifiedCount++;
+                        requiresComment = true;
+
+                    } else if (statusText.equals("EAMS Not Verified")) {
+                        eamsNotVerifiedCount++;
+                        requiresComment = true;
+
+                    } else if (statusText.equals("Multiple Carrier")) {
+                        multipleCarrierCount++;
+                        requiresComment = true;
+
+                    } else if (statusText.equals("No Carrier in EAMS")) {
+                        noCarrierInEamsCount++;
+                        requiresComment = true;
+
+                    } else if (statusText.equals("Not Verified")) {
+                        notVerifiedCount++;
+                        requiresComment = false;
+
+                    } else {
+                        System.out.println("⚠ Unknown status: " + statusText);
+                        continue;
+                    }
+
+                    // ======================
+                    // COMMENT VALIDATION
+                    // ======================
+
+                    if (requiresComment) {
+
                         try {
-                            WebElement statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
-                            String statusText = statusBadge.getText().trim();
+                            WebElement commentDiv = row.findElement(By.xpath(".//td[5]/div/div[2]"));
+                            String commentText = commentDiv.getText().trim();
 
-                            totalInvoices++;
-                            System.out.println("\n📋 Row " + (i + 1) + " - Status: " + statusText);
+                            System.out.println("   💬 Comment: " + commentText);
 
-                            // Case 1: EAMS Verified or EAMS Not Verified - MUST have valid comment
-                            if (statusText.equals("EAMS Verified") || statusText.equals("EAMS Not Verified")) {
-
-                                if (statusText.equals("EAMS Verified")) {
-                                    eamsVerifiedCount++;
-                                } else {
-                                    eamsNotVerifiedCount++;
-                                }
-
-                                // Get the comment
-                                String commentText = "";
-                                try {
-                                    WebElement commentDiv = row.findElement(By.xpath(".//td[5]/div/div[2]"));
-                                    commentText = commentDiv.getText().trim();
-                                    System.out.println("   💬 Comment: " + commentText);
-                                } catch (Exception e) {
-                                    String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
-                                            ": Status is '" + statusText + "' but comment element not found";
-                                    System.err.println(errorMsg);
-                                    result.put("error", errorMsg);
-                                    result.put("failedRow", i + 1);
-                                    result.put("success", false);
-                                    return result;
-                                }
-
-                                // Validate comment is not empty
-                                if (commentText == null || commentText.isEmpty()) {
-                                    String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
-                                            ": Status is '" + statusText + "' but comment is EMPTY. " +
-                                            "Business Rule: Invoices with EAMS status MUST have scrubbing comment.";
-                                    System.err.println(errorMsg);
-                                    result.put("error", errorMsg);
-                                    result.put("failedRow", i + 1);
-                                    result.put("success", false);
-                                    return result;
-                                }
-
-                                // Validate comment matches one of 8 valid comments
-                                if (!isValidEamsComment(commentText)) {
-                                    String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
-                                            ": Comment does NOT match any of the 8 valid EAMS comments.\n" +
-                                            "   Status: " + statusText + "\n" +
-                                            "   Comment: " + commentText;
-                                    System.err.println(errorMsg);
-                                    result.put("error", errorMsg);
-                                    result.put("failedRow", i + 1);
-                                    result.put("success", false);
-                                    return result;
-                                }
-
-                                System.out.println("   ✅ Valid");
-
-                                // Case 2: Not Verified - Should NOT have comment
-                            } else if (statusText.equals("Not Verified")) {
-                                notVerifiedCount++;
-
-                                // Check if comment exists (it shouldn't)
-                                try {
-                                    WebElement commentDiv = row.findElement(By.xpath(".//td[5]/div/div[2]"));
-                                    String commentText = commentDiv.getText().trim();
-
-                                    if (commentText != null && !commentText.isEmpty()) {
-                                        String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
-                                                ": Status is 'Not Verified' but comment EXISTS: '" + commentText + "'. " +
-                                                "Business Rule: 'Not Verified' invoices should NOT have scrubbing comments.";
-                                        System.err.println(errorMsg);
-                                        result.put("error", errorMsg);
-                                        result.put("failedRow", i + 1);
-                                        result.put("success", false);
-                                        return result;
-                                    }
-                                } catch (Exception e) {
-                                    // No comment div found - this is correct for Not Verified
-                                    System.out.println("   ✅ No comment (correct)");
-                                }
+                            if (commentText.isEmpty()) {
+                                result.put("error", "Row " + (i + 1) +
+                                        ": Status '" + statusText +
+                                        "' requires comment but it is EMPTY.");
+                                result.put("failedRow", i + 1);
+                                result.put("success", false);
+                                return result;
                             }
 
-                        } catch (Exception statusError) {
-                            // No status badge in this row, might be a grouping row - skip
+                            if (!isValidEamsComment(commentText)) {
+                                result.put("error", "Row " + (i + 1) +
+                                        ": Invalid EAMS comment → " + commentText);
+                                result.put("failedRow", i + 1);
+                                result.put("success", false);
+                                return result;
+                            }
+
+                            System.out.println("   ✅ Valid");
+
+                        } catch (Exception e) {
+                            result.put("error", "Row " + (i + 1) +
+                                    ": Comment element not found for status '" +
+                                    statusText + "'");
+                            result.put("failedRow", i + 1);
+                            result.put("success", false);
+                            return result;
                         }
 
-                    } catch (Exception e) {
-                        // Skip this row and continue
-                        System.err.println("⚠ Error processing row " + (i + 1) + ": " + e.getMessage());
+                    } else {
+
+                        // Not Verified must NOT have comment
+
+                        try {
+                            WebElement commentDiv = row.findElement(By.xpath(".//td[5]/div/div[2]"));
+                            String commentText = commentDiv.getText().trim();
+
+                            if (!commentText.isEmpty()) {
+                                result.put("error", "Row " + (i + 1) +
+                                        ": 'Not Verified' should NOT have comment → " +
+                                        commentText);
+                                result.put("failedRow", i + 1);
+                                result.put("success", false);
+                                return result;
+                            }
+
+                            System.out.println("   ✅ No comment (correct)");
+
+                        } catch (Exception ignored) {
+                            // Correct scenario – no comment exists
+                            System.out.println("   ✅ No comment (correct)");
+                        }
                     }
+
+                } catch (Exception ignored) {
+                    // Skip grouping rows safely
                 }
-
-                System.out.println("\n═══════════════════════════════════════════════════════════");
-
-                // Store counts
-                result.put("totalInvoices", totalInvoices);
-                result.put("eamsVerifiedCount", eamsVerifiedCount);
-                result.put("eamsNotVerifiedCount", eamsNotVerifiedCount);
-                result.put("notVerifiedCount", notVerifiedCount);
-                result.put("success", true);
-
-                return result;
-
-            } catch (Exception e) {
-                System.err.println("❌ Error validating invoices: " + e.getMessage());
-                e.printStackTrace();
-                result.put("error", "Unexpected error: " + e.getMessage());
-                result.put("success", false);
-                return result;
             }
+
+            System.out.println("\n═══════════════════════════════════════════════════════════");
+
+            result.put("totalInvoices", totalInvoices);
+            result.put("eamsVerifiedCount", eamsVerifiedCount);
+            result.put("eamsNotVerifiedCount", eamsNotVerifiedCount);
+            result.put("multipleCarrierCount", multipleCarrierCount);
+            result.put("noCarrierInEamsCount", noCarrierInEamsCount);
+            result.put("notVerifiedCount", notVerifiedCount);
+            result.put("success", true);
+
+            return result;
+
+        } catch (Exception e) {
+
+            result.put("error", "Unexpected error: " + e.getMessage());
+            result.put("success", false);
+            return result;
         }
+    }
 
         /* ========== SMOKE_DB_013 ========== */
         private final By ClaimForm = By.xpath("/html/body/div[1]/div[2]/div[4]/div/div[1]/div[2]/span[2]");
@@ -1919,12 +2411,12 @@ public class DailyBillingPage {
         // ========== SMOKE_DB_014: EMC FILTER LOCATORS & METHODS ==========
 
         // EMC Filter Radio Button
-        private final By emcFilterRadioButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[1]/p-toolbar/div/div[3]/div/div/label[2]/p-radiobutton");
+        private final By emcFilterRadioButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-toolbar/div/div[3]/div/div/label[2]/p-radiobutton/div/div[2]");
 
         // ========== SMOKE_DB_015: EMAIL FILTER LOCATORS ==========
 
         // EMAIL Filter Radio Button
-        private final By emailFilterRadioButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[1]/p-toolbar/div/div[3]/div/div/label[3]/p-radiobutton/div");
+        private final By emailFilterRadioButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-toolbar/div/div[3]/div/div/label[3]/p-radiobutton/div/div[2]");
 
         // EMAIL Toggle Button (in Claim Administrator popup) - CORRECTED: div[11] instead of div[8]
         private final By emailToggleButton = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[11]/div/div/div/div/div/div[1]/p-inputswitch");
@@ -1935,7 +2427,7 @@ public class DailyBillingPage {
         // ========== SMOKE_DB_016: FAX FILTER LOCATORS ==========
 
         // FAX Filter Radio Button
-        private final By faxFilterRadioButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[1]/p-toolbar/div/div[3]/div/div/label[4]/p-radiobutton/div");
+        private final By faxFilterRadioButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-toolbar/div/div[3]/div/div/label[4]/p-radiobutton/div/div[2]");
 
         // FAX Toggle Button (in Claim Administrator popup) - div[11]/div[2] for FAX toggle
         private final By faxToggleButton = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[11]/div/div/div/div/div/div[2]/div/div/p-inputswitch");
@@ -1949,7 +2441,7 @@ public class DailyBillingPage {
         // ========== SMOKE_DB_017: PAPER FILTER LOCATORS ==========
 
         // Paper Filter Radio Button
-        private final By paperFilterRadioButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[1]/p-toolbar/div/div[3]/div/div/label[5]/p-radiobutton/div/div[2]");
+        private final By paperFilterRadioButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-toolbar/div/div[3]/div/div/label[5]/p-radiobutton/div/div[2]");
 
         // EMC Toggle Button (for Paper filter validation - must be DISABLED)
         private final By emcToggleButtonPaper = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[8]/div/div/div/div");
@@ -2036,6 +2528,8 @@ public class DailyBillingPage {
                 throw e;
             }
         }
+
+
 
         /**
          * SMOKE_DB_014: Find and click first invoice with "EAMS Verified" or "EAMS Not Verified" status
@@ -2885,7 +3379,7 @@ public class DailyBillingPage {
             }
         }
 
-        // ========== SMOKE_DB_018: EMC SUBMISSION METHODS ==========
+        // ========== SMOKE_DB_016: EMC SUBMISSION METHODS ==========
 
         /**
          * SMOKE_DB_018: Select checkbox for first EAMS Verified or EAMS Not Verified invoice
@@ -2914,7 +3408,7 @@ public class DailyBillingPage {
                             System.out.println("   Row " + (i + 1) + " - Status: '" + statusText + "'");
 
                             // Check if status is "EAMS Verified" or "EAMS Not Verified"
-                            if (statusText.equals("EAMS Verified") || statusText.equals("EAMS Not Verified")) {
+                            if (statusText.equals("EAMS Verified") || statusText.equals("Multiple Carrier") || statusText.equals("No Carrier In EAMS")) {
                                 System.out.println("✓ Found invoice with status: " + statusText + " at row " + (i + 1));
 
                                 // Get invoice number from column 2 (td[2])
@@ -2961,7 +3455,7 @@ public class DailyBillingPage {
         }
 
         /**
-         * SMOKE_DB_018: Enable HCFA Toggle Button
+         * SMOKE_DB_016: Enable HCFA Toggle Button
          */
         public void enableHcfaToggle() {
             try {
