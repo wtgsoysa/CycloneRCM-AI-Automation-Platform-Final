@@ -488,7 +488,7 @@ public class SingleBillingPage {
                 "No Carrier on Invoice; Billed to Carrier on EAMS",
                 "No Carrier on Invoice or EAMS; Billed to Single Employer",
                 "No Carrier on Invoice or EAMS; Billed to Multiple Employers",
-                "Invoice Data and EAMS Data Mismatch; (Billed to EAMS Carrier)",
+                "Invoice Data and EAMS Data Mismatch (Billed to EAMS Carrier)",
                 "Invoice Data and EAMS Data Mismatch; Created Multiple Invoices (Billed to EAMS Carrier)"
         };
 
@@ -509,6 +509,7 @@ public class SingleBillingPage {
      * @return Map containing validation results and counts
      */
     public Map<String, Object> validateAllInvoicesEamsComments() {
+
         Map<String, Object> result = new HashMap<>();
 
         int totalInvoices = 0;
@@ -517,118 +518,139 @@ public class SingleBillingPage {
         int notVerifiedCount = 0;
 
         try {
+
             WaitUtils.sleep(3000); // Wait for table to load
 
-            // Find all table rows in tbody
             By allTableRows = By.xpath("//p-table//tbody/tr[contains(@class, 'ng-star-inserted')]");
             List<WebElement> rows = driver.findElements(allTableRows);
 
             System.out.println("📊 Validating " + rows.size() + " rows in the table");
             System.out.println("═══════════════════════════════════════════════════════════");
 
-            // Iterate through each row
             for (int i = 0; i < rows.size(); i++) {
+
                 try {
-                    WebElement row = rows.get(i);
 
-                    // Try to find status badge in column 5 (td[5])
+                    // Re-fetch row to avoid stale element issues
+                    WebElement row = driver.findElements(allTableRows).get(i);
+
+                    WebElement statusBadge;
                     try {
-                        WebElement statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
-                        String statusText = statusBadge.getText().trim();
-
-                        totalInvoices++;
-                        System.out.println("\n📋 Row " + (i + 1) + " - Status: " + statusText);
-
-                        // Case 1: EAMS Verified or EAMS Not Verified - MUST have valid comment
-                        if (statusText.equals("EAMS Verified") || statusText.equals("EAMS Not Verified")) {
-
-                            if (statusText.equals("EAMS Verified")) {
-                                eamsVerifiedCount++;
-                            } else {
-                                eamsNotVerifiedCount++;
-                            }
-
-                            // Get the comment
-                            String commentText = "";
-                            try {
-                                WebElement commentDiv = row.findElement(By.xpath(".//td[5]/div/div[2]"));
-                                commentText = commentDiv.getText().trim();
-                                System.out.println("   💬 Comment: " + commentText);
-                            } catch (Exception e) {
-                                String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
-                                        ": Status is '" + statusText + "' but comment element not found";
-                                System.err.println(errorMsg);
-                                result.put("error", errorMsg);
-                                result.put("failedRow", i + 1);
-                                result.put("success", false);
-                                return result;
-                            }
-
-                            // Validate comment is not empty
-                            if (commentText == null || commentText.isEmpty()) {
-                                String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
-                                        ": Status is '" + statusText + "' but comment is EMPTY. " +
-                                        "Business Rule: Invoices with EAMS status MUST have scrubbing comment.";
-                                System.err.println(errorMsg);
-                                result.put("error", errorMsg);
-                                result.put("failedRow", i + 1);
-                                result.put("success", false);
-                                return result;
-                            }
-
-                            // Validate comment matches one of 8 valid comments
-                            if (!isValidEamsComment(commentText)) {
-                                String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
-                                        ": Comment does NOT match any of the 8 valid EAMS comments.\n" +
-                                        "   Status: " + statusText + "\n" +
-                                        "   Comment: " + commentText;
-                                System.err.println(errorMsg);
-                                result.put("error", errorMsg);
-                                result.put("failedRow", i + 1);
-                                result.put("success", false);
-                                return result;
-                            }
-
-                            System.out.println("   ✅ Valid");
-
-                            // Case 2: Not Verified - Should NOT have comment
-                        } else if (statusText.equals("Not Verified")) {
-                            notVerifiedCount++;
-
-                            // Check if comment exists (it shouldn't)
-                            try {
-                                WebElement commentDiv = row.findElement(By.xpath(".//td[5]/div/div[2]"));
-                                String commentText = commentDiv.getText().trim();
-
-                                if (commentText != null && !commentText.isEmpty()) {
-                                    String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
-                                            ": Status is 'Not Verified' but comment EXISTS: '" + commentText + "'. " +
-                                            "Business Rule: 'Not Verified' invoices should NOT have scrubbing comments.";
-                                    System.err.println(errorMsg);
-                                    result.put("error", errorMsg);
-                                    result.put("failedRow", i + 1);
-                                    result.put("success", false);
-                                    return result;
-                                }
-                            } catch (Exception e) {
-                                // No comment div found - this is correct for Not Verified
-                                System.out.println("   ✅ No comment (correct)");
-                            }
-                        }
-
-                    } catch (Exception statusError) {
-                        // No status badge in this row, might be a grouping row - skip
+                        statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
+                    } catch (Exception e) {
+                        continue; // Skip grouping or empty rows
                     }
 
-                } catch (Exception e) {
-                    // Skip this row and continue
-                    System.err.println("⚠ Error processing row " + (i + 1) + ": " + e.getMessage());
+                    String statusText = statusBadge.getText().trim();
+                    totalInvoices++;
+
+                    System.out.println("\n📋 Row " + (i + 1) + " - Status: " + statusText);
+
+                    boolean isEamsType =
+                            statusText.equals("EAMS Verified") ||
+                                    statusText.equals("Address requires verification") ||
+                                    statusText.equals("No Carrier in EAMS") ||
+                                    statusText.equals("EAMS Carrier") ||
+                                    statusText.equals("No Carrier; Employer Bill") ||
+                                    statusText.equals("Nothing Match") ||
+                                    statusText.equals("Multiple Carrier");
+
+                    // =============================
+                    // CASE 1: EAMS TYPE STATUSES
+                    // =============================
+                    if (isEamsType) {
+
+                        if (statusText.equals("EAMS Verified")) {
+                            eamsVerifiedCount++;
+                        } else {
+                            eamsNotVerifiedCount++;
+                        }
+
+                        String commentText = "";
+
+                        try {
+                            WebElement commentDiv = row.findElement(By.xpath(".//td[5]/div/div[2]"));
+                            commentText = commentDiv.getText().trim();
+                            System.out.println("   💬 Comment: " + commentText);
+
+                        } catch (Exception e) {
+
+                            String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
+                                    ": Status '" + statusText + "' but comment element NOT found";
+
+                            System.err.println(errorMsg);
+                            result.put("error", errorMsg);
+                            result.put("failedRow", i + 1);
+                            result.put("success", false);
+                            return result;
+                        }
+
+                        if (commentText == null || commentText.isEmpty()) {
+
+                            String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
+                                    ": Status '" + statusText + "' but comment is EMPTY. " +
+                                    "Business Rule: EAMS statuses MUST have scrubbing comment.";
+
+                            System.err.println(errorMsg);
+                            result.put("error", errorMsg);
+                            result.put("failedRow", i + 1);
+                            result.put("success", false);
+                            return result;
+                        }
+
+                        if (!isValidEamsComment(commentText)) {
+
+                            String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
+                                    ": Invalid EAMS comment.\n" +
+                                    "   Status: " + statusText + "\n" +
+                                    "   Comment: " + commentText;
+
+                            System.err.println(errorMsg);
+                            result.put("error", errorMsg);
+                            result.put("failedRow", i + 1);
+                            result.put("success", false);
+                            return result;
+                        }
+
+                        System.out.println("   ✅ Valid");
+
+                    }
+
+                    // =============================
+                    // CASE 2: NOT VERIFIED
+                    // =============================
+                    else if (statusText.equals("Not Verified")) {
+
+                        notVerifiedCount++;
+
+                        try {
+                            WebElement commentDiv = row.findElement(By.xpath(".//td[5]/div/div[2]"));
+                            String commentText = commentDiv.getText().trim();
+
+                            if (commentText != null && !commentText.isEmpty()) {
+
+                                String errorMsg = "❌ VALIDATION FAILED - Row " + (i + 1) +
+                                        ": 'Not Verified' should NOT have comment.";
+
+                                System.err.println(errorMsg);
+                                result.put("error", errorMsg);
+                                result.put("failedRow", i + 1);
+                                result.put("success", false);
+                                return result;
+                            }
+
+                        } catch (Exception e) {
+                            System.out.println("   ✅ No comment (correct)");
+                        }
+                    }
+
+                } catch (Exception rowError) {
+                    System.err.println("⚠ Error processing row " + (i + 1) + ": " + rowError.getMessage());
                 }
             }
 
             System.out.println("\n═══════════════════════════════════════════════════════════");
 
-            // Store counts
             result.put("totalInvoices", totalInvoices);
             result.put("eamsVerifiedCount", eamsVerifiedCount);
             result.put("eamsNotVerifiedCount", eamsNotVerifiedCount);
@@ -638,8 +660,10 @@ public class SingleBillingPage {
             return result;
 
         } catch (Exception e) {
+
             System.err.println("❌ Error validating invoices: " + e.getMessage());
             e.printStackTrace();
+
             result.put("error", "Unexpected error: " + e.getMessage());
             result.put("success", false);
             return result;
@@ -712,7 +736,7 @@ public class SingleBillingPage {
             System.out.println("📊 Searching for available status buttons in " + rows.size() + " rows");
 
             // Priority order: EAMS Verified > EAMS Not Verified > Not Verified
-            String[] statusPriority = {"EAMS Verified", "EAMS Not Verified", "Not Verified"};
+            String[] statusPriority = {"EAMS Verified", "EAMS Not Verified", "Not Verified", "Address requires verification", "No Carrier in EAMS", "EAMS Carrier", "No Carrier; Employer Bill", "Nothing Match", "Multiple Carrier"};
 
             for (String targetStatus : statusPriority) {
                 for (int i = 0; i < rows.size(); i++) {
@@ -838,12 +862,12 @@ public class SingleBillingPage {
                     WebElement statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
                     String statusText = statusBadge.getText().trim();
 
-                    if (statusText.equals("EAMS Verified") || statusText.equals("EAMS Not Verify")) {
+                    if (statusText.equals("EAMS Verified") || statusText.equals("No Carrier in EAMS") || statusText.equals("EAMS Carrier") || statusText.equals("No Carrier; Employer Bill") || statusText.equals("Nothing Match") || statusText.equals("Multiple Carrier")) {
                         // Get claim number from this row before clicking
                         WebElement claimNumberElement = row.findElement(By.xpath(".//td[3]/span"));
                         String claimNumber = claimNumberElement.getText().trim();
 
-                        WebElement invoice = row.findElement(By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-table/div/div/table/tbody/tr[3]/td[1]/div/p-checkbox/div"));
+                        WebElement invoice = row.findElement(By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[1]/div/p-checkbox"));
                         invoice.click();
                         WaitUtils.sleep(3000);
 
@@ -1156,7 +1180,7 @@ public class SingleBillingPage {
     // ========== SMOKE_SB_024: Delete All Invoices ==========
 
     // Delete All button
-    private final By deleteAllButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[1]/p-toolbar/div/div[3]/button[1]");
+    private final By deleteAllButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[2]/p-toolbar/div/div[3]/button[1]");
 
     // Delete All confirmation popup
     private final By deleteAllConfirmationPopup = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/p-confirmdialog[1]/div/div");
@@ -1233,7 +1257,7 @@ public class SingleBillingPage {
                         String statusText = statusBadge.getText().trim();
 
                         // Check if status is "EAMS Verified" or "EAMS Not Verified"
-                        if (statusText.equals("EAMS Verified") || statusText.equals("EAMS Not Verified")) {
+                        if (statusText.equals("EAMS Verified") || statusText.equals("Address requires verification") || statusText.equals("No Carrier in EAMS") || statusText.equals("EAMS Carrier") || statusText.equals("No Carrier; Employer Bill") || statusText.equals("Nothing Match") || statusText.equals("Multiple Carrier")) {
                             System.out.println("   Row " + (i + 1) + " - Status: '" + statusText + "'");
 
                             // Get invoice number from column 2 (td[2])

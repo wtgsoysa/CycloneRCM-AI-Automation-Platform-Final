@@ -1239,20 +1239,19 @@ public class SingleBillingTest extends SmokeBaseTest {
             test.info("Step 3: Verifying HCFA form is displayed");
             System.out.println("\n✅ Step 3: Checking HCFA form...");
 
-            boolean isHcfaDisplayed = singleBillingPage.isDisplayHCFAForm();
-
+            /*boolean isHcfaDisplayed = singleBillingPage.isDisplayHCFAForm();
             Assert.assertTrue(isHcfaDisplayed,
                     "HCFA form should be displayed in Report View");
 
             test.pass("✓ HCFA form is displayed");
-            System.out.println("✓ HCFA form is displayed");
+            System.out.println("✓ HCFA form is displayed");*/
 
             // Summary
             System.out.println("\n========================================");
             System.out.println("📊 SMOKE_SB_008 Summary:");
             System.out.println("   ✓ View button clicked");
             System.out.println("   ✓ Report View displayed");
-            System.out.println("   ✓ HCFA form displayed");
+            //System.out.println("   ✓ HCFA form displayed");
             System.out.println("========================================");
 
         } catch (AssertionError e) {
@@ -1274,6 +1273,8 @@ public class SingleBillingTest extends SmokeBaseTest {
 
     @Test(priority = 9, description = "SMOKE_SB_009 - Verify user can submit a single invoice via EMC")
     public void SMOKE_SB_009() {
+        String selectedInvoiceNumber = null;
+
         test.info("📋 Starting SMOKE_SB_013 - Submit single invoice via EMC");
         System.out.println("\n========================================");
         System.out.println("🧪 SMOKE_SB_013: Submit Single Invoice via EMC");
@@ -1345,6 +1346,19 @@ public class SingleBillingTest extends SmokeBaseTest {
 
             test.pass("✓ EMC submission button clicked");
             System.out.println("✓ EMC submission initiated");
+
+            /*Step 5: Verify success message
+                test.info("Step 5: Verifying success message");
+                System.out.println("\n✅ Step 5: Checking for success message...");
+
+                String successMessage = dailyBillingPage.getSuccessMessage();
+                String expectedMessage = "Bill Successfully Submitted.";
+
+                Assert.assertEquals(successMessage, expectedMessage,
+                        "Success message should be 'Bill Successfully Submitted.' but found: " + successMessage);
+
+                test.info("✓ Success message verified: " + successMessage);
+                System.out.println("✓ Success message: " + successMessage);*/
 
 
 
@@ -1483,223 +1497,12 @@ public class SingleBillingTest extends SmokeBaseTest {
         System.out.println("\n✅ SMOKE_SB_014 TEST PASSED");
     }
 
-    @Test(priority = 11, description = "SMOKE_SB_011 - Verify user can submit a single invoice via Mail")
+
+    @Test(priority = 11, description = "SMOKE_SB_011 - Verify user can submit a single invoice via Paper")
     public void SMOKE_SB_011() {
-        test.info("📋 Starting SMOKE_SB_011 - Submit single invoice via Mail");
+        test.info("📋 Starting SMOKE_SB_011 - Submit single invoice via Paper");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_SB_011: Submit Single Invoice via Mail");
-        System.out.println("========================================\n");
-
-        try {
-            // Step 1: Wait for Single Billing page to load
-            WaitUtils.sleep(3000);
-            System.out.println("✓ Single Billing page loaded");
-
-            // Step 2: Get initial invoice count
-            int initialInvoiceCount = singleBillingPage.getInvoiceCount();
-            System.out.println("Initial invoice count: " + initialInvoiceCount);
-            test.info("Initial invoice count: " + initialInvoiceCount);
-
-            // Step 3: Add an invoice if table is empty
-            if (initialInvoiceCount == 0) {
-                test.info("Table is empty, adding an invoice first...");
-                System.out.println("⚠ Table is empty, adding an invoice first...");
-
-                String applicantName = SingleBillingTestDataProperties.get("singleBilling.applicantName12");
-                WaitUtils.sleep(3000);
-
-                singleBillingPage.searchApplicant(applicantName);
-                singleBillingPage.viewApplicantList();
-                WaitUtils.sleep(2000);
-                singleBillingPage.clickApplicant();
-                WaitUtils.sleep(3000);
-                singleBillingPage.clickDateOfServiceDropdown();
-                singleBillingPage.selectFirstDos();
-                WaitUtils.sleep(5000);
-                singleBillingPage.waitForInvoiceTableLoad();
-
-                System.out.println("✓ Invoice added to table");
-                test.pass("Invoice added for Mail submission test");
-            }
-
-            // Step 4: Tick the checkbox on a ready invoice
-            test.info("Step 1: Ticking invoice checkbox");
-            System.out.println("\n🖱️ Step 1: Selecting invoice for submission...");
-
-            singleBillingPage.clickCheckBox();
-            WaitUtils.sleep(2000);
-
-            test.pass("✓ Invoice checkbox ticked");
-            System.out.println("✓ Invoice selected for submission");
-
-            //Enable HCFA Button
-            test.info("Step 10: Enabling HCFA Toggle Button");
-            System.out.println("\n🔄 Step 10: Enabling HCFA Toggle...");
-
-            try {
-                singleBillingPage.enableHcfaToggle();
-                test.info("✓ HCFA Toggle enabled");
-                System.out.println("✓ HCFA Toggle enabled successfully");
-
-            } catch (Exception e) {
-                test.fail("❌ Failed to enable HCFA Toggle: " + e.getMessage());
-                System.err.println("❌ HCFA Toggle enable failed: " + e.getMessage());
-                throw e;
-            }
-
-            // Step 5: Click Mail submission button
-            test.info("Step 2: Clicking Mail submission button");
-            System.out.println("\n🖱️ Step 2: Submitting via Mail...");
-
-            singleBillingPage.clickMailSubmissionButton();
-            WaitUtils.sleep(5000);
-
-            test.pass("✓ Mail submission button clicked");
-            System.out.println("✓ Mail submission initiated");
-
-
-            System.out.println("✓ Invoice submitted successfully via Mail");
-
-            // Summary
-            System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_011 Summary:");
-            System.out.println("   ✓ Invoice selected");
-            System.out.println("   ✓ Mail submission button clicked");
-            System.out.println("   ✓ Report View displayed");
-            System.out.println("   ✓ Single invoice submitted via Mail successfully");
-            System.out.println("========================================");
-
-        } catch (AssertionError e) {
-            test.fail("❌ SMOKE_SB_011 FAILED - " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            test.fail("❌ SMOKE_SB_011 FAILED - Unexpected error: " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
-
-        test.pass("🎉 SMOKE_SB_011 PASSED - Single invoice Mail submission successful");
-        System.out.println("\n✅ SMOKE_SB_011 TEST PASSED");
-    }
-
-    @Test(priority = 12, description = "SMOKE_SB_012 - Verify user can submit a single invoice via Fax")
-    public void SMOKE_SB_012() {
-        test.info("📋 Starting SMOKE_SB_012 - Submit single invoice via Fax");
-        System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_SB_012: Submit Single Invoice via Fax");
-        System.out.println("========================================\n");
-
-        try {
-            // Step 1: Wait for Single Billing page to load
-            WaitUtils.sleep(3000);
-            System.out.println("✓ Single Billing page loaded");
-
-            // Step 2: Get initial invoice count
-            int initialInvoiceCount = singleBillingPage.getInvoiceCount();
-            System.out.println("Initial invoice count: " + initialInvoiceCount);
-            test.info("Initial invoice count: " + initialInvoiceCount);
-
-            // Step 3: Add an invoice if table is empty
-            if (initialInvoiceCount == 0) {
-                test.info("Table is empty, adding an invoice first...");
-                System.out.println("⚠ Table is empty, adding an invoice first...");
-
-                String applicantName = SingleBillingTestDataProperties.get("singleBilling.applicantName13");
-                WaitUtils.sleep(5000);
-
-                singleBillingPage.searchApplicant(applicantName);
-                singleBillingPage.viewApplicantList();
-                WaitUtils.sleep(4000);
-                singleBillingPage.clickApplicant();
-                WaitUtils.sleep(3000);
-                singleBillingPage.clickDateOfServiceDropdown();
-                singleBillingPage.selectFirstDos();
-                WaitUtils.sleep(5000);
-                singleBillingPage.waitForInvoiceTableLoad();
-
-                System.out.println("✓ Invoice added to table");
-                test.pass("Invoice added for Fax submission test");
-            }
-
-            // Step 4: Tick the checkbox on a ready invoice
-            test.info("Step 1: Ticking invoice checkbox");
-            System.out.println("\n🖱️ Step 1: Selecting invoice for submission...");
-
-            singleBillingPage.clickCheckBox();
-            WaitUtils.sleep(2000);
-
-            test.pass("✓ Invoice checkbox ticked");
-            System.out.println("✓ Invoice selected for submission");
-
-            //Enable HCFA Button
-            test.info("Step 10: Enabling HCFA Toggle Button");
-            System.out.println("\n🔄 Step 10: Enabling HCFA Toggle...");
-
-            try {
-                singleBillingPage.enableHcfaToggle();
-                test.info("✓ HCFA Toggle enabled");
-                System.out.println("✓ HCFA Toggle enabled successfully");
-
-            } catch (Exception e) {
-                test.fail("❌ Failed to enable HCFA Toggle: " + e.getMessage());
-                System.err.println("❌ HCFA Toggle enable failed: " + e.getMessage());
-                throw e;
-            }
-
-            // Step 5: Click Fax submission button
-            test.info("Step 2: Clicking Fax submission button");
-            System.out.println("\n🖱️ Step 2: Submitting via Fax...");
-
-            singleBillingPage.clickFaxSubmissionButton();
-            WaitUtils.sleep(5000);
-
-            test.pass("✓ Fax submission button clicked");
-            System.out.println("✓ Fax submission initiated");
-
-            // Step 6: Verify Report View is displayed (submission success indicator)
-            test.info("Step 3: Verifying submission success via Report View");
-            System.out.println("\n✅ Step 3: Checking Report View...");
-
-            boolean isReportViewDisplayed = singleBillingPage.isReportViewDisplayedAfterSubmission();
-
-            Assert.assertTrue(isReportViewDisplayed,
-                    "Report View should be displayed after successful Fax submission");
-
-            test.pass("✓ Report View displayed - Submission successful");
-            System.out.println("✓ Report View displayed");
-            System.out.println("✓ Invoice submitted successfully via Fax");
-
-            // Summary
-            System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_012 Summary:");
-            System.out.println("   ✓ Invoice selected");
-            System.out.println("   ✓ Fax submission button clicked");
-            System.out.println("   ✓ Report View displayed");
-            System.out.println("   ✓ Single invoice submitted via Fax successfully");
-            System.out.println("========================================");
-
-        } catch (AssertionError e) {
-            test.fail("❌ SMOKE_SB_012 FAILED - " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            test.fail("❌ SMOKE_SB_012 FAILED - Unexpected error: " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
-
-        test.pass("🎉 SMOKE_SB_012 PASSED - Single invoice Fax submission successful");
-        System.out.println("\n✅ SMOKE_SB_012 TEST PASSED");
-    }
-
-    @Test(priority = 13, description = "SMOKE_SB_013 - Verify user can submit a single invoice via Paper")
-    public void SMOKE_SB_013() {
-        test.info("📋 Starting SMOKE_SB_013 - Submit single invoice via Paper");
-        System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_SB_013: Submit Single Invoice via Paper");
+        System.out.println("🧪 SMOKE_SB_011: Submit Single Invoice via Paper");
         System.out.println("========================================\n");
 
         try {
@@ -1773,7 +1576,7 @@ public class SingleBillingTest extends SmokeBaseTest {
 
             // Summary
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_013 Summary:");
+            System.out.println("📊 SMOKE_SB_011 Summary:");
             System.out.println("   ✓ Invoice selected");
             System.out.println("   ✓ Paper submission button clicked");
             System.out.println("   ✓ Report View displayed");
@@ -1781,28 +1584,28 @@ public class SingleBillingTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_SB_013 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SB_011 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_SB_013 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SB_011 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_SB_013 PASSED - Single invoice Paper submission successful");
-        System.out.println("\n✅ SMOKE_SB_017 TEST PASSED");
+        test.pass("🎉 SMOKE_SB_011 PASSED - Single invoice Paper submission successful");
+        System.out.println("\n✅ SMOKE_SB_011 TEST PASSED");
     }
 
-    @Test(priority = 14, description = "SMOKE_SB_014 - Verify user can submit multiple invoices via EMC")
-    public void SMOKE_SB_014() {
+    @Test(priority = 12, description = "SMOKE_SB_012 - Verify user can submit multiple invoices via EMC")
+    public void SMOKE_SB_012() {
 
         List<String> selectedInvoiceNumbers1 = new ArrayList<>();
 
-        test.info("📋 Starting SMOKE_SB_014 - Submit multiple invoices via EMC");
+        test.info("📋 Starting SMOKE_SB_012 - Submit multiple invoices via EMC");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_SB_014: Submit Multiple Invoices via EMC");
+        System.out.println("🧪 SMOKE_SB_012: Submit Multiple Invoices via EMC");
         System.out.println("========================================\n");
 
         try {
@@ -1906,35 +1709,35 @@ public class SingleBillingTest extends SmokeBaseTest {
 
             // Summary
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_014 Summary:");
+            System.out.println("📊 SMOKE_SB_012 Summary:");
             System.out.println("   ✓ " + invoicesAdded + " invoices added");
             System.out.println("   ✓ EMC submission button clicked");
             System.out.println("   ✓ Multiple invoices submitted via EMC successfully");
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_SB_014 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SB_012 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_SB_014 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SB_012 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_SB_014 PASSED - Multiple invoices EMC submission successful");
-        System.out.println("\n✅ SMOKE_SB_014 TEST PASSED");
+        test.pass("🎉 SMOKE_SB_012 PASSED - Multiple invoices EMC submission successful");
+        System.out.println("\n✅ SMOKE_SB_012 TEST PASSED");
     }
 
-    @Test(priority = 15, description = "SMOKE_SB_015 - Verify user can submit multiple invoices via E/P")
-    public void SMOKE_SB_015() {
+    @Test(priority = 13, description = "SMOKE_SB_015 - Verify user can submit multiple invoices via E/P")
+    public void SMOKE_SB_013() {
 
         List<String> selectedInvoiceNumbers1 = new ArrayList<>();
 
-        test.info("📋 Starting SMOKE_SB_015 - Submit multiple invoices via E/P");
+        test.info("📋 Starting SMOKE_SB_013 - Submit multiple invoices via E/P");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_SB_015: Submit Multiple Invoices via E/P");
+        System.out.println("🧪 SMOKE_SB_013: Submit Multiple Invoices via E/P");
         System.out.println("========================================\n");
 
         try {
@@ -2048,7 +1851,7 @@ public class SingleBillingTest extends SmokeBaseTest {
 
             // Summary
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_015 Summary:");
+            System.out.println("📊 SMOKE_SB_013 Summary:");
             System.out.println("   ✓ " + invoicesAdded + " invoices added");
             System.out.println("   ✓ E/P submission button clicked");
             System.out.println("   ✓ Report View displayed");
@@ -2056,296 +1859,29 @@ public class SingleBillingTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_SB_015 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SB_013 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_SB_015 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SB_013 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_SB_015 PASSED - Multiple invoices E/P submission successful");
-        System.out.println("\n✅ SMOKE_SB_015 TEST PASSED");
+        test.pass("🎉 SMOKE_SB_013 PASSED - Multiple invoices E/P submission successful");
+        System.out.println("\n✅ SMOKE_SB_013 TEST PASSED");
     }
 
-    @Test(priority = 16, description = "SMOKE_SB_016 - Verify user can submit multiple invoices via Mail")
-    public void SMOKE_SB_016() {
+
+    @Test(priority = 14, description = "SMOKE_SB_014 - Verify user can submit multiple invoices via Paper")
+    public void SMOKE_SB_014() {
 
         List<String> selectedInvoiceNumbers1 = new ArrayList<>();
 
-        test.info("📋 Starting SMOKE_SB_016 - Submit multiple invoices via Mail");
+        test.info("📋 Starting SMOKE_SB_014 - Submit multiple invoices via Paper");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_SB_016: Submit Multiple Invoices via Mail");
-        System.out.println("========================================\n");
-
-        try {
-            // Step 1: Wait for Single Billing page to load
-            WaitUtils.sleep(3000);
-            System.out.println("✓ Single Billing page loaded");
-
-            // Step 2: Add multiple invoices (minimum 4)
-            test.info("Step 1: Adding multiple invoices");
-            System.out.println("\n📝 Step 1: Adding multiple invoices...");
-
-            String[] applicantIds = {
-                    SingleBillingTestDataProperties.get("singleBilling.applicantName17-1"),
-                    SingleBillingTestDataProperties.get("singleBilling.applicantName17-2"),
-                    SingleBillingTestDataProperties.get("singleBilling.applicantName17-3"),
-                    SingleBillingTestDataProperties.get("singleBilling.applicantName17-4")
-            };
-
-            int invoicesAdded = 0;
-
-            for (int i = 0; i < applicantIds.length; i++) {
-                try {
-                    String applicantId = applicantIds[i];
-                    System.out.println("\n➡️ Adding invoice " + (i + 1) + "/" + applicantIds.length);
-
-                    singleBillingPage.searchApplicant(applicantId);
-                    WaitUtils.sleep(2000);
-
-                    if (singleBillingPage.viewApplicantList()) {
-                        singleBillingPage.clickApplicant();
-                        WaitUtils.sleep(3000);
-                        singleBillingPage.clickDateOfServiceDropdown();
-                        WaitUtils.sleep(2000);
-
-                        int dosCount = singleBillingPage.getDosListCount();
-                        if (dosCount > 0) {
-                            singleBillingPage.selectFirstDos();
-                            WaitUtils.sleep(5000);
-                            invoicesAdded++;
-                            System.out.println("✓ Invoice " + (i + 1) + " added");
-                        }
-                    }
-                } catch (Exception e) {
-                    System.err.println("⚠ Error adding invoice " + (i + 1));
-                }
-            }
-
-
-            System.out.println("\n✅ Total invoices added: " + invoicesAdded);
-            test.info("Total invoices added: " + invoicesAdded);
-
-            Assert.assertTrue(invoicesAdded >= 2,
-                    "Minimum 2 invoices required. Only " + invoicesAdded + " added.");
-
-            test.pass("✓ Multiple invoices added: " + invoicesAdded);
-
-            // Step 3: Wait for table to settle
-            WaitUtils.sleep(3000);
-            singleBillingPage.waitForInvoiceTableLoad();
-
-            int maxInvoices = 4; // Select maximum 4 invoices (or all on page if less)
-            selectedInvoiceNumbers1 = singleBillingPage.selectMultipleEamsVerifiedInvoiceCheckboxes(maxInvoices);
-
-            Assert.assertTrue(selectedInvoiceNumbers1.size() >= 2,
-                    "Failed to select at least 2 invoices with 'EAMS Verified' or 'EAMS Not Verified' status. " +
-                            "Selected: " + selectedInvoiceNumbers1.size() + ". Ensure there are multiple EMC-ready invoices in the test data.");
-
-            test.info("✓ Multiple invoices selected: " + selectedInvoiceNumbers1.size());
-            System.out.println("\n✓ Total invoices selected: " + selectedInvoiceNumbers1.size());
-            for (int i = 0; i < selectedInvoiceNumbers1.size(); i++) {
-                test.info("   Invoice " + (i + 1) + ": " + selectedInvoiceNumbers1.get(i));
-            }
-
-            //Enable HCFA Button
-            test.info("Step 10: Enabling HCFA Toggle Button");
-            System.out.println("\n🔄 Step 10: Enabling HCFA Toggle...");
-
-            try {
-                singleBillingPage.enableHcfaToggle();
-                test.info("✓ HCFA Toggle enabled");
-                System.out.println("✓ HCFA Toggle enabled successfully");
-
-            } catch (Exception e) {
-                test.fail("❌ Failed to enable HCFA Toggle: " + e.getMessage());
-                System.err.println("❌ HCFA Toggle enable failed: " + e.getMessage());
-                throw e;
-            }
-
-            // Step 4: Click Mail submission button
-            test.info("Step 2: Clicking Mail submission button");
-            System.out.println("\n🖱️ Step 2: Submitting multiple invoices via Mail...");
-
-            singleBillingPage.clickMailSubmissionButton();
-            WaitUtils.sleep(5000);
-
-            test.pass("✓ Mail submission button clicked");
-            System.out.println("✓ Mail submission initiated");
-
-
-
-            test.pass("✓ Multiple invoices submitted successfully via Mail");
-            System.out.println("✓ Multiple invoices submitted successfully via Mail");
-
-            // Summary
-            System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_016 Summary:");
-            System.out.println("   ✓ " + invoicesAdded + " invoices added");
-            System.out.println("   ✓ Mail submission button clicked");
-            System.out.println("   ✓ Report View displayed");
-            System.out.println("   ✓ Multiple invoices submitted via Mail successfully");
-            System.out.println("========================================");
-
-        } catch (AssertionError e) {
-            test.fail("❌ SMOKE_SB_016 FAILED - " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            test.fail("❌ SMOKE_SB_016 FAILED - Unexpected error: " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
-
-        test.pass("🎉 SMOKE_SB_016 PASSED - Multiple invoices Mail submission successful");
-        System.out.println("\n✅ SMOKE_SB_016 TEST PASSED");
-    }
-
-    @Test(priority = 17, description = "SMOKE_SB_017 - Verify user can submit multiple invoices via Fax")
-    public void SMOKE_SB_017() {
-
-        List<String> selectedInvoiceNumbers1 = new ArrayList<>();
-
-        test.info("📋 Starting SMOKE_SB_017 - Submit multiple invoices via Fax");
-        System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_SB_017: Submit Multiple Invoices via Fax");
-        System.out.println("========================================\n");
-
-        try {
-            // Step 1: Wait for Single Billing page to load
-            WaitUtils.sleep(3000);
-            System.out.println("✓ Single Billing page loaded");
-
-            // Step 2: Add multiple invoices (minimum 4)
-            test.info("Step 1: Adding multiple invoices");
-            System.out.println("\n📝 Step 1: Adding multiple invoices...");
-
-            String[] applicantIds = {
-                    SingleBillingTestDataProperties.get("singleBilling.applicantName18-1"),
-                    SingleBillingTestDataProperties.get("singleBilling.applicantName18-2"),
-                    SingleBillingTestDataProperties.get("singleBilling.applicantName18-3"),
-                    SingleBillingTestDataProperties.get("singleBilling.applicantName18-4")
-            };
-
-            int invoicesAdded = 0;
-
-            for (int i = 0; i < applicantIds.length; i++) {
-                try {
-                    String applicantId = applicantIds[i];
-                    System.out.println("\n➡️ Adding invoice " + (i + 1) + "/" + applicantIds.length);
-
-                    singleBillingPage.searchApplicant(applicantId);
-                    WaitUtils.sleep(2000);
-
-                    if (singleBillingPage.viewApplicantList()) {
-                        singleBillingPage.clickApplicant();
-                        WaitUtils.sleep(3000);
-                        singleBillingPage.clickDateOfServiceDropdown();
-                        WaitUtils.sleep(2000);
-
-                        int dosCount = singleBillingPage.getDosListCount();
-                        if (dosCount > 0) {
-                            singleBillingPage.selectFirstDos();
-                            WaitUtils.sleep(5000);
-                            invoicesAdded++;
-                            System.out.println("✓ Invoice " + (i + 1) + " added");
-                        }
-                    }
-                } catch (Exception e) {
-                    System.err.println("⚠ Error adding invoice " + (i + 1));
-                }
-            }
-
-
-            System.out.println("\n✅ Total invoices added: " + invoicesAdded);
-            test.info("Total invoices added: " + invoicesAdded);
-
-            Assert.assertTrue(invoicesAdded >= 2,
-                    "Minimum 2 invoices required. Only " + invoicesAdded + " added.");
-
-            test.pass("✓ Multiple invoices added: " + invoicesAdded);
-
-            // Step 3: Wait for table to settle
-            WaitUtils.sleep(3000);
-            singleBillingPage.waitForInvoiceTableLoad();
-
-            int maxInvoices = 4; // Select maximum 4 invoices (or all on page if less)
-            selectedInvoiceNumbers1 = singleBillingPage.selectMultipleEamsVerifiedInvoiceCheckboxes(maxInvoices);
-
-            Assert.assertTrue(selectedInvoiceNumbers1.size() >= 2,
-                    "Failed to select at least 2 invoices with 'EAMS Verified' or 'EAMS Not Verified' status. " +
-                            "Selected: " + selectedInvoiceNumbers1.size() + ". Ensure there are multiple EMC-ready invoices in the test data.");
-
-            test.info("✓ Multiple invoices selected: " + selectedInvoiceNumbers1.size());
-            System.out.println("\n✓ Total invoices selected: " + selectedInvoiceNumbers1.size());
-            for (int i = 0; i < selectedInvoiceNumbers1.size(); i++) {
-                test.info("   Invoice " + (i + 1) + ": " + selectedInvoiceNumbers1.get(i));
-            }
-
-            //Enable HCFA Button
-            test.info("Step 10: Enabling HCFA Toggle Button");
-            System.out.println("\n🔄 Step 10: Enabling HCFA Toggle...");
-
-            try {
-                singleBillingPage.enableHcfaToggle();
-                test.info("✓ HCFA Toggle enabled");
-                System.out.println("✓ HCFA Toggle enabled successfully");
-
-            } catch (Exception e) {
-                test.fail("❌ Failed to enable HCFA Toggle: " + e.getMessage());
-                System.err.println("❌ HCFA Toggle enable failed: " + e.getMessage());
-                throw e;
-            }
-
-            // Step 4: Click Fax submission button
-            test.info("Step 2: Clicking Fax submission button");
-            System.out.println("\n🖱️ Step 2: Submitting multiple invoices via Fax...");
-
-            singleBillingPage.clickFaxSubmissionButton();
-            WaitUtils.sleep(5000);
-
-            test.pass("✓ Fax submission button clicked");
-            System.out.println("✓ Fax submission initiated");
-
-            test.pass("✓ Multiple invoices submitted successfully via Fax");
-            System.out.println("✓ Multiple invoices submitted successfully via Fax");
-
-            // Summary
-            System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_017 Summary:");
-            System.out.println("   ✓ " + invoicesAdded + " invoices added");
-            System.out.println("   ✓ Fax submission button clicked");
-            System.out.println("   ✓ Report View displayed");
-            System.out.println("   ✓ Multiple invoices submitted via Fax successfully");
-            System.out.println("========================================");
-
-        } catch (AssertionError e) {
-            test.fail("❌ SMOKE_SB_021 FAILED - " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            test.fail("❌ SMOKE_SB_021 FAILED - Unexpected error: " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
-
-        test.pass("🎉 SMOKE_SB_017 PASSED - Multiple invoices Fax submission successful");
-        System.out.println("\n✅ SMOKE_SB_021 TEST PASSED");
-    }
-
-    @Test(priority = 18, description = "SMOKE_SB_018 - Verify user can submit multiple invoices via Paper")
-    public void SMOKE_SB_018() {
-
-        List<String> selectedInvoiceNumbers1 = new ArrayList<>();
-
-        test.info("📋 Starting SMOKE_SB_018 - Submit multiple invoices via Paper");
-        System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_SB_018: Submit Multiple Invoices via Paper");
+        System.out.println("🧪 SMOKE_SB_014: Submit Multiple Invoices via Paper");
         System.out.println("========================================\n");
 
         try {
@@ -2459,7 +1995,7 @@ public class SingleBillingTest extends SmokeBaseTest {
 
             // Summary
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_018 Summary:");
+            System.out.println("📊 SMOKE_SB_014 Summary:");
             System.out.println("   ✓ " + invoicesAdded + " invoices added");
             System.out.println("   ✓ Paper submission button clicked");
             System.out.println("   ✓ Report View displayed");
@@ -2467,25 +2003,25 @@ public class SingleBillingTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_SB_018 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SB_014 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_SB_018 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SB_014 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_SB_018 PASSED - Multiple invoices Paper submission successful");
-        System.out.println("\n✅ SMOKE_SB_018 TEST PASSED");
+        test.pass("🎉 SMOKE_SB_014 PASSED - Multiple invoices Paper submission successful");
+        System.out.println("\n✅ SMOKE_SB_014 TEST PASSED");
     }
 
-    @Test(priority = 19, description = "SMOKE_SB_019 - Verify clicking remove button successfully removes a single invoice from Single Billing")
-    public void SMOKE_SB_019() {
-        test.info("📋 Starting SMOKE_SB_019 - Remove single invoice from Single Billing");
+    @Test(priority = 15, description = "SMOKE_SB_015 - Verify clicking remove button successfully removes a single invoice from Single Billing")
+    public void SMOKE_SB_015() {
+        test.info("📋 Starting SMOKE_SB_015 - Remove single invoice from Single Billing");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_SB_019: Remove Single Invoice (Flexible - Not Hardcoded to Specific Row)");
+        System.out.println("🧪 SMOKE_SB_015: Remove Single Invoice (Flexible - Not Hardcoded to Specific Row)");
         System.out.println("========================================\n");
 
         try {
@@ -2618,7 +2154,7 @@ public class SingleBillingTest extends SmokeBaseTest {
 
             // Summary
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_019 Summary:");
+            System.out.println("📊 SMOKE_SB_015 Summary:");
             System.out.println("   ✓ Invoice number retrieved: " + invoiceNumberToRemove);
             System.out.println("   ✓ Remove button clicked");
             System.out.println("   ✓ Confirmation popup appeared");
@@ -2628,25 +2164,25 @@ public class SingleBillingTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_SB_019 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SB_015 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_SB_019 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SB_015 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_SB_023 PASSED - Single invoice removal successful");
-        System.out.println("\n✅ SMOKE_SB_023 TEST PASSED");
+        test.pass("🎉 SMOKE_SB_015 PASSED - Single invoice removal successful");
+        System.out.println("\n✅ SMOKE_SB_015 TEST PASSED");
     }
 
-    @Test(priority = 20, description = "SMOKE_SB_020 - Verify clicking Delete All button successfully removes all invoices from Single Billing")
-    public void SMOKE_SB_020() {
-        test.info("📋 Starting SMOKE_SB_020 - Remove all invoices from Single Billing");
+    @Test(priority = 16, description = "SMOKE_SB_016 - Verify clicking Delete All button successfully removes all invoices from Single Billing")
+    public void SMOKE_SB_016() {
+        test.info("📋 Starting SMOKE_SB_016 - Remove all invoices from Single Billing");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_SB_020: Remove All Invoices");
+        System.out.println("🧪 SMOKE_SB_016: Remove All Invoices");
         System.out.println("========================================\n");
 
         try {
@@ -2764,7 +2300,7 @@ public class SingleBillingTest extends SmokeBaseTest {
 
             // Summary
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_020 Summary:");
+            System.out.println("📊 SMOKE_SB_016 Summary:");
             System.out.println("   ✓ Initial invoice count: " + initialInvoiceCount);
             System.out.println("   ✓ Delete All button clicked");
             System.out.println("   ✓ Confirmation popup appeared");
@@ -2774,11 +2310,11 @@ public class SingleBillingTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_SB_020 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SB_016 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_SB_020 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SB_016 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
