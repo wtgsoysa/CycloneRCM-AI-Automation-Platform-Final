@@ -17,7 +17,7 @@ import java.util.List;
      * Page Object Model for Daily Billing Edit Invoice functionality
      * Supports SMOKE_DEI_001 through SMOKE_DEI_012 test cases
      */
-public class EditInvoicePage {
+public class BillingEditInvoicePage {
 
     private WebDriver driver;
 
@@ -25,8 +25,8 @@ public class EditInvoicePage {
 
     // Main Edit Invoice Screen
     private By editInvoiceLabel = By.xpath("/html/body/div[2]/div/div[2]/div/div[1]/p-toolbar/div/div[1]/span");
-    private By editFormEditButton = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[1]/p-toolbar/div/div[2]/button[5]");
-    private By editFormSaveButton = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[1]/p-toolbar/div/div[2]/button[4]");
+    private By editFormEditButton = By.xpath("//button[@icon='pi pi-pencil']");
+    private By editFormSaveButton = By.xpath("//span[@class='p-button-icon pi pi-save']");
     private By mainFormSaveButton = By.xpath("/html/body/div[3]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[1]/p-toolbar/div/div[2]/button[4]");
 
     // Mandatory Fields
@@ -45,7 +45,7 @@ public class EditInvoicePage {
 
     // Claim Administrator Popup
     private By claimAdminLink = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[2]/div[1]/div[2]/div[1]/span[1]/u");
-    private By claimAdminPopupLabel = By.xpath("/html/body/div[4]/div/div[2]/cyclone-edit-claim-admin/div/div/p-toolbar/div/div[1]");
+    private By claimAdminPopupLabel = By.xpath("//span[normalize-space()='Claim Administrator']");
     private By claimAdminEditButton = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/div/p-toolbar/div/div[2]/button[3]");
     private By claimAdminNameField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[2]/div/div/div/div/input");
     private By claimAdminZipField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[5]/div/div[1]/div/div/div/span/input");
@@ -73,7 +73,7 @@ public class EditInvoicePage {
     private By caseSaveButton = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/div/p-toolbar/div/div[2]/button[2]");
 
     // Applicant Popup
-    private By applicantLink = By.xpath("/html/body/div[3]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[2]/span/u");
+    private By applicantLink = By.xpath("(//u[normalize-space()='APPLICANT'])[1]");
     private By applicantPopupLabel = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[1]/span");
     private By applicantEditButton = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[3]/button[3]");
     private By applicantLastNameField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/form/div/div/div/div[1]/p-tabview/div/div[2]/p-tabpanel/div/div/div/div/div[3]/div/div/div/div/input");
@@ -94,6 +94,7 @@ public class EditInvoicePage {
     private By interpreterEditButton = By.xpath("/html/body/div[3]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[3] | /html/body/div[4]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[3] | /html/body/div[5]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[3]");
     private By interpreterNameField = By.xpath("/html/body/div[3]/div/div[2]/cyclonercm-edit-interpreter/div/form/div/div/div/div/div/div/div/div[2]/div/div/div/div/input | /html/body/div[4]/div/div[2]/cyclonercm-edit-interpreter/div/form/div/div/div/div/div/div/div/div[2]/div/div/div/div/input | /html/body/div[5]/div/div[2]/cyclonercm-edit-interpreter/div/form/div/div/div/div/div/div/div/div[2]/div/div/div/div/input");
     private By interpreterSaveButton = By.xpath("/html/body/div[3]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[2] | /html/body/div[4]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[2] | /html/body/div[5]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[2]");
+    private By interpretercloseButton = By.xpath("//div[@class='ng-tns-c56-61 p-dialog-mask p-component-overlay p-component-overlay-enter p-dialog-mask-scrollblocker p-dialog-left ng-star-inserted']//button[4]");
 
     // Interpreter Invoice Details Popup
     private By interpreterInvoiceDetailsLink = By.xpath("//span[contains(@class,'hyperlink-text') or contains(@style,'color: rgb(65, 105, 225)')]//u[contains(text(),'Interpreter Invoice Details')] | //span[contains(text(),'Interpreter Invoice Details') and .//u]");
@@ -132,7 +133,7 @@ public class EditInvoicePage {
 
     // Success Message
     private By successMessagePopup = By.xpath("/html/body/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div");
-    private By successMessageText = By.xpath("/html/body/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div/p");
+    private By successMessageText = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div/p");
 
     // Financial Fields
     private By billedAmountField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[6]/div[1]/div[2]");
@@ -158,7 +159,7 @@ public class EditInvoicePage {
 
     // ========== CONSTRUCTOR ==========
 
-    public EditInvoicePage(WebDriver driver) {
+    public BillingEditInvoicePage(WebDriver driver) {
         this.driver = driver;
     }
 
@@ -185,7 +186,7 @@ public class EditInvoicePage {
      */
     public void clickEditButton() {
         try {
-            WaitUtils.waitForVisibility(driver, editFormEditButton, 10);
+            //WaitUtils.waitForVisibility(driver, editFormEditButton, 10);
             WebElement button = driver.findElement(editFormEditButton);
             button.click();
             WaitUtils.sleep(2000);
@@ -490,7 +491,7 @@ public class EditInvoicePage {
 
     public void clickClaimAdminEditButton() {
         try {
-            WaitUtils.waitForVisibility(driver, claimAdminEditButton, 10);
+            //WaitUtils.waitForVisibility(driver, claimAdminEditButton, 10);
             driver.findElement(claimAdminEditButton).click();
             WaitUtils.sleep(2000);
             System.out.println("✓ Claim Admin Edit button clicked");
@@ -658,7 +659,7 @@ public class EditInvoicePage {
                 fieldClicked = true;
             } catch (Exception e) {
                 System.out.println("⚠ Regular click failed, trying JavaScript click...");
-                ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", zipField);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", zipField);
                 fieldClicked = true;
             }
 
@@ -697,7 +698,7 @@ public class EditInvoicePage {
                     By genericZipRow = By.xpath("//cyclone-search-zip//p-table//tbody/tr[1]");
                     WaitUtils.waitForVisibility(driver, genericZipRow, 5);
                     WebElement firstZipGeneric = driver.findElement(genericZipRow);
-                    ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", firstZipGeneric);
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", firstZipGeneric);
                     zipSelected = true;
                     System.out.println("✓ Random ZIP selected using generic locator");
                 } catch (Exception ex) {
@@ -1109,6 +1110,18 @@ public class EditInvoicePage {
             System.out.println("✓ Interpreter Save button clicked");
         } catch (Exception e) {
             System.err.println("Failed to click Interpreter Save button: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void closeInterpreterPopup() {
+        try {
+            WaitUtils.waitForVisibility(driver, interpretercloseButton, 10);
+            driver.findElement(servicesCloseButton).click();
+            WaitUtils.sleep(2000);
+            System.out.println("✓ Services Close button clicked");
+        } catch (Exception e) {
+            System.err.println("Failed to click Services Close button: " + e.getMessage());
             throw e;
         }
     }
