@@ -2559,7 +2559,7 @@ public class DailyBillingPage {
                             String statusText = statusBadge.getText().trim();
 
                             // Check if this invoice is "EAMS Verified" or "EAMS Not Verified"
-                            if (statusText.equals("EAMS Verified") || statusText.equals("EAMS Not Verified")) {
+                            if (statusText.equals("EAMS Verified") || statusText.equals("Address requires verification") || statusText.equals("No Carrier in EAMS") || statusText.equals("Multiple Carrier") || statusText.equals("EAMS Carrier") || statusText.equals("No Carrier; Employer Bill") || statusText.equals("EAMS Not Verified") || statusText.equals("Nothing Match")) {
                                 System.out.println("✓ Found invoice with status: " + statusText + " at row " + (i + 1));
 
                                 // Find and click the invoice number link in column 2 (td[2])
