@@ -2,8 +2,10 @@ package com.cyclonercm.pages;
 
 import com.cyclonercm.utils.WaitUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -1222,15 +1224,20 @@ public class DailyBillingPage {
                             // Try to click the checkbox in column 1 (td[1]) for this row
                             try {
                                 WebElement checkbox = row.findElement(By.xpath(".//td[1]//div"));
-                                checkbox.click();
+                                // Use retry helper that will toggle the Missing Info switch on dialog and retry
+                                boolean clicked = retryClickCheckbox(checkbox, row);
+                                if (!clicked) {
+                                    System.out.println("   ⏭ Skipping row " + (i + 1) + " - Could not reliably select checkbox after retries");
+                                    continue;
+                                }
+
                                 System.out.println("   ✓ Checkbox clicked, checking for errors...");
 
-                                // Check if "Missing Information" dialog appeared
+                                // Final safeguard: if dialog still appears, close and skip
                                 if (isMissingInfoDialogDisplayed()) {
-                                    System.out.println("   ⚠ Missing Information dialog appeared - Invoice not ready for billing");
+                                    System.out.println("   ⚠ Missing Information dialog still present after retry - skipping invoice");
                                     closeMissingInfoDialog();
-                                    System.out.println("   ⏭ Skipping to next invoice\n");
-                                    continue; // Move to next invoice
+                                    continue;
                                 }
 
                                 // No dialog appeared - invoice is successfully selected!
@@ -3424,8 +3431,12 @@ public class DailyBillingPage {
                                 // Click checkbox in column 1 (td[1])
                                 try {
                                     WebElement checkbox = row.findElement(By.xpath(".//td[1]//div"));
-                                    WaitUtils.sleep(1000);
-                                    checkbox.click();
+                                    WaitUtils.sleep(500);
+                                    boolean clicked = retryClickCheckbox(checkbox, row);
+                                    if (!clicked) {
+                                        System.err.println("❌ Could not reliably select checkbox after retries for invoice: " + invoiceNumber);
+                                        continue;
+                                    }
                                     System.out.println("✓ Checkbox clicked for invoice: " + invoiceNumber + " (Status: " + statusText + ")");
 
                                     return invoiceNumber;
@@ -3858,6 +3869,101 @@ public class DailyBillingPage {
                 System.err.println("❌ Error checking if multiple invoices disappeared: " + e.getMessage());
                 return false;
             }
+        }
+
+        /**
+         * Helper: Toggle the p-inputswitch in the same row (column 7) to enable invoice selection
+         * This is needed when the "Missing Information" dialog appears
+         */
+        private void toggleMissingInfoSwitch(WebElement row) {
+            try {
+                // Relative xpath to the p-inputswitch inside the same row (column 7)
+                WebElement switchSpan = row.findElement(By.xpath(".//td[7]//p-inputswitch//div/span"));
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+                wait.until(ExpectedConditions.elementToBeClickable(switchSpan));
+                try {
+                    switchSpan.click();
+                } catch (org.openqa.selenium.ElementClickInterceptedException ex) {
+                    // try via JS as fallback
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", switchSpan);
+                }
+                // Short wait for UI state change
+                WaitUtils.sleep(500);
+                // Verify toggled state if possible
+                try {
+                    WebElement inputSwitchRoot = row.findElement(By.xpath(".//td[7]//p-inputswitch"));
+                    String cls = inputSwitchRoot.getAttribute("class");
+                    if (cls == null || !cls.contains("p-inputswitch-checked")) {
+                        // Try clicking once more as a fallback
+                        WaitUtils.sleep(200);
+                        try {
+                            switchSpan.click();
+                        } catch (Exception inner) {
+                            // ignore
+                        }
+                        WaitUtils.sleep(300);
+                    }
+                } catch (Exception verifyEx) {
+                    System.err.println("Warning: could not validate switch state: " + verifyEx.getMessage());
+                }
+            } catch (Exception e) {
+                System.err.println("⚠ toggleMissingInfoSwitch failed: " + e.getMessage());
+            }
+        }
+
+        /**
+         * Helper: Retry clicking checkbox with toggle logic
+         * If Missing Information dialog appears, toggle the switch and retry
+         */
+        private boolean retryClickCheckbox(WebElement checkbox, WebElement row) {
+            int attempts = 0;
+            while (attempts < 3) {
+                try {
+                    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+                    wait.until(ExpectedConditions.elementToBeClickable(checkbox));
+                    try {
+                        checkbox.click();
+                    } catch (org.openqa.selenium.ElementClickInterceptedException interceptedEx) {
+                        // try JS click as fallback
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", checkbox);
+                    }
+                    WaitUtils.sleep(500);
+                    // If Missing Information dialog appears, try toggle and retry
+                    if (isMissingInfoDialogDisplayed()) {
+                        System.out.println("   ⚠ Missing Information dialog appeared after checkbox click - toggling and retrying");
+                        // close the modal if it shows up immediately
+                        try { closeMissingInfoDialog(); } catch (Exception ignore) {}
+                        toggleMissingInfoSwitch(row);
+                        WaitUtils.sleep(700);
+                        // Re-locate checkbox in case DOM refreshed
+                        try { checkbox = row.findElement(By.xpath(".//td[1]//div")); } catch (Exception ignore) {}
+                        attempts++;
+                        continue;
+                    }
+                    // No dialog -> success
+                    return true;
+                } catch (org.openqa.selenium.StaleElementReferenceException staleEx) {
+                    // Re-find and retry
+                    try {
+                        checkbox = row.findElement(By.xpath(".//td[1]//div"));
+                    } catch (Exception ignore) {}
+                } catch (org.openqa.selenium.ElementClickInterceptedException interceptedEx) {
+                    // If click intercepted, wait and retry
+                    WaitUtils.sleep(400);
+                } catch (org.openqa.selenium.WebDriverException we) {
+                    System.err.println("Checkbox click attempt failed: " + we.getMessage());
+                    WaitUtils.sleep(300);
+                } catch (Exception e) {
+                    System.err.println("Unexpected error during retryClickCheckbox: " + e.getMessage());
+                    WaitUtils.sleep(300);
+                }
+                attempts++;
+            }
+            // Final check: if Missing Information dialog persists, ensure it's closed then return false
+            if (isMissingInfoDialogDisplayed()) {
+                try { closeMissingInfoDialog(); } catch (Exception ignore) {}
+            }
+            return false;
         }
 
 

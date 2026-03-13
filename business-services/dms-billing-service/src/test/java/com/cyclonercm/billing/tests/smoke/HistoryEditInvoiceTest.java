@@ -38,10 +38,10 @@ import org.testng.annotations.Test;
             WaitUtils.sleep(2000); // Give extra time for page stability
 
             String actualSystemLabelText = loginPage.getSystemLabelText();
-            String expectedSystemLabelText = HistorySmokeTestDataProperties.get("systemLabel");
+            String expectedSystemLabelText = HistoryBillingTestDataProperties.get("systemLabel");
 
             String actualSystemVersionText = loginPage.getVersionText();
-            String expectedSystemVersionText = HistorySmokeTestDataProperties.get("buildNumber");
+            String expectedSystemVersionText = HistoryBillingTestDataProperties.get("buildNumber");
 
             try {
                 Assert.assertEquals(actualSystemLabelText, expectedSystemLabelText, "System label text does not match.");
@@ -59,8 +59,8 @@ import org.testng.annotations.Test;
                 throw e;
             }
 
-            loginPage.enterUsername(HistorySmokeTestDataProperties.get("validUserId"));
-            loginPage.enterPassword(HistorySmokeTestDataProperties.get("validPassword"));
+            loginPage.enterUsername(HistoryBillingTestDataProperties.get("validUserId"));
+            loginPage.enterPassword(HistoryBillingTestDataProperties.get("validPassword"));
             loginPage.clickSignInButton();
 
             WaitUtils.waitForVisibility(driver, LocatorConstants.getStartedButton, 30);

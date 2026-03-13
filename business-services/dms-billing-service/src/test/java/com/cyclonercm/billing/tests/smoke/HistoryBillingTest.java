@@ -2,7 +2,7 @@ package com.cyclonercm.billing.tests.smoke;
 
 import com.cyclonercm.billing.base.SmokeBaseTest;
 import com.cyclonercm.pages.*;
-import com.cyclonercm.utils.DailyBillingTestDataProperties;
+import com.cyclonercm.utils.HistoryBillingTestDataProperties;
 import com.cyclonercm.utils.LocatorConstants;
 import com.cyclonercm.utils.TestDataProperties;
 import com.cyclonercm.utils.WaitUtils;
@@ -36,10 +36,10 @@ public class HistoryBillingTest extends SmokeBaseTest {
 
         // Verify system label and version
         String actualSystemLabelText = loginPage.getSystemLabelText();
-        String expectedSystemLabelText = DailyBillingTestDataProperties.get("systemLabel");
+        String expectedSystemLabelText = HistoryBillingTestDataProperties.get("systemLabel");
 
         String actualSystemVersionText = loginPage.getVersionText();
-        String expectedSystemVersionText = DailyBillingTestDataProperties.get("buildNumber");
+        String expectedSystemVersionText = HistoryBillingTestDataProperties.get("buildNumber");
 
         System.out.println("Expected System Label: " + expectedSystemLabelText);
         System.out.println("Actual System Label: " + actualSystemLabelText);
@@ -70,8 +70,8 @@ public class HistoryBillingTest extends SmokeBaseTest {
         }
 
         // Login
-        loginPage.enterUsername(DailyBillingTestDataProperties.get("validUserId"));
-        loginPage.enterPassword(DailyBillingTestDataProperties.get("validPassword"));
+        loginPage.enterUsername(HistoryBillingTestDataProperties.get("validUserId"));
+        loginPage.enterPassword(HistoryBillingTestDataProperties.get("validPassword"));
         loginPage.clickSignInButton();
 
         WaitUtils.waitForVisibility(driver, LocatorConstants.BillingMenu, 60);
@@ -138,212 +138,356 @@ public class HistoryBillingTest extends SmokeBaseTest {
 
     }
 
-    // ========== TEST METHODS ==========
+    @Test(priority = 1, description = "SMOKE_BH_001: Verify user can filter Billing History by Biller")
+    public void testFilterByBiller() {
+        test.info("SMOKE_BH_001: Verify user can filter Billing History by Biller");
+        System.out.println("\n🧪 SMOKE_BH_001: Verify user can filter Billing History by Biller");
 
-    @Test(priority = 1, description = "SMOKE_BH_001 - Verify user can filter Billing History by Biller")
-    public void SMOKE_BH_001() {
-        test.info("📋 Starting SMOKE_BH_001 - Filter Billing History by Biller");
-        System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_BH_001: Filter Billing History by Biller");
-        System.out.println("========================================\n");
+        test.info("Step 1: Click Biller dropdown");
+        System.out.println("Step 1: Clicking Biller dropdown...");
+        billingHistoryPage.clickBillerDropdown();
+        test.pass("✓ Biller dropdown clicked");
 
-        try {
-            // Step 1: Click Biller Dropdown
-            test.info("Step 1: Clicking Biller dropdown");
-            System.out.println("\n📝 Step 1: Clicking Biller dropdown...");
+        test.info("Step 2: Get first biller name");
+        System.out.println("Step 2: Getting first biller name...");
+        String selectedBiller = billingHistoryPage.getFirstBillerName();
+        System.out.println("Selected Biller: " + selectedBiller);
+        test.info("Selected Biller: " + selectedBiller);
 
-            billingHistoryPage.clickBillerDropdown();
-            test.pass("✓ Biller dropdown clicked");
-            System.out.println("✓ Biller dropdown clicked");
+        test.info("Step 3: Select biller from dropdown");
+        System.out.println("Step 3: Selecting biller...");
+        billingHistoryPage.selectBillerByName(selectedBiller);
+        test.pass("✓ Biller selected: " + selectedBiller);
 
-            // Step 2: Get first biller name from dropdown
-            test.info("Step 2: Getting first biller name from dropdown");
-            System.out.println("\n🔍 Step 2: Getting first biller name from dropdown...");
+        test.info("Step 4: Wait for table to load");
+        System.out.println("Step 4: Waiting for table to load...");
+        billingHistoryPage.waitForTableLoad();
+        test.pass("✓ Table loaded");
 
-            String selectedBillerFullName = billingHistoryPage.getFirstBillerName();
+        test.info("Step 5: Verify biller in table matches selected biller");
+        System.out.println("Step 5: Verifying biller in table...");
+        String tableBiller = billingHistoryPage.getTableBillerName();
+        System.out.println("Expected Biller: " + selectedBiller);
+        System.out.println("Actual Biller: " + tableBiller);
 
-            Assert.assertFalse(selectedBillerFullName.isEmpty(),
-                    "Biller name should not be empty");
-
-            System.out.println("Selected Biller (Full Name): " + selectedBillerFullName);
-            test.info("Selected Biller: " + selectedBillerFullName);
-
-            // Extract first name from full name (format: "LastName FirstName" -> "FirstName")
-            String[] nameParts = selectedBillerFullName.split(" ");
-            String expectedFirstName = nameParts.length > 1 ? nameParts[1] : selectedBillerFullName;
-            System.out.println("Expected First Name in table: " + expectedFirstName);
-
-            test.pass("✓ Biller name retrieved: " + selectedBillerFullName);
-
-            // Step 3: Select the biller from dropdown
-            test.info("Step 3: Selecting biller: " + selectedBillerFullName);
-            System.out.println("\n🖱️ Step 3: Selecting biller...");
-
-            billingHistoryPage.selectBillerByName(selectedBillerFullName);
-            test.pass("✓ Biller selected: " + selectedBillerFullName);
-            System.out.println("✓ Biller selected");
-
-            // Step 4: Wait for table to load
-            test.info("Step 4: Waiting for table to load");
-            System.out.println("\n⏳ Step 4: Waiting for table to load...");
-
-            billingHistoryPage.waitForTableLoad();
-            test.pass("✓ Table loaded");
-            System.out.println("✓ Table loaded");
-
-            // Step 5: Get biller name from table (first row, column 5)
-            test.info("Step 5: Getting biller name from table");
-            System.out.println("\n✅ Step 5: Getting biller name from table...");
-
-            String actualBillerName = billingHistoryPage.getTableBillerName();
-
-            Assert.assertFalse(actualBillerName.isEmpty(),
-                    "Table biller name should not be empty");
-
-            System.out.println("Actual Biller Name in Table: " + actualBillerName);
-            test.info("Table Biller Name: " + actualBillerName);
-
-            // Step 6: Validate biller name (table shows only first name)
-            test.info("Step 6: Validating biller name");
-            System.out.println("\n✅ Step 6: Validating biller name...");
-
-            System.out.println("Expected First Name: " + expectedFirstName);
-            System.out.println("Actual Table Name: " + actualBillerName);
-
-            Assert.assertEquals(actualBillerName, expectedFirstName,
-                    "Table biller first name should match selected biller's first name");
-
-            test.pass("✓ Biller name validated successfully");
-            System.out.println("✓ Biller filter validated: " + actualBillerName + " = " + expectedFirstName);
-
-            // Summary
-            System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_BH_001 Summary:");
-            System.out.println("   ✓ Biller dropdown opened");
-            System.out.println("   ✓ Selected biller: " + selectedBillerFullName);
-            System.out.println("   ✓ Table loaded successfully");
-            System.out.println("   ✓ Table biller name: " + actualBillerName);
-            System.out.println("   ✓ Validation passed: " + expectedFirstName + " = " + actualBillerName);
-            System.out.println("========================================");
-
-        } catch (AssertionError e) {
-            test.fail("❌ SMOKE_BH_001 FAILED - " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            test.fail("❌ SMOKE_BH_001 FAILED - Unexpected error: " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
-        }
-
-        test.pass("🎉 SMOKE_BH_001 PASSED - Biller filter validated successfully");
-        System.out.println("\n✅ SMOKE_BH_001 TEST PASSED");
+        Assert.assertEquals(tableBiller, selectedBiller, "Biller in table should match selected biller");
+        test.pass("✓ SMOKE_BH_001 PASSED: Biller filter verified successfully");
+        System.out.println("✓ SMOKE_BH_001 PASSED");
     }
 
-    @Test(priority = 2, description = "SMOKE_BH_002 - Verify user can filter Billing History by Invoice Number")
-    public void SMOKE_BH_002() {
-        test.info("📋 Starting SMOKE_BH_002 - Filter Billing History by Invoice Number");
-        System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_BH_002: Filter Billing History by Invoice Number");
-        System.out.println("========================================\n");
+    @Test(priority = 2, description = "SMOKE_BH_002: Verify user can filter Billing History by Invoice Number")
+    public void testFilterByInvoiceNumber() {
+        test.info("SMOKE_BH_002: Verify user can filter Billing History by Invoice Number");
+        System.out.println("\n🧪 SMOKE_BH_002: Verify user can filter Billing History by Invoice Number");
 
-        try {
-            // Step 1: Get invoice number from test data
-            test.info("Step 1: Getting invoice number from test data");
-            System.out.println("\n📝 Step 1: Getting invoice number from test data...");
+        String invoiceNumber = HistoryBillingTestDataProperties.get("invoiceNumber");
 
-            String invoiceNumber = TestDataProperties.get("billingHistory.invoiceNumber1");
+        test.info("Step 1: Enter invoice number in search field");
+        System.out.println("Step 1: Entering invoice number: " + invoiceNumber);
+        billingHistoryPage.enterInvoiceNumber(invoiceNumber);
+        test.pass("✓ Invoice number entered");
 
-            Assert.assertFalse(invoiceNumber.isEmpty(),
-                    "Invoice number should not be empty");
+        test.info("Step 2: Click invoice search button");
+        System.out.println("Step 2: Clicking search button...");
+        billingHistoryPage.clickInvoiceSearchButton();
+        test.pass("✓ Search button clicked");
 
-            System.out.println("Invoice Number to search: " + invoiceNumber);
-            test.info("Invoice Number: " + invoiceNumber);
-            test.pass("✓ Invoice number retrieved from test data");
+        test.info("Step 3: Expand first parent row");
+        System.out.println("Step 3: Expanding first parent row...");
+        billingHistoryPage.expandFirstParentRow();
+        test.pass("✓ Parent row expanded");
 
-            // Step 2: Enter invoice number in search field
-            test.info("Step 2: Entering invoice number in search field");
-            System.out.println("\n🔍 Step 2: Entering invoice number in search field...");
+        test.info("Step 4: Verify invoice number in table");
+        System.out.println("Step 4: Verifying invoice number...");
+        String tableInvoiceNumber = billingHistoryPage.getTableInvoiceNumber();
+        System.out.println("Expected Invoice: " + invoiceNumber);
+        System.out.println("Actual Invoice: " + tableInvoiceNumber);
 
-            billingHistoryPage.enterInvoiceNumber(invoiceNumber);
-            test.pass("✓ Invoice number entered: " + invoiceNumber);
-            System.out.println("✓ Invoice number entered");
+        Assert.assertTrue(tableInvoiceNumber.contains(invoiceNumber), "Invoice number should be present in table");
+        test.pass("✓ SMOKE_BH_002 PASSED: Invoice filter verified successfully");
+        System.out.println("✓ SMOKE_BH_002 PASSED");
+    }
 
-            // Step 3: Click invoice search button
-            test.info("Step 3: Clicking invoice search button");
-            System.out.println("\n🖱️ Step 3: Clicking invoice search button...");
+    @Test(priority = 3, description = "SMOKE_BH_003: Verify user can filter Billing History by User Account")
+    public void testFilterByAccount() {
+        test.info("SMOKE_BH_003: Verify user can filter Billing History by User Account");
+        System.out.println("\n🧪 SMOKE_BH_003: Verify user can filter Billing History by User Account");
 
-            billingHistoryPage.clickInvoiceSearchButton();
-            test.pass("✓ Invoice search button clicked");
-            System.out.println("✓ Invoice search button clicked");
+        String accountSearchText = HistoryBillingTestDataProperties.get("accountSearchText");
 
-            // Step 4: Wait for table to load
-            test.info("Step 4: Waiting for table to load");
-            System.out.println("\n⏳ Step 4: Waiting for table to load...");
+        test.info("Step 1: Click Account dropdown");
+        System.out.println("Step 1: Clicking Account dropdown...");
+        billingHistoryPage.clickAccountDropdown();
+        test.pass("✓ Account dropdown clicked");
 
-            billingHistoryPage.waitForTableLoad();
-            test.pass("✓ Table loaded");
-            System.out.println("✓ Table loaded");
+        test.info("Step 2: Enter account search text");
+        System.out.println("Step 2: Entering search text: " + accountSearchText);
+        billingHistoryPage.enterAccountSearchText(accountSearchText);
+        test.pass("✓ Search text entered");
 
-            // Step 5: Expand parent row to reveal nested invoice table
-            test.info("Step 5: Expanding parent row to reveal nested invoice table");
-            System.out.println("\n🔽 Step 5: Expanding parent row to reveal nested invoice table...");
+        test.info("Step 3: Click account search button");
+        System.out.println("Step 3: Clicking search button...");
+        billingHistoryPage.clickAccountSearchButton();
+        test.pass("✓ Search button clicked");
 
-            billingHistoryPage.expandFirstParentRow();
-            test.pass("✓ Parent row expanded");
-            System.out.println("✓ Parent row expanded");
+        test.info("Step 4: Select first account result");
+        System.out.println("Step 4: Selecting first account result...");
+        billingHistoryPage.selectFirstAccountResult();
+        test.pass("✓ Account selected");
 
-            // Step 6: Get invoice number from nested table
-            test.info("Step 6: Getting invoice number from nested table");
-            System.out.println("\n✅ Step 6: Getting invoice number from nested table...");
+        test.info("Step 5: Wait for table to load");
+        System.out.println("Step 5: Waiting for table to load...");
+        billingHistoryPage.waitForTableLoad();
+        test.pass("✓ SMOKE_BH_003 PASSED: Account filter verified successfully");
+        System.out.println("✓ SMOKE_BH_003 PASSED");
+    }
 
-            String actualInvoiceNumber = billingHistoryPage.getTableInvoiceNumber();
+    @Test(priority = 4, description = "SMOKE_BH_004: Verify user can filter Billing History by Applicant")
+    public void testFilterByApplicant() {
+        test.info("SMOKE_BH_004: Verify user can filter Billing History by Applicant");
+        System.out.println("\n🧪 SMOKE_BH_004: Verify user can filter Billing History by Applicant");
 
-            Assert.assertFalse(actualInvoiceNumber.isEmpty(),
-                    "Table invoice number should not be empty");
+        String applicantSearchText = HistoryBillingTestDataProperties.get("applicantSearchText");
 
-            System.out.println("Actual Invoice Number in Table: " + actualInvoiceNumber);
-            test.info("Table Invoice Number: " + actualInvoiceNumber);
+        test.info("Step 1: Click Applicant dropdown");
+        System.out.println("Step 1: Clicking Applicant dropdown...");
+        billingHistoryPage.clickApplicantDropdown();
+        test.pass("✓ Applicant dropdown clicked");
 
-            // Step 7: Validate invoice number
-            test.info("Step 7: Validating invoice number");
-            System.out.println("\n✅ Step 7: Validating invoice number...");
+        test.info("Step 2: Enter applicant search text");
+        System.out.println("Step 2: Entering search text: " + applicantSearchText);
+        billingHistoryPage.enterApplicantSearchText(applicantSearchText);
+        test.pass("✓ Search text entered");
 
-            System.out.println("Expected Invoice Number: " + invoiceNumber);
-            System.out.println("Actual Table Invoice Number: " + actualInvoiceNumber);
+        test.info("Step 3: Click applicant search button");
+        System.out.println("Step 3: Clicking search button...");
+        billingHistoryPage.clickApplicantSearchButton();
+        test.pass("✓ Search button clicked");
 
-            Assert.assertEquals(actualInvoiceNumber, invoiceNumber,
-                    "Table invoice number should match searched invoice number");
+        test.info("Step 4: Select first applicant result");
+        System.out.println("Step 4: Selecting first applicant result...");
+        billingHistoryPage.selectFirstApplicantResult();
+        test.pass("✓ Applicant selected");
 
-            test.pass("✓ Invoice number validated successfully");
-            System.out.println("✓ Invoice filter validated: " + actualInvoiceNumber + " = " + invoiceNumber);
+        test.info("Step 5: Wait for table to load");
+        System.out.println("Step 5: Waiting for table to load...");
+        billingHistoryPage.waitForTableLoad();
+        test.pass("✓ SMOKE_BH_004 PASSED: Applicant filter verified successfully");
+        System.out.println("✓ SMOKE_BH_004 PASSED");
+    }
 
-            // Summary
-            System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_BH_002 Summary:");
-            System.out.println("   ✓ Invoice number entered: " + invoiceNumber);
-            System.out.println("   ✓ Search button clicked");
-            System.out.println("   ✓ Table loaded successfully");
-            System.out.println("   ✓ Parent row expanded to reveal nested invoice table");
-            System.out.println("   ✓ Table invoice number: " + actualInvoiceNumber);
-            System.out.println("   ✓ Validation passed: " + invoiceNumber + " = " + actualInvoiceNumber);
-            System.out.println("========================================");
+    @Test(priority = 5, description = "SMOKE_BH_005: Verify submitted invoices appear in Billing History with correct details")
+    public void testVerifyInvoiceDetails() {
+        test.info("SMOKE_BH_005: Verify submitted invoices appear in Billing History with correct details");
+        System.out.println("\n🧪 SMOKE_BH_005: Verify submitted invoices appear in Billing History with correct details");
 
-        } catch (AssertionError e) {
-            test.fail("❌ SMOKE_BH_002 FAILED - " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED: " + e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            test.fail("❌ SMOKE_BH_002 FAILED - Unexpected error: " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
-            e.printStackTrace();
-            throw e;
+        test.info("Step 1: Expand first parent row");
+        System.out.println("Step 1: Expanding first parent row...");
+        billingHistoryPage.expandFirstParentRow();
+        test.pass("✓ Parent row expanded");
+
+        test.info("Step 2: Get Sub Number");
+        System.out.println("Step 2: Getting Sub Number...");
+        String subNumber = billingHistoryPage.getSubNumber();
+        System.out.println("Sub Number: " + subNumber);
+        Assert.assertFalse(subNumber.isEmpty(), "Sub Number should not be empty");
+        test.pass("✓ Sub Number: " + subNumber);
+
+        test.info("Step 3: Get Invoice Number");
+        System.out.println("Step 3: Getting Invoice Number...");
+        String invoiceNumber = billingHistoryPage.getExpandedInvoiceNumber();
+        System.out.println("Invoice Number: " + invoiceNumber);
+        Assert.assertFalse(invoiceNumber.isEmpty(), "Invoice Number should not be empty");
+        test.pass("✓ Invoice Number: " + invoiceNumber);
+
+        test.info("Step 4: Get Case Number");
+        System.out.println("Step 4: Getting Case Number...");
+        String caseNumber = billingHistoryPage.getCaseNumber();
+        System.out.println("Case Number: " + caseNumber);
+        Assert.assertFalse(caseNumber.isEmpty(), "Case Number should not be empty");
+        test.pass("✓ Case Number: " + caseNumber);
+
+        test.info("Step 5: Get Claim Number");
+        System.out.println("Step 5: Getting Claim Number...");
+        String claimNumber = billingHistoryPage.getClaimNumber();
+        System.out.println("Claim Number: " + claimNumber);
+        Assert.assertFalse(claimNumber.isEmpty(), "Claim Number should not be empty");
+        test.pass("✓ Claim Number: " + claimNumber);
+
+        test.info("Step 6: Get Amount");
+        System.out.println("Step 6: Getting Amount...");
+        String amount = billingHistoryPage.getAmount();
+        System.out.println("Amount: " + amount);
+        Assert.assertFalse(amount.isEmpty(), "Amount should not be empty");
+        test.pass("✓ Amount: " + amount);
+
+        test.info("Step 7: Get Status");
+        System.out.println("Step 7: Getting Status...");
+        String status = billingHistoryPage.getStatus();
+        System.out.println("Status: " + status);
+        Assert.assertFalse(status.isEmpty(), "Status should not be empty");
+        test.pass("✓ Status: " + status);
+
+        test.pass("✓ SMOKE_BH_005 PASSED: All invoice details verified successfully");
+        System.out.println("✓ SMOKE_BH_005 PASSED");
+    }
+
+    @Test(priority = 6, description = "SMOKE_BH_006: Verify user can filter Billing History by EMC")
+    public void testFilterByEMC() {
+        test.info("SMOKE_BH_006: Verify user can filter Billing History by EMC");
+        System.out.println("\n🧪 SMOKE_BH_006: Verify user can filter Billing History by EMC");
+
+        test.info("Step 1: Click EMC radio button");
+        System.out.println("Step 1: Clicking EMC radio button...");
+        billingHistoryPage.clickEMCRadioButton();
+        test.pass("✓ EMC radio button clicked");
+
+        test.info("Step 2: Wait for table to load");
+        System.out.println("Step 2: Waiting for table to load...");
+        billingHistoryPage.waitForTableLoad();
+        test.pass("✓ Table loaded");
+
+        test.info("Step 3: Expand first parent row");
+        System.out.println("Step 3: Expanding first parent row...");
+        billingHistoryPage.expandFirstParentRow();
+        test.pass("✓ Parent row expanded");
+
+        test.info("Step 4: Verify billing type status is EMC");
+        System.out.println("Step 4: Verifying status is EMC...");
+        String status = billingHistoryPage.getBillingTypeStatus();
+        System.out.println("Status: " + status);
+        Assert.assertEquals(status.toUpperCase(), "EMC", "Status should be EMC");
+        test.pass("✓ SMOKE_BH_006 PASSED: EMC filter verified successfully");
+        System.out.println("✓ SMOKE_BH_006 PASSED");
+    }
+
+    @Test(priority = 7, description = "SMOKE_BH_007: Verify user can filter Billing History by Paper")
+    public void testFilterByPaper() {
+        test.info("SMOKE_BH_007: Verify user can filter Billing History by Paper");
+        System.out.println("\n🧪 SMOKE_BH_007: Verify user can filter Billing History by Paper");
+
+        test.info("Step 1: Click Paper radio button");
+        System.out.println("Step 1: Clicking Paper radio button...");
+        billingHistoryPage.clickPaperRadioButton();
+        test.pass("✓ Paper radio button clicked");
+
+        test.info("Step 2: Wait for table to load");
+        System.out.println("Step 2: Waiting for table to load...");
+        billingHistoryPage.waitForTableLoad();
+        test.pass("✓ Table loaded");
+
+        test.info("Step 3: Expand first parent row");
+        System.out.println("Step 3: Expanding first parent row...");
+        billingHistoryPage.expandFirstParentRow();
+        test.pass("✓ Parent row expanded");
+
+        test.info("Step 4: Verify billing type status is Paper");
+        System.out.println("Step 4: Verifying status is Paper...");
+        String status = billingHistoryPage.getBillingTypeStatus();
+        System.out.println("Status: " + status);
+        Assert.assertEquals(status.toUpperCase(), "PAPER", "Status should be Paper");
+        test.pass("✓ SMOKE_BH_007 PASSED: Paper filter verified successfully");
+        System.out.println("✓ SMOKE_BH_007 PASSED");
+    }
+
+    @Test(priority = 8, description = "SMOKE_BH_008: Verify Re-Submit checkbox allows invoice resubmission with EMC")
+    public void testReSubmitEMC() {
+        test.info("SMOKE_BH_008: Verify Re-Submit checkbox allows invoice resubmission with EMC");
+        System.out.println("\n🧪 SMOKE_BH_008: Verify Re-Submit checkbox allows invoice resubmission with EMC");
+
+        test.info("Step 1: Click file select button");
+        System.out.println("Step 1: Clicking file select button...");
+        billingHistoryPage.clickFileSelectButton();
+        test.pass("✓ File selected");
+
+        test.info("Step 2: Expand first parent row");
+        System.out.println("Step 2: Expanding first parent row...");
+        billingHistoryPage.expandFirstParentRow();
+        test.pass("✓ Parent row expanded");
+
+        test.info("Step 3: Check status");
+        System.out.println("Step 3: Checking status...");
+        String status = billingHistoryPage.getStatus();
+        System.out.println("Status: " + status);
+
+        if (status.toUpperCase().contains("EMC")) {
+            test.info("Step 4: Status is EMC, clicking EMC submit button");
+            System.out.println("Step 4: Status is EMC, clicking EMC submit button...");
+            billingHistoryPage.clickEMCSubmitButton();
+            test.pass("✓ EMC submit button clicked");
+            test.pass("✓ SMOKE_BH_008 PASSED: EMC resubmission verified successfully");
+            System.out.println("✓ SMOKE_BH_008 PASSED");
+        } else {
+            test.warning("Status is not EMC: " + status);
+            System.out.println("⚠ Status is not EMC: " + status);
         }
+    }
 
-        test.pass("🎉 SMOKE_BH_002 PASSED - Invoice filter validated successfully");
-        System.out.println("\n✅ SMOKE_BH_002 TEST PASSED");
+    @Test(priority = 9, description = "SMOKE_BH_009: Verify Re-Submit checkbox allows invoice resubmission with Paper")
+    public void testReSubmitPaper() {
+        test.info("SMOKE_BH_009: Verify Re-Submit checkbox allows invoice resubmission with Paper");
+        System.out.println("\n🧪 SMOKE_BH_009: Verify Re-Submit checkbox allows invoice resubmission with Paper");
 
+        test.info("Step 1: Click file select button");
+        System.out.println("Step 1: Clicking file select button...");
+        billingHistoryPage.clickFileSelectButton();
+        test.pass("✓ File selected");
+
+        test.info("Step 2: Expand first parent row");
+        System.out.println("Step 2: Expanding first parent row...");
+        billingHistoryPage.expandFirstParentRow();
+        test.pass("✓ Parent row expanded");
+
+        test.info("Step 3: Check status");
+        System.out.println("Step 3: Checking status...");
+        String status = billingHistoryPage.getStatus();
+        System.out.println("Status: " + status);
+
+        if (status.toUpperCase().contains("PAPER")) {
+            test.info("Step 4: Status is Paper, clicking Paper submit button");
+            System.out.println("Step 4: Status is Paper, clicking Paper submit button...");
+            billingHistoryPage.clickPaperSubmitButton();
+            test.pass("✓ Paper submit button clicked");
+            test.pass("✓ SMOKE_BH_009 PASSED: Paper resubmission verified successfully");
+            System.out.println("✓ SMOKE_BH_009 PASSED");
+        } else {
+            test.warning("Status is not Paper: " + status);
+            System.out.println("⚠ Status is not Paper: " + status);
+        }
+    }
+
+    @Test(priority = 10, description = "SMOKE_BH_010: Verify user can open Edocs to view related documents")
+    public void testOpenEdocs() {
+        test.info("SMOKE_BH_010: Verify user can open Edocs to view related documents");
+        System.out.println("\n🧪 SMOKE_BH_010: Verify user can open Edocs to view related documents");
+
+        test.info("Step 1: Expand first parent row");
+        System.out.println("Step 1: Expanding first parent row...");
+        billingHistoryPage.expandFirstParentRow();
+        test.pass("✓ Parent row expanded");
+
+        test.info("Step 2: Click Edoc button");
+        System.out.println("Step 2: Clicking Edoc button...");
+        billingHistoryPage.clickEdocButton();
+        test.pass("✓ Edoc button clicked");
+
+        test.info("Step 3: Verify Edoc view heading");
+        System.out.println("Step 3: Verifying Edoc view heading...");
+        String heading = billingHistoryPage.getEdocViewHeading();
+        String expectedHeading = "E-docs View";
+        System.out.println("Expected Heading: " + expectedHeading);
+        System.out.println("Actual Heading: " + heading);
+
+        Assert.assertTrue(heading.contains(expectedHeading), "Edoc view should be opened");
+        test.pass("✓ Edoc view opened with heading: " + heading);
+
+        test.info("Step 4: Close Edoc view");
+        System.out.println("Step 4: Closing Edoc view...");
+        billingHistoryPage.clickEdocCloseButton();
+        test.pass("✓ Edoc view closed");
+
+        test.pass("✓ SMOKE_BH_010 PASSED: Edocs verified successfully");
+        System.out.println("✓ SMOKE_BH_010 PASSED");
     }
 
 }

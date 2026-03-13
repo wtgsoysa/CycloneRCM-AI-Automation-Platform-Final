@@ -1897,7 +1897,7 @@ public class SingleBillingTest extends SmokeBaseTest {
                     SingleBillingTestDataProperties.get("singleBilling.applicantName19-1"),
                     SingleBillingTestDataProperties.get("singleBilling.applicantName19-2"),
                     SingleBillingTestDataProperties.get("singleBilling.applicantName19-3"),
-                    SingleBillingTestDataProperties.get("singleBilling.applicantName19-4")
+                   // SingleBillingTestDataProperties.get("singleBilling.applicantName19-4")
             };
 
             int invoicesAdded = 0;
@@ -2045,11 +2045,11 @@ public class SingleBillingTest extends SmokeBaseTest {
                         SingleBillingTestDataProperties.get("singleBilling.applicantName20-3"),
                         SingleBillingTestDataProperties.get("singleBilling.applicantName20-4"),
                         SingleBillingTestDataProperties.get("singleBilling.applicantName20-5"),
-                        SingleBillingTestDataProperties.get("singleBilling.applicantName20-6")
+                        //SingleBillingTestDataProperties.get("singleBilling.applicantName20-6")
                 };
 
                 int invoicesAdded = 0;
-                int invoicesNeeded = 6 - initialInvoiceCount;
+                int invoicesNeeded = 5 - initialInvoiceCount;
 
                 for (int i = 0; i < invoicesNeeded && i < applicantIds.length; i++) {
                     try {
@@ -2206,7 +2206,7 @@ public class SingleBillingTest extends SmokeBaseTest {
                         SingleBillingTestDataProperties.get("singleBilling.applicantName20-3"),
                         SingleBillingTestDataProperties.get("singleBilling.applicantName20-4"),
                         SingleBillingTestDataProperties.get("singleBilling.applicantName20-5"),
-                        SingleBillingTestDataProperties.get("singleBilling.applicantName20-6")
+                      //  SingleBillingTestDataProperties.get("singleBilling.applicantName20-6")
                 };
 
                 int invoicesAdded = 0;

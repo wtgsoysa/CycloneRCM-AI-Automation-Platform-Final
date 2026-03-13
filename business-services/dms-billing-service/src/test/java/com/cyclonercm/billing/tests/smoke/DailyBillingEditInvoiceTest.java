@@ -3,15 +3,9 @@ package com.cyclonercm.billing.tests.smoke;
 import com.cyclonercm.billing.base.SmokeBaseTest;
 import com.cyclonercm.pages.*;
 import com.cyclonercm.utils.*;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.time.Duration;
 
 public class DailyBillingEditInvoiceTest extends SmokeBaseTest {
 
@@ -40,10 +34,10 @@ public class DailyBillingEditInvoiceTest extends SmokeBaseTest {
         WaitUtils.sleep(3000);
 
         String actualSystemLabelText = loginPage.getSystemLabelText();
-        String expectedSystemLabelText = HistorySmokeTestDataProperties.get("systemLabel");
+        String expectedSystemLabelText = HistoryBillingTestDataProperties.get("systemLabel");
 
         String actualSystemVersionText = loginPage.getVersionText();
-        String expectedSystemVersionText = HistorySmokeTestDataProperties.get("buildNumber");
+        String expectedSystemVersionText = HistoryBillingTestDataProperties.get("buildNumber");
 
         System.out.println("Expected System Label: " + expectedSystemLabelText);
         System.out.println("Actual System Label: " + actualSystemLabelText);
@@ -72,8 +66,8 @@ public class DailyBillingEditInvoiceTest extends SmokeBaseTest {
             throw e;
         }
 
-        loginPage.enterUsername(HistorySmokeTestDataProperties.get("validUserId"));
-        loginPage.enterPassword(HistorySmokeTestDataProperties.get("validPassword"));
+        loginPage.enterUsername(HistoryBillingTestDataProperties.get("validUserId"));
+        loginPage.enterPassword(HistoryBillingTestDataProperties.get("validPassword"));
         loginPage.clickSignInButton();
 
         WaitUtils.sleep(2500);

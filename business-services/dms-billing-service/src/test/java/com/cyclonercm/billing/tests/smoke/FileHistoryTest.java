@@ -5,7 +5,7 @@ import com.cyclonercm.pages.FileUploadPage;
 import com.cyclonercm.pages.FileHistoryPage;
 import com.cyclonercm.billing.base.SmokeBaseTest;
 import com.cyclonercm.utils.LocatorConstants;
-import com.cyclonercm.utils.HistorySmokeTestDataProperties;
+import com.cyclonercm.utils.HistoryBillingTestDataProperties;
 import com.cyclonercm.utils.WaitUtils;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -28,10 +28,10 @@ public class FileHistoryTest extends SmokeBaseTest {
         WaitUtils.sleep(2000); // Give extra time for page stability
 
         String actualSystemLabelText = loginPage.getSystemLabelText();
-        String expectedSystemLabelText = HistorySmokeTestDataProperties.get("systemLabel");
+        String expectedSystemLabelText = HistoryBillingTestDataProperties.get("systemLabel");
 
         String actualSystemVersionText = loginPage.getVersionText();
-        String expectedSystemVersionText = HistorySmokeTestDataProperties.get("buildNumber");
+        String expectedSystemVersionText = HistoryBillingTestDataProperties.get("buildNumber");
 
         try {
             Assert.assertEquals(actualSystemLabelText, expectedSystemLabelText, "System label text does not match.");
@@ -49,8 +49,8 @@ public class FileHistoryTest extends SmokeBaseTest {
             throw e;
         }
 
-        loginPage.enterUsername(HistorySmokeTestDataProperties.get("validUserId"));
-        loginPage.enterPassword(HistorySmokeTestDataProperties.get("validPassword"));
+        loginPage.enterUsername(HistoryBillingTestDataProperties.get("validUserId"));
+        loginPage.enterPassword(HistoryBillingTestDataProperties.get("validPassword"));
         loginPage.clickSignInButton();
 
         WaitUtils.waitForVisibility(driver, LocatorConstants.getStartedButton, 30);
@@ -946,7 +946,7 @@ public class FileHistoryTest extends SmokeBaseTest {
             Assert.assertTrue(historyPage.isSearchByFileNameFieldDisplayed(), "Search by file name field should be displayed");
             test.pass("Search by file name field is displayed");
 
-            String searchFileName = HistorySmokeTestDataProperties.get("searchFileName");
+            String searchFileName = HistoryBillingTestDataProperties.get("searchFileName");
             Assert.assertNotNull(searchFileName, "searchFileName property must be configured in historysmoketestdata.properties");
             Assert.assertFalse(searchFileName.trim().isEmpty(), "searchFileName property cannot be empty");
 

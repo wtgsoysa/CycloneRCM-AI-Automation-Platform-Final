@@ -9,7 +9,7 @@ public class EditInvoiceTestDataProperties {
     private static final Properties props = new Properties();
 
     static {
-        try (InputStream input = HistorySmokeTestDataProperties.class.getClassLoader()
+        try (InputStream input = HistoryBillingTestDataProperties.class.getClassLoader()
                 .getResourceAsStream("editinvoicesmoketestdata.properties")) {
             if (input != null) {
                 props.load(input);
