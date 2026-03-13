@@ -3,7 +3,26 @@
 
     <test name="Billing Authentication Smoke Tests">
         <classes>
+
             <class name="com.cyclonercm.billing.tests.smoke.AuthenticationTest"/>
+
+            <class name="com.cyclonercm.billing.tests.smoke.FileuploadTest"/>
+
+            <class name="com.cyclonercm.billing.tests.smoke.FileHistoryTest"/>
+
+            <class name="com.cyclonercm.billing.tests.smoke.HistoryEditInvoiceTest"/>
+
+            <class name="com.cyclonercm.billing.tests.smoke.DailyBillingTest"/>
+
+            <class name="com.cyclonercm.billing.tests.smoke.DailyBillingEditInvoiceTest"/>
+
+            <class name="com.cyclonercm.billing.tests.smoke.SingleBillingTest"/>
+
+            <class name="com.cyclonercm.billing.tests.smoke.SingleBillingEditInvoiceTest"/>
+
+            <class name="com.cyclonercm.billing.tests.smoke.HistoryBillingTest"/>
+
+
         </classes>
     </test>
 
