@@ -7,10 +7,10 @@ import java.util.Properties;
 /**
  * Utility class to read Billing Smoke Test Data Properties
  */
-public class HistoryBillingTestDataProperties {
+public class HistoryTestDataProperties {
 
     private static Properties properties = new Properties();
-    private static final String PROPERTIES_FILE = "src/test/resources/historybillingsmoketestdata.properties";
+    private static final String PROPERTIES_FILE = "src/test/resources/historysmoketestdata.properties";
 
     static {
         try (FileInputStream fis = new FileInputStream(PROPERTIES_FILE)) {
