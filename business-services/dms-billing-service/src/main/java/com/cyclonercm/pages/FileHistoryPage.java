@@ -57,7 +57,7 @@ public class FileHistoryPage {
     private final By firstPageButton = By.xpath("//p-paginator[@styleclass='p-paginator-top']//button[contains(@class,'p-paginator-first')]");
     private final By previousPageButton = By.xpath("//p-paginator[@styleclass='p-paginator-top')]//button[contains(@class,'p-paginator-prev')]");
     private final By currentPageNumber = By.xpath("//p-paginator[@styleclass='p-paginator-top']//button[contains(@class,'p-paginator-page') and contains(@class,'p-highlight')]");
-    private final By nextPageButton = By.xpath("//p-paginator[@styleclass='p-paginator-top']//button[contains(@class,'p-paginator-next')]");
+    private final By nextPageButton = By.xpath("/html/body/ng-component/div/div/div[2]/file-history-app/div/div[2]/cyclone-invoice-history-list/div/div/div/div/div[3]/div/form/p-table/div/p-paginator/div/button[3]");
     private final By lastPageButton = By.xpath("//p-paginator[@styleclass='p-paginator-top']//button[contains(@class,'p-paginator-last')]");
 
     private final By jsonButton = By.xpath("/html/body/ng-component/div/div/div[2]/file-history-app/div/div[1]/cyclone-list-file-history/div/div/div/div/div[2]/div/div/form/p-table/div/div/table/tbody/tr[1]/td/span[2]/div/div[3]/button[1]");
@@ -837,6 +837,175 @@ public class FileHistoryPage {
         return driver.findElements(invoiceCheckbox);
     }
 
+    /**
+     * Click a file row by zero-based index in the Received Files panel.
+     */
+    public void clickFileByIndex(int index) {
+        List<WebElement> files = driver.findElements(fileCard);
+        if (index >= files.size()) {
+            throw new IndexOutOfBoundsException("File index " + index + " out of bounds (total files: " + files.size() + ")");
+        }
+        files.get(index).click();
+    }
+
+    /**
+     * Get all invoice rows from the Invoice List panel using the
+     * absolute container XPath provided in the test spec.
+     * Falls back to getRightPanelRows() if nothing is found.
+     */
+    public List<WebElement> getInvoiceListRows() {
+        // Primary: exact tbody rows inside the invoice list panel
+        By primary = By.xpath(
+            "/html/body/ng-component/div/div/div[2]/file-history-app/div/div[2]" +
+            "/cyclone-invoice-history-list/div/div/div/div/div[3]" +
+            "/div/form/p-table/div/div/table/tbody/tr");
+        List<WebElement> rows = driver.findElements(primary);
+        if (!rows.isEmpty()) {
+            System.out.println("✓ getInvoiceListRows: found " + rows.size() + " row(s) via primary XPath");
+            return rows;
+        }
+        // Fallback
+        System.out.println("⚠ getInvoiceListRows: primary XPath returned 0, falling back to getRightPanelRows()");
+        return getRightPanelRows();
+    }
+
+    /**
+     * Get the status badge text of an invoice row (1-based index) from the
+     * Invoice List panel using the absolute XPath supplied in the test spec.
+     *
+     * @param rowIndex 1-based row index
+     */
+    public String getInvoiceStatusByIndex(int rowIndex) {
+        try {
+            // Primary: absolute XPath with dynamic row index
+            By statusLocator = By.xpath(
+                "/html/body/ng-component/div/div/div[2]/file-history-app/div/div[2]" +
+                "/cyclone-invoice-history-list/div/div/div/div/div[3]" +
+                "/div/form/p-table/div/div/table/tbody/tr[" + rowIndex + "]/td/span[2]/div[1]/div[7]/div[1]/p-badge/span");
+            List<WebElement> badges = driver.findElements(statusLocator);
+            if (!badges.isEmpty()) {
+                String status = badges.get(0).getText().trim();
+                System.out.println("✓ Invoice row[" + rowIndex + "] status (primary XPath): '" + status + "'");
+                return status;
+            }
+
+            // Fallback: use getInvoiceRowStatus on the nth row from getInvoiceListRows()
+            List<WebElement> rows = getInvoiceListRows();
+            if (rowIndex <= rows.size()) {
+                String status = getInvoiceRowStatus(rows.get(rowIndex - 1));
+                System.out.println("✓ Invoice row[" + rowIndex + "] status (fallback): '" + status + "'");
+                return status;
+            }
+        } catch (Exception e) {
+            System.out.println("✗ getInvoiceStatusByIndex(" + rowIndex + "): " + e.getMessage());
+        }
+        return "";
+    }
+
+    /**
+     * Click the Delete icon of an invoice row (1-based index) in the Invoice List panel.
+     *
+     * @param rowIndex 1-based row index
+     */
+    public void clickDeleteIconByIndex(int rowIndex) {
+        try {
+            // Primary: locate delete button inside the specific row's action section
+            By deleteBtn = By.xpath(
+                "/html/body/ng-component/div/div/div[2]/file-history-app/div/div[2]" +
+                "/cyclone-invoice-history-list/div/div/div/div/div[3]" +
+                "/div/form/p-table/div/div/table/tbody/tr[" + rowIndex + "]/td/span[2]" +
+                "//button[@ptooltip='Delete Invoice' or @icon='pi pi-trash']");
+            List<WebElement> btns = driver.findElements(deleteBtn);
+            if (!btns.isEmpty()) {
+                System.out.println("✓ Clicking Delete icon on invoice row[" + rowIndex + "] via primary XPath");
+                btns.get(0).click();
+                return;
+            }
+
+            // Fallback: use the nth element from the global invoiceDeleteIcon list
+            List<WebElement> allDeleteIcons = driver.findElements(invoiceDeleteIcon);
+            if (rowIndex <= allDeleteIcons.size()) {
+                System.out.println("✓ Clicking Delete icon on invoice row[" + rowIndex + "] via fallback list index");
+                allDeleteIcons.get(rowIndex - 1).click();
+                return;
+            }
+            throw new RuntimeException("No Delete icon found for row index " + rowIndex);
+        } catch (RuntimeException re) {
+            throw re;
+        } catch (Exception e) {
+            throw new RuntimeException("clickDeleteIconByIndex(" + rowIndex + ") failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Return the total number of invoice rows currently visible in the Invoice List panel.
+     */
+    public int getInvoiceRowCountInPanel() {
+        return getInvoiceListRows().size();
+    }
+
+    /**
+     * Wait until the Deleted Count for a specific left-panel file row (1-based)
+     * increases above {@code oldCount}, polling every 500 ms up to {@code maxWaitSeconds}.
+     *
+     * @param fileRowIndex    1-based row index in left panel
+     * @param oldCount        the Deleted Count value that existed BEFORE the deletion
+     * @param maxWaitSeconds  maximum seconds to poll
+     * @return the new Deleted Count once it changes, or oldCount if timeout is reached
+     */
+    public int waitForDeletedCountToIncrease(int fileRowIndex, int oldCount, int maxWaitSeconds) {
+        System.out.println("⏳ Waiting for Deleted Count to increase above " + oldCount +
+                           " for file row[" + fileRowIndex + "] (max " + maxWaitSeconds + "s)...");
+        long deadline = System.currentTimeMillis() + (maxWaitSeconds * 1000L);
+        while (System.currentTimeMillis() < deadline) {
+            int current = getDeletedCountByFileIndex(fileRowIndex);
+            System.out.println("   → Deleted Count now: " + current);
+            if (current > oldCount) {
+                System.out.println("✓ Deleted Count increased to " + current);
+                return current;
+            }
+            try { Thread.sleep(500); } catch (InterruptedException e) { Thread.currentThread().interrupt(); break; }
+        }
+        System.out.println("✗ Deleted Count did not increase within " + maxWaitSeconds + "s");
+        return getDeletedCountByFileIndex(fileRowIndex);
+    }
+
+    /**
+     * Get the Deleted Count displayed on a specific file row (1-based) in the
+     * Received Files (left) panel.
+     * XPath pattern from spec:
+     *   …/tbody/tr[N]/td/span[2]/div/div[7]/div[5]
+     *
+     * @param fileRowIndex 1-based row index in the left-panel file table
+     * @return parsed integer deleted count, or -1 if not readable
+     */
+    public int getDeletedCountByFileIndex(int fileRowIndex) {
+        try {
+            // Primary: absolute XPath with dynamic row index
+            By locator = By.xpath(
+                "/html/body/ng-component/div/div/div[2]/file-history-app/div/div[1]" +
+                "/cyclone-list-file-history/div/div/div/div/div[2]/div/div/form" +
+                "/p-table/div/div/table/tbody/tr[" + fileRowIndex + "]/td/span[2]/div/div[7]/div[5]");
+            List<WebElement> elements = driver.findElements(locator);
+            if (!elements.isEmpty()) {
+                String raw = elements.get(0).getText().trim();
+                System.out.println("✓ getDeletedCountByFileIndex[" + fileRowIndex + "] raw text: '" + raw + "'");
+                // Extract numeric value – text may be "Deleted: 2" or just "2"
+                String numeric = raw.replaceAll("[^0-9]", "");
+                return numeric.isEmpty() ? 0 : Integer.parseInt(numeric);
+            }
+
+            // Fallback: use getFileRowDeletedCount via left panel rows list
+            List<WebElement> leftRows = getLeftPanelRows();
+            if (fileRowIndex <= leftRows.size()) {
+                return getFileRowDeletedCount(leftRows.get(fileRowIndex - 1));
+            }
+        } catch (Exception e) {
+            System.out.println("✗ getDeletedCountByFileIndex(" + fileRowIndex + "): " + e.getMessage());
+        }
+        return -1;
+    }
+
     // ============ FILTER & SEARCH VALIDATION METHODS ============
 
     /**
@@ -1034,6 +1203,24 @@ public class FileHistoryPage {
             String text = row.findElement(failCountLocator).getText().trim();
             return Integer.parseInt(text.replaceAll("[^0-9]", ""));
         } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Get Deleted Count from a file row (left panel)
+     * XPath: .//td/span[2]/div/div[7]/div[5]
+     * Matches the absolute path: …/tbody/tr[N]/td/span[2]/div/div[7]/div[5]
+     */
+    public int getFileRowDeletedCount(WebElement row) {
+        try {
+            By deletedCountLocator = By.xpath(".//td/span[2]/div/div[7]/div[5]");
+            String text = row.findElement(deletedCountLocator).getText().trim();
+            System.out.println("✓ getFileRowDeletedCount raw text: '" + text + "'");
+            String numeric = text.replaceAll("[^0-9]", "");
+            return numeric.isEmpty() ? 0 : Integer.parseInt(numeric);
+        } catch (Exception e) {
+            System.out.println("✗ getFileRowDeletedCount failed: " + e.getMessage());
             return 0;
         }
     }
@@ -1661,7 +1848,20 @@ public class FileHistoryPage {
             System.out.println("  Applicant: '" + applicant + "'");
             System.out.println("  Amount: '" + amount + "'");
 
-            // Validate required fields
+            // Check Status - used to determine which fields are mandatory
+            String status = getInvoiceRowStatus(firstInvoice);
+            if (status.isEmpty()) {
+                System.out.println("⚠ WARNING: Invoice Status badge not found (optional)");
+            } else {
+                System.out.println("✓ Invoice Status badge found: " + status);
+            }
+
+            // Determine if this invoice is in a "fully processed" success state
+            // Only Success and Success/Manually Corrected invoices must have all fields populated
+            boolean isSuccessStatus = status.equalsIgnoreCase("Success")
+                    || status.equalsIgnoreCase("Success/Manually Corrected");
+
+            // Validate required fields - Invoice # and Date are always mandatory
             if (invoiceNumber.isEmpty()) {
                 System.out.println("✗ Invoice Number is empty");
                 return false;
@@ -1672,26 +1872,30 @@ public class FileHistoryPage {
                 return false;
             }
 
-            if (applicant.isEmpty()) {
-                System.out.println("✗ Applicant is empty");
-                return false;
-            }
-
-            if (amount.isEmpty()) {
-                System.out.println("✗ Amount is empty");
-                return false;
-            }
-
-            // Check Status (optional - some invoices may not have visible status badges)
-            String status = getInvoiceRowStatus(firstInvoice);
-            if (status.isEmpty()) {
-                System.out.println("⚠ WARNING: Invoice Status badge is optional");
+            // Applicant and Amount are mandatory ONLY for Success / Success/Manually Corrected invoices.
+            // For other statuses (Deleted, Fail, Duplicate, Processing, Fail/Manually Corrected, etc.)
+            // these fields may legitimately be absent.
+            if (isSuccessStatus) {
+                if (applicant.isEmpty()) {
+                    System.out.println("✗ Applicant is empty for a Success status invoice");
+                    return false;
+                }
+                if (amount.isEmpty()) {
+                    System.out.println("✗ Amount is empty for a Success status invoice");
+                    return false;
+                }
             } else {
-                System.out.println("✓ Invoice Status badge found: " + status);
+                if (applicant.isEmpty()) {
+                    System.out.println("⚠ Applicant is empty - acceptable for status: '" + status + "'");
+                }
+                if (amount.isEmpty()) {
+                    System.out.println("⚠ Amount is empty - acceptable for status: '" + status + "'");
+                }
             }
 
             System.out.println("✓ First invoice data validated - #: " + invoiceNumber + ", Date: " + invoiceDate +
-                             ", Applicant: " + applicant + ", Amount: " + amount);
+                             ", Applicant: " + (applicant.isEmpty() ? "(empty – status: " + status + ")" : applicant) +
+                             ", Amount: " + (amount.isEmpty() ? "(empty – status: " + status + ")" : amount));
             return true;
         } catch (Exception e) {
             System.out.println("Error validating first invoice data: " + e.getMessage());
