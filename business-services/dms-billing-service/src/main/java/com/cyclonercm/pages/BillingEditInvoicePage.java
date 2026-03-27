@@ -25,7 +25,7 @@ public class BillingEditInvoicePage {
 
     // Main Edit Invoice Screen
     private By editInvoiceLabel = By.xpath("/html/body/div[2]/div/div[2]/div/div[1]/p-toolbar/div/div[1]/span");
-    private By editFormEditButton = By.xpath("//button[@icon='pi pi-pencil']");
+    private By editFormEditButton = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[1]/p-toolbar/div/div[2]/button[6]");
     private By editFormSaveButton = By.xpath("//span[@class='p-button-icon pi pi-save']");
     private By mainFormSaveButton = By.xpath("/html/body/div[3]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[1]/p-toolbar/div/div[2]/button[4]");
 
@@ -45,13 +45,13 @@ public class BillingEditInvoicePage {
 
     // Claim Administrator Popup
     private By claimAdminLink = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[2]/div[1]/div[2]/div[1]/span[1]/u");
-    private By claimAdminPopupLabel = By.xpath("//span[normalize-space()='Claim Administrator']");
+    private By claimAdminPopupLabel = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/div/p-toolbar/div/div[1]/span");
     private By claimAdminEditButton = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/div/p-toolbar/div/div[2]/button[3]");
     private By claimAdminNameField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[2]/div/div/div/div/input");
-    private By claimAdminZipField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[5]/div/div[1]/div/div/div/span/input");
+    private By claimAdminZipField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[5]/div/div[1]/div/div/div");
     private By claimAdminZipDropdown = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[2]/div/cyclone-search-zip");
     private By zipsLabel = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[2]/div/cyclone-search-zip/div/div/div/div[1]/p-toolbar/div/div[1]/span");
-    private By zipList = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[2]/div/cyclone-search-zip/div/div/div/div[2]/form/p-table/div/div/table/tbody");
+    private By zipList = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[2]/div/cyclone-search-zip/div/div/div/div[2]/form/p-table/div/div");
     private By zipAddress = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[2]/div/cyclone-search-zip/div/div/div/div[2]/form/p-table/div/div/table/tbody/tr[1]");
     private By claimAdminSaveButton = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/div/p-toolbar/div/div[2]/button[2]");
 
@@ -66,7 +66,7 @@ public class BillingEditInvoicePage {
 
     // Case Popup
     private By caseLink = By.xpath("//client-billing-form//div[contains(text(),'CASE#')]/../following-sibling::div//span | /html/body/div[3]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[1]/span | /html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[1]/span");
-    private By casePopupLabel = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/div/p-toolbar/div/div[1]/span");
+    private By casePopupLabel = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/div/p-toolbar/div");
     private By caseEditButton = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/div/p-toolbar/div/div[2]/button[3]");
     private By caseDosField = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/form/div/div/div/div[1]/div/div/div/div[2]/div/div/div/div/div");
     private By caseFileNoField = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/form/div/div/div/div[1]/div/div/div/div[3]/div/div/div/div/input");
@@ -604,6 +604,7 @@ public class BillingEditInvoicePage {
             WaitUtils.waitForVisibility(driver, employerAddressField, 10);
             WebElement addressField = driver.findElement(employerAddressField);
             addressField.clear();
+            WaitUtils.sleep(500);
             addressField.sendKeys(address);
             WaitUtils.sleep(1000);
             System.out.println("✓ Employer address edited: " + address);

@@ -180,7 +180,7 @@ public class HistoryBillingTest extends SmokeBaseTest {
         test.info("SMOKE_BH_002: Verify user can filter Billing History by Invoice Number");
         System.out.println("\n🧪 SMOKE_BH_002: Verify user can filter Billing History by Invoice Number");
 
-        String invoiceNumber = HistoryBillingTestDataProperties.get("invoiceNumber");
+        String invoiceNumber = HistoryBillingTestDataProperties.get("invoiceNumberB");
 
         test.info("Step 1: Enter invoice number in search field");
         System.out.println("Step 1: Entering invoice number: " + invoiceNumber);

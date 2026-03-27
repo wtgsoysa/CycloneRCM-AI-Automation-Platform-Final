@@ -15,20 +15,20 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
     private FileHistoryPage historyPage;
     private EditInvoicePage editInvoicePage;
     private DailyBillingPage dailyBillingPage;
-    private BillingEditInvoicePage dailyEditInvoicePage;
+    private BillingEditInvoicePage2 dailyEditInvoicePage;
     private SingleBillingPage singleBillingPage;
 
     @BeforeMethod
     public void setUp() {
-      ((JavascriptExecutor) driver).executeScript("document.body.style.zoom='80%'");
-      WaitUtils.sleep(1000);
+      //((JavascriptExecutor) driver).executeScript("document.body.style.zoom='80%'");
+     //WaitUtils.sleep(1000);
 
         loginPage = new AuthenticationPage(driver);
         uploadPage = new FileUploadPage(driver);
         historyPage = new FileHistoryPage(driver);
         editInvoicePage = new EditInvoicePage(driver);
         dailyBillingPage = new DailyBillingPage(driver);
-        dailyEditInvoicePage = new BillingEditInvoicePage(driver);
+        dailyEditInvoicePage = new BillingEditInvoicePage2(driver);
         singleBillingPage = new SingleBillingPage(driver);
 
         WaitUtils.waitForVisibility(driver, LocatorConstants.LOGIN_LOGO, 60);
@@ -124,8 +124,8 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
         System.out.println("========================================\n");
     }
 
-    @Test(priority = 1, description = "SMOKE_DEI_001 - Verify Edit Invoice screen opens when click the invoice number in Daily Billing")
-    public void SMOKE_DEI_001() {
+    @Test(priority = 1, description = "SMOKE_SEI_001 - Verify Edit Invoice screen opens when click the invoice number in Daily Billing")
+    public void SMOKE_SEI_001() {
         test.info("📋 Starting SMOKE_DEI_001 - Verify Edit Invoice Screen Opens");
         System.out.println("\n========================================");
         System.out.println("🧪 SMOKE_DEI_001: Verify Edit Invoice Screen Opens");
@@ -176,8 +176,8 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
         System.out.println("✅ SMOKE_DEI_001 TEST PASSED");
     }
 
-    @Test(priority = 2, description = "SMOKE_DEI_002 - Verify the Mandatory fields are present (Claim Administrator, Employer, CASE#, APPLICANT, CLAIM#, Services, DOS, Invoice#, Invoice Date)")
-    public void SMOKE_DEI_002() {
+    @Test(priority = 2, description = "SMOKE_SEI_002 - Verify the Mandatory fields are present (Claim Administrator, Employer, CASE#, APPLICANT, CLAIM#, Services, DOS, Invoice#, Invoice Date)")
+    public void SMOKE_SEI_002() {
         test.info("📋 Starting SMOKE_DEI_002 - Verify Mandatory Fields Present");
         System.out.println("\n========================================");
         System.out.println("🧪 SMOKE_DEI_002: Verify Mandatory Fields Present");
@@ -293,8 +293,8 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
         System.out.println("✅ SMOKE_DEI_002 TEST PASSED");
     }
 
-    @Test(priority = 3, description = "SMOKE_DEI_003 - Verify the edit and save Claim Administrator successfully")
-    public void SMOKE_DEI_003() {
+    @Test(priority = 3, description = "SMOKE_SEI_003 - Verify the edit and save Claim Administrator successfully")
+    public void SMOKE_SEI_003() {
         test.info("📋 Starting SMOKE_DEI_003 - Edit and Save Claim Administrator");
         System.out.println("\n========================================");
         System.out.println("🧪 SMOKE_DEI_003: Edit and Save Claim Administrator");

@@ -17,7 +17,7 @@ import java.util.List;
      * Page Object Model for Daily Billing Edit Invoice functionality
      * Supports SMOKE_DEI_001 through SMOKE_DEI_012 test cases
      */
-public class EditInvoicePage {
+public class EditInvoicePage2 {
 
     private WebDriver driver;
 
@@ -37,7 +37,7 @@ public class EditInvoicePage {
     private By applicantField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[2]");
     private By claimField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[3]");
     private By InterpreterField = By.xpath("//span[contains(text(),'Interpreter') or contains(text(),'INTERPRETER')]/u/b | //label[contains(text(),'Interpreter')]/following-sibling::*//b | //b[contains(text(),'Interpreter')]");
-    private By InterpreterInvoiceField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[3]/div/div/div[1]");
+    private By InterpreterInvoiceField = By.xpath("//span[contains(text(),'Interpreter')]/ancestor::div[contains(@class,'col') or contains(@class,'p-col')]/following-sibling::div[1] | /html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[3]/div/div/div[2]");
     private By dosField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[2]/div[2]/div/div[4]/div[2]/div/input");
     private By qtyField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[5]/p-table/div/div/table/tbody/tr/td[3]");
     private By invoiceNumberField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[2]/div[2]/div/div[2]/div[2]/input");
@@ -218,7 +218,7 @@ public class EditInvoicePage {
 
     // ========== CONSTRUCTOR ==========
 
-    public EditInvoicePage(WebDriver driver) {
+    public EditInvoicePage2(WebDriver driver) {
         this.driver = driver;
     }
 
@@ -731,7 +731,7 @@ public class EditInvoicePage {
                 fieldClicked = true;
             } catch (Exception e) {
                 System.out.println("⚠ Regular click failed, trying JavaScript click...");
-                ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", zipField);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", zipField);
                 fieldClicked = true;
             }
 
@@ -770,7 +770,7 @@ public class EditInvoicePage {
                     By genericZipRow = By.xpath("//cyclone-search-zip//p-table//tbody/tr[1]");
                     WaitUtils.waitForVisibility(driver, genericZipRow, 5);
                     WebElement firstZipGeneric = driver.findElement(genericZipRow);
-                    ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", firstZipGeneric);
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", firstZipGeneric);
                     zipSelected = true;
                     System.out.println("✓ Random ZIP selected using generic locator");
                 } catch (Exception ex) {

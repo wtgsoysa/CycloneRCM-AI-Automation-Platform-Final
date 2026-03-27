@@ -17,7 +17,7 @@ import java.util.List;
      * Page Object Model for Daily Billing Edit Invoice functionality
      * Supports SMOKE_DEI_001 through SMOKE_DEI_012 test cases
      */
-public class EditInvoicePage {
+public class BillingEditInvoicePage2 {
 
     private WebDriver driver;
 
@@ -25,10 +25,9 @@ public class EditInvoicePage {
 
     // Main Edit Invoice Screen
     private By editInvoiceLabel = By.xpath("/html/body/div[2]/div/div[2]/div/div[1]/p-toolbar/div/div[1]/span");
-    private By editFormEditButton = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[1]/p-toolbar/div/div[2]/button[5]");
-    private By editFormSaveButton = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[1]/p-toolbar/div/div[2]/button[4]");
+    private By editFormEditButton = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[1]/p-toolbar/div/div[2]/button[6]");
+    private By editFormSaveButton = By.xpath("//span[@class='p-button-icon pi pi-save']");
     private By mainFormSaveButton = By.xpath("/html/body/div[3]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[1]/p-toolbar/div/div[2]/button[4]");
-
 
     // Mandatory Fields
     private By claimAdminField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[2]/div[1]/div[2]/div[1]");
@@ -37,7 +36,7 @@ public class EditInvoicePage {
     private By applicantField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[2]");
     private By claimField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[3]");
     private By InterpreterField = By.xpath("//span[contains(text(),'Interpreter') or contains(text(),'INTERPRETER')]/u/b | //label[contains(text(),'Interpreter')]/following-sibling::*//b | //b[contains(text(),'Interpreter')]");
-    private By InterpreterInvoiceField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[3]/div/div/div[1]");
+    private By InterpreterInvoiceField = By.xpath("//span[contains(text(),'Interpreter')]/ancestor::div[contains(@class,'col') or contains(@class,'p-col')]/following-sibling::div[1] | /html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[3]/div/div/div[2]");
     private By dosField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[2]/div[2]/div/div[4]/div[2]/div/input");
     private By qtyField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[5]/p-table/div/div/table/tbody/tr/td[3]");
     private By invoiceNumberField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[2]/div[2]/div/div[2]/div[2]/input");
@@ -46,13 +45,13 @@ public class EditInvoicePage {
 
     // Claim Administrator Popup
     private By claimAdminLink = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[2]/div[1]/div[2]/div[1]/span[1]/u");
-    private By claimAdminPopupLabel = By.xpath("//span[normalize-space()='Claim Administrator']");
+    private By claimAdminPopupLabel = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/div/p-toolbar/div/div[1]/span");
     private By claimAdminEditButton = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/div/p-toolbar/div/div[2]/button[3]");
     private By claimAdminNameField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[2]/div/div/div/div/input");
-    private By claimAdminZipField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[5]/div/div[1]/div/div/div/span/input");
+    private By claimAdminZipField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[1]/div/div/div/div[5]/div/div[1]/div/div/div");
     private By claimAdminZipDropdown = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[2]/div/cyclone-search-zip");
     private By zipsLabel = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[2]/div/cyclone-search-zip/div/div/div/div[1]/p-toolbar/div/div[1]/span");
-    private By zipList = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[2]/div/cyclone-search-zip/div/div/div/div[2]/form/p-table/div/div/table/tbody");
+    private By zipList = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[2]/div/cyclone-search-zip/div/div/div/div[2]/form/p-table/div/div");
     private By zipAddress = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/form/div/div/div/div[2]/div/cyclone-search-zip/div/div/div/div[2]/form/p-table/div/div/table/tbody/tr[1]");
     private By claimAdminSaveButton = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-claim-admin/div/div/p-toolbar/div/div[2]/button[2]");
 
@@ -67,65 +66,19 @@ public class EditInvoicePage {
 
     // Case Popup
     private By caseLink = By.xpath("//client-billing-form//div[contains(text(),'CASE#')]/../following-sibling::div//span | /html/body/div[3]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[1]/span | /html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[1]/span");
-    private By casePopupLabel = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/div/p-toolbar/div/div[1]/span");
+    private By casePopupLabel = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/div/p-toolbar/div");
     private By caseEditButton = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/div/p-toolbar/div/div[2]/button[3]");
     private By caseDosField = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/form/div/div/div/div[1]/div/div/div/div[2]/div/div/div/div/div");
     private By caseFileNoField = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/form/div/div/div/div[1]/div/div/div/div[3]/div/div/div/div/input");
     private By caseSaveButton = By.xpath("/html/body/div[3]/div/div[2]/aeliusmd-edit-case/div/div/p-toolbar/div/div[2]/button[2]");
 
     // Applicant Popup
-    // applicantLink: div[2] = File History context, div[3] = Daily/Single Billing context
-    // Also includes a semantic fallback via client-billing-form structure
-    private By applicantLink = By.xpath(
-        // File History edit – form at div[2]
-        "/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[2]/span/u" +
-        " | " +
-        // File History edit – span wrapper (no <u>)
-        "/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[2]/span" +
-        " | " +
-        // Daily / Single Billing edit – form at div[3]
-        "/html/body/div[3]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[2]/span/u" +
-        " | " +
-        // Semantic fallback – any context
-        "//client-billing-form//div[contains(@class,'p-col') or contains(@class,'col')]//div[4]/div[2]/span/u | //client-billing-form//div[4]/div[2]//span[.//u]"
-    );
-
-    // Popup locators covering div[3], div[4], div[5] overlay layers
-    private By applicantPopupLabel = By.xpath(
-        "/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[1]/span" +
-        " | " +
-        "/html/body/div[4]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[1]/span" +
-        " | " +
-        "/html/body/div[5]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[1]/span"
-    );
-    private By applicantEditButton = By.xpath(
-        "/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[3]/button[3]" +
-        " | " +
-        "/html/body/div[4]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[3]/button[3]" +
-        " | " +
-        "/html/body/div[5]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[3]/button[3]"
-    );
-    private By applicantLastNameField = By.xpath(
-        "/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/form/div/div/div/div[1]/p-tabview/div/div[2]/p-tabpanel/div/div/div/div/div[3]/div/div/div/div/input" +
-        " | " +
-        "/html/body/div[4]/div/div[2]/cyclone-edit-patient/div/form/div/div/div/div[1]/p-tabview/div/div[2]/p-tabpanel/div/div/div/div/div[3]/div/div/div/div/input" +
-        " | " +
-        "/html/body/div[5]/div/div[2]/cyclone-edit-patient/div/form/div/div/div/div[1]/p-tabview/div/div[2]/p-tabpanel/div/div/div/div/div[3]/div/div/div/div/input"
-    );
-    private By applicantFirstNameField = By.xpath(
-        "/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/form/div/div/div/div[1]/p-tabview/div/div[2]/p-tabpanel/div/div/div/div/div[4]/div/div[1]/div/div/input" +
-        " | " +
-        "/html/body/div[4]/div/div[2]/cyclone-edit-patient/div/form/div/div/div/div[1]/p-tabview/div/div[2]/p-tabpanel/div/div/div/div/div[4]/div/div[1]/div/div/input" +
-        " | " +
-        "/html/body/div[5]/div/div[2]/cyclone-edit-patient/div/form/div/div/div/div[1]/p-tabview/div/div[2]/p-tabpanel/div/div/div/div/div[4]/div/div[1]/div/div/input"
-    );
-    private By applicantSaveButton = By.xpath(
-        "/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[3]/button[2]" +
-        " | " +
-        "/html/body/div[4]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[3]/button[2]" +
-        " | " +
-        "/html/body/div[5]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[3]/button[2]"
-    );
+    private By applicantLink = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[2]/span/u");
+    private By applicantPopupLabel = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[1]/span");
+    private By applicantEditButton = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[3]/button[3]");
+    private By applicantLastNameField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/form/div/div/div/div[1]/p-tabview/div/div[2]/p-tabpanel/div/div/div/div/div[3]/div/div/div/div/input");
+    private By applicantFirstNameField = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/form/div/div/div/div[1]/p-tabview/div/div[2]/p-tabpanel/div/div/div/div/div[4]/div/div[1]/div/div/input");
+    private By applicantSaveButton = By.xpath("/html/body/div[3]/div/div[2]/cyclone-edit-patient/div/div/p-toolbar/div/div[3]/button[2]");
 
     // Claim Popup
     private By claimLink = By.xpath("/html/body/div[3]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[4]/div[3]/span/u");
@@ -141,7 +94,7 @@ public class EditInvoicePage {
     private By interpreterEditButton = By.xpath("/html/body/div[3]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[3] | /html/body/div[4]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[3] | /html/body/div[5]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[3]");
     private By interpreterNameField = By.xpath("/html/body/div[3]/div/div[2]/cyclonercm-edit-interpreter/div/form/div/div/div/div/div/div/div/div[2]/div/div/div/div/input | /html/body/div[4]/div/div[2]/cyclonercm-edit-interpreter/div/form/div/div/div/div/div/div/div/div[2]/div/div/div/div/input | /html/body/div[5]/div/div[2]/cyclonercm-edit-interpreter/div/form/div/div/div/div/div/div/div/div[2]/div/div/div/div/input");
     private By interpreterSaveButton = By.xpath("/html/body/div[3]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[2] | /html/body/div[4]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[2] | /html/body/div[5]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[2]");
-    private By interpreterCloseButton = By.xpath("/html/body/div[3]/div/div[2]/cyclonercm-edit-interpreter/div/div/p-toolbar/div/div[2]/button[4]");
+    private By interpretercloseButton = By.xpath("//div[@class='ng-tns-c56-61 p-dialog-mask p-component-overlay p-component-overlay-enter p-dialog-mask-scrollblocker p-dialog-left ng-star-inserted']//button[4]");
 
     // Interpreter Invoice Details Popup
     private By interpreterInvoiceDetailsLink = By.xpath("//span[contains(@class,'hyperlink-text') or contains(@style,'color: rgb(65, 105, 225)')]//u[contains(text(),'Interpreter Invoice Details')] | //span[contains(text(),'Interpreter Invoice Details') and .//u]");
@@ -179,20 +132,8 @@ public class EditInvoicePage {
     private By dosPicker = By.xpath("/html/body/ngb-datepicker");
 
     // Success Message
-    // Covers all 3 entry-points: file-history-app, billing-app (daily), billing-app (single)
-    private By successMessageText = By.xpath(
-        // File History edit
-        "/html/body/ng-component/div/div/div[2]/file-history-app/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div/p" +
-        " | " +
-        // Daily Billing edit
-        "/html/body/ng-component/div/div/div[2]/billing-app/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div/p" +
-        " | " +
-        // Single Billing edit (same structure, kept as explicit path)
-        "/html/body/ng-component/div/div/div[2]/billing-app/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div/p" +
-        " | " +
-        // Generic fallback – any ui-message toast body paragraph
-        "//ui-message//p-toastitem//div[contains(@class,'p-toast-detail')] | //ui-message//p-toastitem//div//p"
-    );
+    private By successMessagePopup = By.xpath("/html/body/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div");
+    private By successMessageText = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div/p");
 
     // Financial Fields
     private By billedAmountField = By.xpath("/html/body/div[2]/div/div[2]/div/div[2]/div/div[2]/create-billing-order/div/div/div[2]/div/div/div/div/div/div/client-billing-form/div/div/div/div[6]/div[1]/div[2]");
@@ -218,7 +159,7 @@ public class EditInvoicePage {
 
     // ========== CONSTRUCTOR ==========
 
-    public EditInvoicePage(WebDriver driver) {
+    public BillingEditInvoicePage2(WebDriver driver) {
         this.driver = driver;
     }
 
@@ -245,7 +186,7 @@ public class EditInvoicePage {
      */
     public void clickEditButton() {
         try {
-            WaitUtils.waitForVisibility(driver, editFormEditButton, 10);
+            //WaitUtils.waitForVisibility(driver, editFormEditButton, 10);
             WebElement button = driver.findElement(editFormEditButton);
             button.click();
             WaitUtils.sleep(2000);
@@ -268,18 +209,6 @@ public class EditInvoicePage {
             System.out.println("✓ Save button clicked");
         } catch (Exception e) {
             System.err.println("Failed to click Save button: " + e.getMessage());
-            throw e;
-        }
-    }
-
-    public void clickFormCloseButton(){
-        try {
-            WebElement button = driver.findElement(interpreterCloseButton);
-            button.click();
-            WaitUtils.sleep(2000);
-            System.out.println("✓ Close button clicked");
-        } catch (Exception e) {
-            System.err.println("Failed to click Close button: " + e.getMessage());
             throw e;
         }
     }
@@ -550,7 +479,6 @@ public class EditInvoicePage {
         }
     }
 
-
     public String getClaimAdminPopupLabel() {
         try {
             WaitUtils.waitForVisibility(driver, claimAdminPopupLabel, 10);
@@ -563,7 +491,7 @@ public class EditInvoicePage {
 
     public void clickClaimAdminEditButton() {
         try {
-            WaitUtils.waitForVisibility(driver, claimAdminEditButton, 10);
+            //WaitUtils.waitForVisibility(driver, claimAdminEditButton, 10);
             driver.findElement(claimAdminEditButton).click();
             WaitUtils.sleep(2000);
             System.out.println("✓ Claim Admin Edit button clicked");
@@ -676,6 +604,7 @@ public class EditInvoicePage {
             WaitUtils.waitForVisibility(driver, employerAddressField, 10);
             WebElement addressField = driver.findElement(employerAddressField);
             addressField.clear();
+            WaitUtils.sleep(500);
             addressField.sendKeys(address);
             WaitUtils.sleep(1000);
             System.out.println("✓ Employer address edited: " + address);
@@ -731,7 +660,7 @@ public class EditInvoicePage {
                 fieldClicked = true;
             } catch (Exception e) {
                 System.out.println("⚠ Regular click failed, trying JavaScript click...");
-                ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", zipField);
+                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", zipField);
                 fieldClicked = true;
             }
 
@@ -770,7 +699,7 @@ public class EditInvoicePage {
                     By genericZipRow = By.xpath("//cyclone-search-zip//p-table//tbody/tr[1]");
                     WaitUtils.waitForVisibility(driver, genericZipRow, 5);
                     WebElement firstZipGeneric = driver.findElement(genericZipRow);
-                    ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", firstZipGeneric);
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", firstZipGeneric);
                     zipSelected = true;
                     System.out.println("✓ Random ZIP selected using generic locator");
                 } catch (Exception ex) {
@@ -906,49 +835,10 @@ public class EditInvoicePage {
 
     public void clickApplicantLink() {
         try {
-            System.out.println("🔗 Attempting to click Applicant link...");
-
-            // Strategy 1: Primary OR locator (covers File History div[2] and Daily Billing div[3])
-            try {
-                WaitUtils.waitForVisibility(driver, applicantLink, 10);
-                driver.findElement(applicantLink).click();
-                WaitUtils.sleep(3000);
-                System.out.println("✓ Applicant link clicked (Strategy 1 - primary locator)");
-                return;
-            } catch (Exception e1) {
-                System.out.println("⚠ Strategy 1 failed: " + e1.getMessage());
-            }
-
-            // Strategy 2: JavaScript click on the same locator
-            try {
-                WebElement el = driver.findElement(applicantLink);
-                ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
-                WaitUtils.sleep(3000);
-                System.out.println("✓ Applicant link clicked (Strategy 2 - JS click)");
-                return;
-            } catch (Exception e2) {
-                System.out.println("⚠ Strategy 2 failed: " + e2.getMessage());
-            }
-
-            // Strategy 3: Semantic search – find <u> inside div[4]/div[2] of client-billing-form
-            By[] fallbacks = {
-                By.xpath("//client-billing-form//div[4]/div[2]//u"),
-                By.xpath("//client-billing-form//div[4]/div[2]/span"),
-                By.xpath("//client-billing-form//div[contains(@class,'p-col-6') or contains(@class,'p-col')]//span[.//u][2]")
-            };
-            for (By fb : fallbacks) {
-                try {
-                    WebElement el = driver.findElement(fb);
-                    if (el.isDisplayed()) {
-                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
-                        WaitUtils.sleep(3000);
-                        System.out.println("✓ Applicant link clicked (Strategy 3 - fallback)");
-                        return;
-                    }
-                } catch (Exception ignored) {}
-            }
-
-            throw new RuntimeException("Failed to click Applicant link after all strategies");
+            WaitUtils.waitForVisibility(driver, applicantLink, 10);
+            driver.findElement(applicantLink).click();
+            WaitUtils.sleep(3000);
+            System.out.println("✓ Applicant link clicked");
         } catch (Exception e) {
             System.err.println("Failed to click Applicant link: " + e.getMessage());
             throw e;
@@ -1221,6 +1111,18 @@ public class EditInvoicePage {
             System.out.println("✓ Interpreter Save button clicked");
         } catch (Exception e) {
             System.err.println("Failed to click Interpreter Save button: " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public void closeInterpreterPopup() {
+        try {
+            WaitUtils.waitForVisibility(driver, interpretercloseButton, 10);
+            driver.findElement(servicesCloseButton).click();
+            WaitUtils.sleep(2000);
+            System.out.println("✓ Services Close button clicked");
+        } catch (Exception e) {
+            System.err.println("Failed to click Services Close button: " + e.getMessage());
             throw e;
         }
     }
@@ -1639,38 +1541,15 @@ public class EditInvoicePage {
     // ========== SUCCESS MESSAGE METHODS ==========
 
     public String getSuccessMessage() {
-        // Try each known absolute XPath in order – stops at the first one that returns text
-        String[] xpaths = {
-            // File History edit
-            "/html/body/ng-component/div/div/div[2]/file-history-app/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div/p",
-            // Daily Billing / Single Billing edit
-            "/html/body/ng-component/div/div/div[2]/billing-app/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div/p",
-            // Generic fallback – p-toast-detail div
-            "//ui-message//p-toastitem//div[contains(@class,'p-toast-detail')]",
-            // Generic fallback – any paragraph inside a toastitem
-            "//ui-message//p-toastitem//div//p",
-            // Broadest fallback – any visible p-toastitem text
-            "//p-toastitem//div[contains(@class,'p-toast-message-text')]//p",
-        };
-
-        for (String xpath : xpaths) {
-            try {
-                By locator = By.xpath(xpath);
-                // Short wait per candidate (3 s) – avoids spending 10 s on each wrong one
-                WebDriverWait shortWait = new WebDriverWait(driver, Duration.ofSeconds(3));
-                WebElement el = shortWait.until(ExpectedConditions.visibilityOfElementLocated(locator));
-                String text = el.getText().trim();
-                if (!text.isEmpty()) {
-                    System.out.println("✓ Success message captured via [" + xpath.substring(0, Math.min(60, xpath.length())) + "...]: " + text);
-                    return text;
-                }
-            } catch (Exception ignored) {
-                // This XPath did not match in time – try the next one
-            }
+        try {
+            WaitUtils.waitForVisibility(driver, successMessageText, 10);
+            String message = driver.findElement(successMessageText).getText().trim();
+            System.out.println("✓ Success message: " + message);
+            return message;
+        } catch (Exception e) {
+            System.err.println("Failed to get success message: " + e.getMessage());
+            return null;
         }
-
-        System.err.println("Failed to get success message: none of the toast XPaths returned text within the wait window");
-        return null;
     }
 
     // ========== LEFT SIDE DISPLAY METHODS ==========

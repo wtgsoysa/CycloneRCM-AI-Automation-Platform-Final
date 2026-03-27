@@ -62,8 +62,8 @@ public class FileHistoryPage {
 
     private final By jsonButton = By.xpath("/html/body/ng-component/div/div/div[2]/file-history-app/div/div[1]/cyclone-list-file-history/div/div/div/div/div[2]/div/div/form/p-table/div/div/table/tbody/tr[1]/td/span[2]/div/div[3]/button[1]");
     private final By downloadButton = By.xpath("//button[@ptooltip='View Uploaded File' and @icon='pi pi-file']");
-    private final By invoiceFileIcon = By.xpath("//cyclone-invoice-history-list//button[@ptooltip='View Invoice' and @icon='pi pi-file']");
-    private final By invoiceEditIcon = By.xpath("//cyclone-invoice-history-list//button[@ptooltip='Edit Invoice' and @icon='pi pi-pencil']");
+    private final By invoiceFileIcon = By.xpath("/html/body/ng-component/div/div/div[2]/file-history-app/div/div[2]/cyclone-invoice-history-list/div/div/div/div/div[3]/div/form/p-table/div/div/table/tbody/tr[1]/td/span[2]/div[1]/div[7]/div[2]/div/button[1]");
+    private final By invoiceEditIcon = By.xpath("/html/body/ng-component/div/div/div[2]/file-history-app/div/div[2]/cyclone-invoice-history-list/div/div/div/div/div[3]/div/form/p-table/div/div/table/tbody/tr[1]/td/span[2]/div[1]/div[7]/div[2]/div/button[2]");
     private final By invoiceDeleteIcon = By.xpath("//cyclone-invoice-history-list//button[@ptooltip='Delete Invoice' and @icon='pi pi-trash']");
     private final By deleteConfirmModal = By.xpath("//p-confirmdialog[@header='Confirm Delete']");
     private final By confirmDeleteButton = By.xpath("//p-confirmdialog[@header='Confirm Delete']//button[contains(@class,'p-confirm-dialog-accept')]");

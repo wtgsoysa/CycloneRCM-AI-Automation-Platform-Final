@@ -15,6 +15,7 @@ public class DailyBillingEditInvoiceTest extends SmokeBaseTest {
     private EditInvoicePage editInvoicePage;
     private DailyBillingPage dailyBillingPage;
     private BillingEditInvoicePage dailyEditInvoicePage;
+    private EditInvoicePage2 editInvoicePage2;
 
     @BeforeMethod
     public void setUp() {
@@ -27,6 +28,7 @@ public class DailyBillingEditInvoiceTest extends SmokeBaseTest {
         editInvoicePage = new EditInvoicePage(driver);
         dailyBillingPage = new DailyBillingPage(driver);
         dailyEditInvoicePage = new BillingEditInvoicePage(driver);
+        editInvoicePage2 = new EditInvoicePage2(driver);
 
         WaitUtils.waitForVisibility(driver, LocatorConstants.LOGIN_LOGO, 60);
 
@@ -124,7 +126,7 @@ public class DailyBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("Step 1: Verifying Edit Invoice label");
             System.out.println("🏷️ Step 1: Verifying Edit Invoice label...");
 
-            String editInvoiceLabel = editInvoicePage.getEditInvoiceLabel();
+            String editInvoiceLabel = editInvoicePage2.getEditInvoiceLabel();
 
             Assert.assertNotNull(editInvoiceLabel, "Edit Invoice label should not be null");
             Assert.assertEquals(editInvoiceLabel, "Edit Invoice",
@@ -177,60 +179,60 @@ public class DailyBillingEditInvoiceTest extends SmokeBaseTest {
 
             // 1. Claim Administrator
             test.info("Checking Claim Administrator field");
-            boolean claimAdminPresent = editInvoicePage.isClaimAdminPresent();
+            boolean claimAdminPresent = editInvoicePage2.isClaimAdminPresent();
             Assert.assertTrue(claimAdminPresent, "Claim Administrator field should be present");
             System.out.println("✓ 1. Claim Administrator: Present");
 
             // 2. Employer
             test.info("Checking Employer field");
-            boolean employerPresent = editInvoicePage.isEmployerPresent();
+            boolean employerPresent = editInvoicePage2.isEmployerPresent();
             Assert.assertTrue(employerPresent, "Employer field should be present");
             System.out.println("✓ 2. Employer: Present");
 
             // 3. Case
             test.info("Checking Case field");
-            boolean casePresent = editInvoicePage.isCasePresent();
+            boolean casePresent = editInvoicePage2.isCasePresent();
             Assert.assertTrue(casePresent, "Case field should be present");
             System.out.println("✓ 3. CASE#: Present");
 
             // 4. Applicant
             test.info("Checking Applicant field");
-            boolean applicantPresent = editInvoicePage.isApplicantPresent();
+            boolean applicantPresent = editInvoicePage2.isApplicantPresent();
             Assert.assertTrue(applicantPresent, "Applicant field should be present");
             System.out.println("✓ 4. APPLICANT: Present");
 
             // 5. Claim
             test.info("Checking Claim field");
-            boolean claimPresent = editInvoicePage.isClaimPresent();
+            boolean claimPresent = editInvoicePage2.isClaimPresent();
             Assert.assertTrue(claimPresent, "Claim field should be present");
             System.out.println("✓ 5. CLAIM#: Present");
 
             // 6. Services
             test.info("Checking Interpreter  field");
-            boolean InterpreterPresent = editInvoicePage.isInterpreterPresent();
+            boolean InterpreterPresent = editInvoicePage2.isInterpreterPresent();
             Assert.assertTrue(InterpreterPresent, "Interpreter field should be present");
             System.out.println("✓ 6. Interpreter : Present");
 
             test.info("Checking Interpreter Invoice Details  field");
-            boolean InterpreterInvoiceDetailsPresent = editInvoicePage.isInterpreterInvoiceDetailsPresent();
+            boolean InterpreterInvoiceDetailsPresent = editInvoicePage2.isInterpreterInvoiceDetailsPresent();
             Assert.assertTrue(InterpreterInvoiceDetailsPresent , "Interpreter Invoice field should be present");
             System.out.println("✓ 7. Interpreter Invoice Details: Present");
 
             // 7. DOS
             test.info("Checking DOS field");
-            boolean dosPresent = editInvoicePage.isDosPresent();
+            boolean dosPresent = editInvoicePage2.isDosPresent();
             Assert.assertTrue(dosPresent, "DOS field should be present");
             System.out.println("✓ 8. DOS: Present");
 
             // 8. Invoice#
             test.info("Checking Invoice# field");
-            boolean invoiceNumberPresent = editInvoicePage.isInvoiceNumberPresent();
+            boolean invoiceNumberPresent = editInvoicePage2.isInvoiceNumberPresent();
             Assert.assertTrue(invoiceNumberPresent, "Invoice# field should be present");
             System.out.println("✓ 9. Invoice#: Present");
 
             // 9. Invoice Date
             test.info("Checking Invoice Date field");
-            boolean invoiceDatePresent = editInvoicePage.isInvoiceDatePresent();
+            boolean invoiceDatePresent = editInvoicePage2.isInvoiceDatePresent();
             Assert.assertTrue(invoiceDatePresent, "Invoice Date field should be present");
             System.out.println("✓ 10. Invoice Date: Present");
 
@@ -428,6 +430,7 @@ public class DailyBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("Step 6: Editing Address field");
             System.out.println("\n🏠 Step 6: Editing Address field...");
             String testAddress = EditInvoiceTestDataProperties.get("editinvoice.employer.address");
+
             dailyEditInvoicePage.editEmployerAddress(testAddress);
             test.info("✓ Address edited: " + testAddress);
 

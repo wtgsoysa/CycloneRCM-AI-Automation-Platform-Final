@@ -27,6 +27,7 @@ public class DailyBillingPage {
             this.driver = driver;
             this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         this.healer = new SelfHealingAgent(driver);
+
         }
 
         //-------- Helper Methods ---------
@@ -1921,19 +1922,41 @@ public class DailyBillingPage {
                 for (int i = 0; i < rows.size(); i++) {
                     try {
                         WebElement row = rows.get(i);
-
                         // Try to find status badge in column 5 (td[5])
                         try {
                             WebElement statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
                             String statusText = statusBadge.getText().trim();
 
                             // Check if this invoice is "Not Verified"
-                            if (statusText.equals("EAMS Not Verified")) {
+                            if (statusText != null && statusText.contains("Not Verified")) {
                                 System.out.println("✓ Found 'Not Verified' invoice at row " + (i + 1));
 
-                                // Find and click the checkbox in column 1 (td[1])
+                                // Find the primary checkbox element in column 1 (td[1])
                                 try {
                                     WebElement checkbox = row.findElement(By.xpath(".//td[1]//div[@role='checkbox' or contains(@class, 'checkbox')]"));
+
+                                    // NEW: If the checkbox element or its wrapper indicates a disabled state,
+                                    // treat it as not clickable and return false (expected behavior).
+                                    String cls = "";
+                                    try {
+                                        cls = checkbox.getAttribute("class") == null ? "" : checkbox.getAttribute("class");
+                                    } catch (Exception ignore) {
+                                        // ignore
+                                    }
+                                    String ariaDisabled = "";
+                                    try {
+                                        ariaDisabled = checkbox.getAttribute("aria-disabled") == null ? "" : checkbox.getAttribute("aria-disabled");
+                                    } catch (Exception ignore) {}
+                                    String disabledAttr = "";
+                                    try {
+                                        disabledAttr = checkbox.getAttribute("disabled") == null ? "" : checkbox.getAttribute("disabled");
+                                    } catch (Exception ignore) {}
+
+                                    if (cls.contains("p-checkbox-disabled") || ariaDisabled.equalsIgnoreCase("true") || disabledAttr.equalsIgnoreCase("true")) {
+                                        System.out.println("ℹ Checkbox is DISABLED for this 'Not Verified' invoice (class='" + cls + "', aria-disabled='" + ariaDisabled + "', disabled='" + disabledAttr + "') - treating as not clickable");
+                                        return false;
+                                    }
+
                                     WaitUtils.sleep(1000);
                                     checkbox.click();
                                     System.out.println("✓ Checkbox clicked for 'Not Verified' invoice");
@@ -1941,9 +1964,34 @@ public class DailyBillingPage {
 
                                 } catch (Exception checkboxError) {
                                     System.err.println("❌ Could not find or click checkbox: " + checkboxError.getMessage());
-                                    // Try alternative checkbox locator
+                                    // Try alternative checkbox locator BUT only if not clearly disabled
                                     try {
                                         WebElement checkboxAlt = row.findElement(By.xpath(".//td[1]/div"));
+
+                                        // Check for disabled markers on this element or any ancestor p-checkbox wrapper
+                                        boolean altIsDisabled = false;
+                                        try {
+                                            String altCls = checkboxAlt.getAttribute("class") == null ? "" : checkboxAlt.getAttribute("class");
+                                            String altAria = checkboxAlt.getAttribute("aria-disabled") == null ? "" : checkboxAlt.getAttribute("aria-disabled");
+                                            String altDisabled = checkboxAlt.getAttribute("disabled") == null ? "" : checkboxAlt.getAttribute("disabled");
+                                            if (altCls.contains("p-checkbox-disabled") || altAria.equalsIgnoreCase("true") || altDisabled.equalsIgnoreCase("true")) {
+                                                altIsDisabled = true;
+                                            }
+                                            // Also check ancestor divs for a p-checkbox-disabled marker
+                                            try {
+                                                List<WebElement> disabledAncestors = checkboxAlt.findElements(By.xpath("ancestor::div[contains(@class,'p-checkbox-disabled')]"));
+                                                if (!disabledAncestors.isEmpty()) {
+                                                    altIsDisabled = true;
+                                                }
+                                            } catch (Exception ignoreAnc) { }
+
+                                        } catch (Exception ignore) { }
+
+                                        if (altIsDisabled) {
+                                            System.out.println("ℹ Alternative checkbox element or ancestor is DISABLED - not attempting click");
+                                            return false;
+                                        }
+
                                         WaitUtils.sleep(1000);
                                         checkboxAlt.click();
                                         System.out.println("✓ Checkbox clicked (alternative locator) for 'Not Verified' invoice");

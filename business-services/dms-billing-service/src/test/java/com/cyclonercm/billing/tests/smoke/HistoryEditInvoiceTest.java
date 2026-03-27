@@ -762,6 +762,11 @@ import org.testng.annotations.Test;
                 test.info("✓ First success message verified: " + successMessage1);
                 System.out.println("✓ First success message: " + successMessage1);
 
+                WaitUtils.sleep(2000);
+
+                editInvoicePage.clickFormCloseButton();
+                WaitUtils.sleep(2000);
+
                 // Step 8: Click Edit Form Save button
                 test.info("Step 8: Clicking Edit Form Save button");
                 System.out.println("\n💾 Step 8: Clicking Edit Form Save button...");
