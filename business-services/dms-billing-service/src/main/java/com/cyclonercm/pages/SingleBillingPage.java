@@ -11,9 +11,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class SingleBillingPage {
 
@@ -74,6 +77,7 @@ public class SingleBillingPage {
     // Checkbox and Modal Locators
     private final By checkbox = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[1]/div/p-checkbox");
     private final By informationMessageModal = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/p-dialog/div/div/div[2]/div");
+    private final By informationModalCloseButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/p-dialog/div/div/div[2]/div/div[1]/p-toolbar/div/div[2]/button");
 
     // EAMS Details Popup Locators (SMOKE_SB_006)
     private final By eamsDetailsPopup = By.xpath("/html/body/div[2]/div/div[2]/cyclone-eams-details-view/div");
@@ -84,6 +88,25 @@ public class SingleBillingPage {
     private final By reportViewModal = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[2]/cyclone-billing-print-option/p-dialog/div/div/div[2]/cyclone-reporting-board/div/form/div/div[2]");
     private final By reportViewLabel = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[2]/cyclone-billing-print-option/p-dialog/div/div/div[2]/cyclone-reporting-board/div/form/div/div[2]/div[1]/p-toolbar/div/div[1]/span");
     private final By ClaimForm = By.xpath("/html/body/div[1]/div[2]/div[4]/div/div[1]/div[2]/span[2]");
+    private final By invoiceRowsLocator = By.xpath("//p-table//tbody/tr[contains(@class,'ng-star-inserted')]");
+    private final By rowCheckboxLocator = By.xpath(".//td[1]//div[contains(@class,'check-box') or contains(@class,'p-checkbox-box')]");
+    private final By rowStatusBadgeLocator = By.xpath(".//td[5]//p-badge/span");
+    private final By rowClaimNumberLocator = By.xpath(".//td[3]/span");
+    private final By rowManualEamsToggleLocator = By.xpath(".//td[7]//p-inputswitch");
+
+    private static final Set<String> REPORT_VIEW_ELIGIBLE_STATUSES = new HashSet<>(Arrays.asList(
+            "EAMS Verified",
+            "EAMS Not Verified",
+            "EAMS Not Verify",
+            "No Carrier in EAMS",
+            "No Carrier on Invoice; Billed to Carrier on EAMS",
+            "No Carrier on Invoice or EAMS; Billed to Single Employer",
+            "No Carrier on Invoice or EAMS; Billed to Multiple Employers",
+            "No Carrier; Employer Bill",
+            "EAMS Carrier",
+            "Nothing Match",
+            "Multiple Carrier"
+    ));
 
     // Filter Radio Buttons (SMOKE_SB_009 - SMOKE_SB_012)
     private final By emcFilterRadioButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[1]/p-toolbar/div/div[3]/div/div/label[2]/p-radiobutton");
@@ -385,6 +408,23 @@ public class SingleBillingPage {
         WaitUtils.sleep(2000);
     }
 
+    public boolean selectFirstReadyInvoiceForSubmission() {
+        try {
+            WaitUtils.sleep(2000);
+            List<WebElement> rows = driver.findElements(invoiceRowsLocator);
+            for (int i = 0; i < rows.size(); i++) {
+                if (selectInvoiceCheckbox(i + 1)) {
+                    return true;
+                }
+            }
+            System.out.println("❌ No invoice rows could be selected after retries");
+            return false;
+        } catch (Exception e) {
+            System.err.println("❌ Failed to select invoice with manual toggle workflow: " + e.getMessage());
+            return false;
+        }
+    }
+
     /**
      * Check if the Missing Information modal is displayed
      * This modal appears when trying to tick an invoice with red EMC flag (missing mandatory fields)
@@ -396,6 +436,18 @@ public class SingleBillingPage {
             return driver.findElement(informationMessageModal).isDisplayed();
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public void closeMissingInfoModal() {
+        try {
+            if (isMissingInfoModalDisplayed()) {
+                driver.findElement(informationModalCloseButton).click();
+                WaitUtils.sleep(800);
+                System.out.println("   ✓ Missing Information modal closed");
+            }
+        } catch (Exception e) {
+            System.err.println("   ⚠ Failed to close Missing Information modal: " + e.getMessage());
         }
     }
 
@@ -812,38 +864,7 @@ public class SingleBillingPage {
     //========== REPORT VIEW METHODS (SMOKE_SB_008) ==========
 
     public boolean clickViewButtonForEamsVerifiedInvoice() {
-        try {
-            WaitUtils.sleep(3000);
-            By allTableRows = By.xpath("//p-table//tbody/tr[contains(@class, 'ng-star-inserted')]");
-            List<WebElement> rows = driver.findElements(allTableRows);
-
-            for (int i = 0; i < rows.size(); i++) {
-                try {
-                    WebElement row = rows.get(i);
-                    WebElement statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
-                    String statusText = statusBadge.getText().trim();
-
-                    if (statusText.equals("EAMS Verified") || statusText.equals("EAMS Not Verify")) {
-                        WebElement invoice = row.findElement(By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[1]/div/p-checkbox/p-checkbox/div"));
-                        invoice.click();
-                        WaitUtils.sleep(3000);
-                        //WebElement hcfa = row.findElement(By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[2]/cyclone-billing-print-option/div/div/div/div/div/div/div/div[2]/p-inputswitch/div"));
-                        //hcfa.click();
-                        //WaitUtils.sleep(3000);
-                        WebElement viewButton = row.findElement(By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[2]/cyclone-billing-print-option/div/div/div/div/div/div/button[6]"));
-                        viewButton.click();
-                        WaitUtils.sleep(3000);
-                        return true;
-                    }
-                } catch (Exception e) {
-                    continue;
-                }
-            }
-            return false;
-        } catch (Exception e) {
-            System.err.println("❌ Error clicking view button: " + e.getMessage());
-            return false;
-        }
+        return clickViewButtonAndGetClaimNumber() != null;
     }
 
     /**
@@ -853,34 +874,32 @@ public class SingleBillingPage {
     public String clickViewButtonAndGetClaimNumber() {
         try {
             WaitUtils.sleep(3000);
-            By allTableRows = By.xpath("//p-table//tbody/tr[contains(@class, 'ng-star-inserted')]");
-            List<WebElement> rows = driver.findElements(allTableRows);
+            List<WebElement> rows = driver.findElements(invoiceRowsLocator);
 
             for (int i = 0; i < rows.size(); i++) {
-                try {
-                    WebElement row = rows.get(i);
-                    WebElement statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
-                    String statusText = statusBadge.getText().trim();
+                WebElement row = rows.get(i);
+                String statusText = getStatusText(row);
 
-                    if (statusText.equals("EAMS Verified") || statusText.equals("No Carrier in EAMS") || statusText.equals("EAMS Carrier") || statusText.equals("No Carrier; Employer Bill") || statusText.equals("Nothing Match") || statusText.equals("Multiple Carrier")) {
-                        // Get claim number from this row before clicking
-                        WebElement claimNumberElement = row.findElement(By.xpath(".//td[3]/span"));
-                        String claimNumber = claimNumberElement.getText().trim();
-
-                        WebElement invoice = row.findElement(By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[1]/div/p-checkbox"));
-                        invoice.click();
-                        WaitUtils.sleep(3000);
-
-                        WebElement viewButton = row.findElement(By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[2]/cyclone-billing-print-option/div/div/div/div/div/div/button[6]"));
-                        viewButton.click();
-                        WaitUtils.sleep(3000);
-
-                        return claimNumber;
-                    }
-                } catch (Exception e) {
+                if (!isStatusEligibleForReportView(statusText)) {
                     continue;
                 }
+
+                System.out.println("   Row " + (i + 1) + " eligible for Report View (status: " + statusText + ")");
+
+                String claimNumber = getClaimNumberFromRow(row);
+                if (claimNumber == null || claimNumber.isEmpty()) {
+                    System.out.println("   ⚠ Unable to read claim number for row " + (i + 1) + " - skipping");
+                    continue;
+                }
+
+                if (!openReportViewForRow(i + 1)) {
+                    continue;
+                }
+
+                return claimNumber;
             }
+
+            System.err.println("❌ No eligible invoices found for Report View action");
             return null;
         } catch (Exception e) {
             System.err.println("❌ Error clicking view button: " + e.getMessage());
@@ -888,6 +907,93 @@ public class SingleBillingPage {
         }
     }
 
+    private boolean openReportViewForRow(int rowIndex) {
+        if (!selectInvoiceCheckbox(rowIndex)) {
+            return false;
+        }
+
+        try {
+            driver.findElement(reportViewButton).click();
+            WaitUtils.sleep(2000);
+            return true;
+        } catch (Exception e) {
+            System.err.println("   ❌ Failed to click Report View button: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean selectInvoiceCheckbox(int rowIndex) {
+        for (int attempt = 1; attempt <= 3; attempt++) {
+            WebElement currentRow = getInvoiceRowByIndex(rowIndex);
+            if (currentRow == null) {
+                System.out.println("   ❌ Unable to locate row " + rowIndex + " for checkbox selection");
+                return false;
+            }
+
+            try {
+                WebElement checkboxElement = currentRow.findElement(rowCheckboxLocator);
+                WaitUtils.sleep(500);
+                checkboxElement.click();
+                WaitUtils.sleep(1000);
+            } catch (Exception e) {
+                System.out.println("   ⚠ Unable to click checkbox for row " + rowIndex + " (attempt " + attempt + "): " + e.getMessage());
+                WaitUtils.sleep(800);
+                continue;
+            }
+
+            if (!isMissingInfoModalDisplayed()) {
+                System.out.println("   ✓ Checkbox selected for row " + rowIndex);
+                return true;
+            }
+
+            System.out.println("   ⚠ Missing Information modal shown for row " + rowIndex + " (attempt " + attempt + ")");
+            closeMissingInfoModal();
+
+            if (!enableManualEamsToggle(currentRow, rowIndex)) {
+                return false;
+            }
+
+            WaitUtils.sleep(1500);
+        }
+
+        System.out.println("   ❌ Could not select invoice in row " + rowIndex + " after retries");
+        return false;
+    }
+
+    private WebElement getInvoiceRowByIndex(int rowIndex) {
+        try {
+            List<WebElement> rows = driver.findElements(invoiceRowsLocator);
+            int zeroBasedIndex = rowIndex - 1;
+            if (zeroBasedIndex >= 0 && zeroBasedIndex < rows.size()) {
+                return rows.get(zeroBasedIndex);
+            }
+        } catch (Exception e) {
+            System.out.println("   ⚠ Failed to fetch row " + rowIndex + ": " + e.getMessage());
+        }
+        return null;
+    }
+
+    private String getStatusText(WebElement row) {
+        try {
+            return row.findElement(rowStatusBadgeLocator).getText().trim();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private boolean isStatusEligibleForReportView(String statusText) {
+        return REPORT_VIEW_ELIGIBLE_STATUSES.contains(statusText);
+    }
+
+    private String getClaimNumberFromRow(WebElement row) {
+        try {
+            return row.findElement(rowClaimNumberLocator).getText().trim();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    //========== HCFA TOGGLE METHODS ==========
 
     public void enableHcfaToggle() {
         try {
@@ -912,24 +1018,6 @@ public class SingleBillingPage {
         } catch (Exception e) {
             System.err.println("❌ Failed to enable HCFA Toggle: " + e.getMessage());
             throw e;
-        }
-    }
-
-    public boolean isReportViewDisplayed() {
-        try {
-            WaitUtils.sleep(5000);
-            return driver.findElement(reportViewModal).isDisplayed();
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public boolean isDisplayHCFAForm() {
-        try {
-            String actualForm = driver.findElement(ClaimForm).getText().trim();
-            return actualForm.equals("CLAIM FORM");
-        } catch (Exception e) {
-            return false;
         }
     }
 
@@ -991,10 +1079,23 @@ public class SingleBillingPage {
         WaitUtils.sleep(5000);
     }
 
-    public boolean isReportViewDisplayedAfterSubmission() {
+    public boolean isReportViewDisplayed() {
         try {
             WaitUtils.sleep(5000);
-            return driver.findElement(reportViewLabel).isDisplayed();
+            return driver.findElement(reportViewModal).isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isReportViewDisplayedAfterSubmission() {
+        return isReportViewDisplayed();
+    }
+
+    public boolean isDisplayHCFAForm() {
+        try {
+            String actualForm = driver.findElement(ClaimForm).getText().trim();
+            return actualForm.equals("CLAIM FORM");
         } catch (Exception e) {
             return false;
         }
@@ -1232,12 +1333,19 @@ public class SingleBillingPage {
     }
 
     public List<String> selectMultipleEamsVerifiedInvoiceCheckboxes(int maxCount) {
+        return selectInvoicesUsingManualEamsWorkflow(maxCount);
+    }
+
+    public List<String> selectInvoicesWithManualEamsWorkflow(int maxCount) {
+        return selectInvoicesUsingManualEamsWorkflow(maxCount);
+    }
+
+    private List<String> selectInvoicesUsingManualEamsWorkflow(int maxCount) {
         List<String> selectedInvoices = new ArrayList<>();
 
         try {
             WaitUtils.sleep(3000); // Wait for table to load
 
-            // Find all table rows in tbody
             By allTableRows = By.xpath("//p-table//tbody/tr[contains(@class, 'ng-star-inserted')]");
             List<WebElement> rows = driver.findElements(allTableRows);
 
@@ -1246,48 +1354,51 @@ public class SingleBillingPage {
 
             int selectedCount = 0;
 
-            // Iterate through each row
             for (int i = 0; i < rows.size() && selectedCount < maxCount; i++) {
                 try {
                     WebElement row = rows.get(i);
 
-                    // Try to find status badge in column 5 (td[5])
                     try {
                         WebElement statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
                         String statusText = statusBadge.getText().trim();
 
-                        // Check if status is "EAMS Verified" or "EAMS Not Verified"
-                        if (statusText.equals("EAMS Verified") || statusText.equals("Address requires verification") || statusText.equals("No Carrier in EAMS") || statusText.equals("EAMS Carrier") || statusText.equals("No Carrier; Employer Bill") || statusText.equals("Nothing Match") || statusText.equals("Multiple Carrier")) {
-                            System.out.println("   Row " + (i + 1) + " - Status: '" + statusText + "'");
+                        boolean statusEligible = statusText.equals("EAMS Verified") ||
+                                statusText.equals("EAMS Not Verified") ||
+                                statusText.equals("Address requires verification") ||
+                                statusText.equals("No Carrier in EAMS") ||
+                                statusText.equals("EAMS Carrier") ||
+                                statusText.equals("No Carrier; Employer Bill") ||
+                                statusText.equals("Nothing Match") ||
+                                statusText.equals("Multiple Carrier");
 
-                            // Get invoice number from column 2 (td[2])
-                            String invoiceNumber = "";
-                            try {
-                                WebElement invoiceElement = row.findElement(By.xpath(".//td[2]//span"));
-                                invoiceNumber = invoiceElement.getText().trim();
-                                System.out.println("   ✓ Invoice Number: " + invoiceNumber);
-                            } catch (Exception e) {
-                                System.err.println("   ⚠ Could not get invoice number");
-                                continue;
-                            }
-
-                            // Click checkbox in column 1 (td[1])
-                            try {
-                                WebElement checkbox = row.findElement(By.xpath(".//td[1]//div"));
-                                WaitUtils.sleep(500);
-                                checkbox.click();
-                                selectedCount++;
-                                selectedInvoices.add(invoiceNumber);
-                                System.out.println("   ✓ Checkbox " + selectedCount + " selected: " + invoiceNumber + " (Status: " + statusText + ")");
-                                WaitUtils.sleep(500); // Small delay between selections
-
-                            } catch (Exception checkboxError) {
-                                System.err.println("   ❌ Could not find or click checkbox: " + checkboxError.getMessage());
-                            }
+                        if (!statusEligible) {
+                            continue;
                         }
 
+                        System.out.println("   Row " + (i + 1) + " - Status: '" + statusText + "'");
+
+                        String invoiceNumber;
+                        try {
+                            WebElement invoiceElement = row.findElement(By.xpath(".//td[2]//span"));
+                            invoiceNumber = invoiceElement.getText().trim();
+                            System.out.println("   ✓ Invoice Number: " + invoiceNumber);
+                        } catch (Exception e) {
+                            System.err.println("   ⚠ Could not get invoice number");
+                            continue;
+                        }
+
+                        if (!selectInvoiceCheckbox(i + 1)) {
+                            System.err.println("   ❌ Could not select invoice in row " + (i + 1) + " even after Manual EAMS workflow");
+                            continue;
+                        }
+
+                        selectedCount++;
+                        selectedInvoices.add(invoiceNumber);
+                        System.out.println("   ✓ Checkbox " + selectedCount + " selected: " + invoiceNumber + " (Status: " + statusText + ")");
+                        WaitUtils.sleep(500);
+
                     } catch (Exception statusError) {
-                        // No status badge in this row, might be a grouping row - skip
+                        // Skip rows without status badge (group headers)
                     }
 
                 } catch (Exception e) {
@@ -1312,5 +1423,35 @@ public class SingleBillingPage {
             return selectedInvoices;
         }
     }
-}
 
+    private boolean enableManualEamsToggle(WebElement row, int rowIndex) {
+        try {
+            List<WebElement> toggles = row.findElements(rowManualEamsToggleLocator);
+            if (toggles.isEmpty()) {
+                System.out.println("   ⚠ Manual EAMS toggle not found for row " + rowIndex);
+                return false;
+            }
+
+            WebElement toggle = toggles.get(0);
+            String ariaChecked = toggle.getAttribute("aria-checked");
+            String className = toggle.getAttribute("class");
+            boolean alreadyEnabled = "true".equalsIgnoreCase(ariaChecked) ||
+                    (className != null && className.contains("p-inputswitch-checked"));
+
+            if (alreadyEnabled) {
+                System.out.println("   ✓ Manual EAMS toggle already enabled for row " + rowIndex);
+                return true;
+            }
+
+            List<WebElement> slider = toggle.findElements(By.xpath(".//*[contains(@class,'p-inputswitch-slider')]"));
+            WebElement elementToClick = slider.isEmpty() ? toggle : slider.get(0);
+            elementToClick.click();
+            WaitUtils.sleep(800);
+            System.out.println("   ✓ Manual EAMS toggle enabled for row " + rowIndex);
+            return true;
+        } catch (Exception e) {
+            System.err.println("   ❌ Failed to enable Manual EAMS toggle for row " + rowIndex + ": " + e.getMessage());
+            return false;
+        }
+    }
+}

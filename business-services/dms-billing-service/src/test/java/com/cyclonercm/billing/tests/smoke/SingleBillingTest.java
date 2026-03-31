@@ -354,7 +354,6 @@ public class SingleBillingTest extends SmokeBaseTest {
             test.pass("✓ Invoice successfully added to Single Billing with correct applicant!");
             test.pass("Expected: " + actualApplicantName + " | Found: " + firstInvoiceApplicant);
             System.out.println("✓ Invoice successfully added to Single Billing!");
-
         } catch (AssertionError e) {
             test.fail("Applicant name mismatch. Expected: " + actualApplicantName + ", Found: " + firstInvoiceApplicant);
             throw e;
@@ -496,16 +495,23 @@ public class SingleBillingTest extends SmokeBaseTest {
         System.out.println("✓ Applicant selected from dropdown");
         test.pass("Applicant selected: " + actualApplicantName);
 
+
+
+        /* Step 2: Select applicant from autocomplete
+        singleBillingPage.selectApplicantFromAutocomplete();
+        System.out.println("✓ Applicant selected from autocomplete");
+        test.pass("Applicant selected from autocomplete dropdown");*/
+
         // Wait for system to process applicant selection and load DOS options
-        WaitUtils.sleep(4000);
+        WaitUtils.sleep(3000);
         System.out.println("✓ Waiting for DOS dropdown to be ready");
 
-        // Step 5: Click Date of Service dropdown
+        // Step 3: Click Date of Service dropdown
         singleBillingPage.clickDateOfServiceDropdown();
         System.out.println("✓ DOS dropdown opened");
         test.pass("Date of Service dropdown opened");
 
-        // Step 6: Get available DOS list count
+        // Step 4: Get available DOS list count
         int dosCount = singleBillingPage.getDosListCount();
         System.out.println("Available DOS options: " + dosCount);
         test.info("Available DOS options: " + dosCount);
@@ -519,17 +525,17 @@ public class SingleBillingTest extends SmokeBaseTest {
             throw e;
         }
 
-        // Step 7: Select the first DOS from the list
+        // Step 5: Select the first DOS from the list
         singleBillingPage.selectFirstDos();
         System.out.println("✓ First DOS selected from list");
         test.pass("First DOS selected and added to Single Billing");
 
-        // Step 8: Wait for invoice to be added to the table
+        // Step 6: Wait for invoice to be added to the table
         WaitUtils.sleep(5000);
         singleBillingPage.waitForInvoiceTableLoad();
         System.out.println("✓ Waiting for invoice to be added to table");
 
-        // Step 9: Verify invoice was added (should be at the top of the table)
+        // Step 7: Verify invoice was added (should be at the top of the table)
         int finalInvoiceCount = singleBillingPage.getInvoiceCount();
         System.out.println("Final invoice count: " + finalInvoiceCount);
         test.info("Final invoice count: " + finalInvoiceCount);
@@ -543,7 +549,7 @@ public class SingleBillingTest extends SmokeBaseTest {
             throw e;
         }
 
-        // Step 10: Verify the newly added invoice appears at the top (first row)
+        // Step 8: Verify the newly added invoice appears at the top (first row)
         String firstInvoiceApplicant = singleBillingPage.getFirstInvoiceApplicantName();
         System.out.println("First invoice applicant name: " + firstInvoiceApplicant);
         test.info("First invoice applicant from table: " + firstInvoiceApplicant);
@@ -925,7 +931,7 @@ public class SingleBillingTest extends SmokeBaseTest {
         }
 
         test.pass("🎉 SMOKE_SB_005 PASSED - ALL invoices validated successfully");
-        System.out.println("✅ SMOKE_SB_005 TEST PASSED - ALL INVOICES VALIDATED SUCCESSFULLY");
+        System.out.println("\n✅ SMOKE_SB_005 TEST PASSED");
     }
 
     @Test(priority = 6, description = "SMOKE_SB_006 - Verify clicking the status button opens the popup with Original EAMS Details and Invoice Details for comparison")
@@ -1316,11 +1322,12 @@ public class SingleBillingTest extends SmokeBaseTest {
             test.info("Step 1: Ticking invoice checkbox");
             System.out.println("\n🖱️ Step 1: Selecting invoice for submission...");
 
-            singleBillingPage.clickCheckBox();
-            WaitUtils.sleep(2000);
+            boolean invoiceSelected = singleBillingPage.selectFirstReadyInvoiceForSubmission();
+            Assert.assertTrue(invoiceSelected,
+                    "At least one invoice should be selectable after applying Manual EAMS toggle workflow");
 
-            test.pass("✓ Invoice checkbox ticked");
-            System.out.println("✓ Invoice selected for submission");
+            test.pass("✓ Invoice checkbox ticked (Manual EAMS workflow)");
+            System.out.println("✓ Invoice selected for submission (Manual EAMS workflow)");
 
             //Enable HCFA Button
             test.info("Step 10: Enabling HCFA Toggle Button");
@@ -1425,15 +1432,16 @@ public class SingleBillingTest extends SmokeBaseTest {
                 test.pass("Invoice added for E/P submission test");
             }
 
-            // Step 4: Tick the checkbox on a ready invoice
+            // Step 4: Tick the checkbox on a ready invoice with HCFA
             test.info("Step 1: Ticking invoice checkbox");
             System.out.println("\n🖱️ Step 1: Selecting invoice for submission...");
 
-            singleBillingPage.clickCheckBox();
-            WaitUtils.sleep(2000);
+            boolean invoiceSelected = singleBillingPage.selectFirstReadyInvoiceForSubmission();
+            Assert.assertTrue(invoiceSelected,
+                    "At least one invoice should be selectable after applying Manual EAMS toggle workflow");
 
-            test.pass("✓ Invoice checkbox ticked");
-            System.out.println("✓ Invoice selected for submission");
+            test.pass("✓ Invoice checkbox ticked (Manual EAMS workflow)");
+            System.out.println("✓ Invoice selected for submission (Manual EAMS workflow)");
 
             //Enable HCFA Button
             test.info("Step 10: Enabling HCFA Toggle Button");
@@ -1541,13 +1549,12 @@ public class SingleBillingTest extends SmokeBaseTest {
             test.info("Step 1: Ticking invoice checkbox");
             System.out.println("\n🖱️ Step 1: Selecting invoice for submission...");
 
+            boolean invoiceSelected = singleBillingPage.selectFirstReadyInvoiceForSubmission();
+            Assert.assertTrue(invoiceSelected,
+                    "At least one invoice should be selectable after applying Manual EAMS toggle workflow");
 
-
-            singleBillingPage.clickCheckBox();
-            WaitUtils.sleep(2000);
-
-            test.pass("✓ Invoice checkbox ticked");
-            System.out.println("✓ Invoice selected for submission");
+            test.pass("✓ Invoice checkbox ticked (Manual EAMS workflow)");
+            System.out.println("✓ Invoice selected for submission (Manual EAMS workflow)");
 
             // Step 5: Click Paper submission button
             test.info("Step 2: Clicking Paper submission button");
@@ -1645,83 +1652,130 @@ public class SingleBillingTest extends SmokeBaseTest {
                             singleBillingPage.selectFirstDos();
                             WaitUtils.sleep(5000);
                             invoicesAdded++;
-                            System.out.println("✓ Invoice " + (i + 1) + " added");
+                            System.out.println("✓ Invoice " + (i + 1) + " added successfully");
+                            test.pass("Invoice " + (i + 1) + " added: " + applicantId);
+                        } else {
+                            System.out.println("⚠ No DOS available for applicant " + applicantId + " - skipping");
+                            test.info("No DOS available for " + applicantId + " - skipped");
                         }
+                    } else {
+                        System.out.println("⚠ Applicant " + applicantId + " not found - skipping");
+                        test.info("Applicant " + applicantId + " not found - skipped");
                     }
+
                 } catch (Exception e) {
-                    System.err.println("⚠ Error adding invoice " + (i + 1));
+                    System.err.println("⚠ Error adding invoice " + (i + 1) + ": " + e.getMessage());
+                    test.info("Error adding invoice " + (i + 1) + " - continuing with next");
                 }
             }
 
 
-            System.out.println("\n✅ Total invoices added: " + invoicesAdded);
+            System.out.println("\n✅ Finished adding invoices");
+            System.out.println("Total invoices added: " + invoicesAdded);
             test.info("Total invoices added: " + invoicesAdded);
 
-            Assert.assertTrue(invoicesAdded >= 2,
-                    "Minimum 2 invoices required. Only " + invoicesAdded + " added.");
+            Assert.assertTrue(invoicesAdded >= 4,
+                    "Minimum 4 invoices required for this test. Only " + invoicesAdded + " invoices were added. " +
+                            "Please ensure test data has valid applicant IDs with available DOS.");
 
-            test.pass("✓ Multiple invoices added: " + invoicesAdded);
+            test.pass("✓ Added " + invoicesAdded + " invoices (minimum 4 required)");
 
-            // Step 3: Wait for table to settle
+            // Step 4: Wait for table to settle
             WaitUtils.sleep(3000);
             singleBillingPage.waitForInvoiceTableLoad();
 
-            int maxInvoices = 4; // Select maximum 4 invoices (or all on page if less)
-            selectedInvoiceNumbers1 = singleBillingPage.selectMultipleEamsVerifiedInvoiceCheckboxes(maxInvoices);
+            // Step 5: Validate ALL invoices
+            test.info("Step 2: Validating ALL invoices in the table");
+            System.out.println("\n🔍 Step 2: Starting validation of ALL invoices...\n");
 
-            Assert.assertTrue(selectedInvoiceNumbers1.size() >= 2,
-                    "Failed to select at least 2 invoices with 'EAMS Verified' or 'EAMS Not Verified' status. " +
-                            "Selected: " + selectedInvoiceNumbers1.size() + ". Ensure there are multiple EMC-ready invoices in the test data.");
+            Map<String, Object> validationResult = singleBillingPage.validateAllInvoicesEamsComments();
 
-            test.info("✓ Multiple invoices selected: " + selectedInvoiceNumbers1.size());
-            System.out.println("\n✓ Total invoices selected: " + selectedInvoiceNumbers1.size());
-            for (int i = 0; i < selectedInvoiceNumbers1.size(); i++) {
-                test.info("   Invoice " + (i + 1) + ": " + selectedInvoiceNumbers1.get(i));
+            // Step 6: Check validation result
+            Boolean success = (Boolean) validationResult.get("success");
+
+            if (!success) {
+                // Validation failed - get error details
+                String error = (String) validationResult.get("error");
+                Integer failedRow = (Integer) validationResult.get("failedRow");
+
+                test.fail("❌ SMOKE_SB_012 FAILED at Row " + failedRow);
+                test.fail("Error: " + error);
+                System.out.println("\n❌ TEST FAILED AT ROW " + failedRow);
+                System.out.println("Error: " + error);
+
+                Assert.fail(error);
             }
 
-            //Enable HCFA Button
-            test.info("Step 10: Enabling HCFA Toggle Button");
-            System.out.println("\n🔄 Step 10: Enabling HCFA Toggle...");
+            // Step 7: Get counts
+            Integer totalInvoices = (Integer) validationResult.get("totalInvoices");
+            Integer eamsVerifiedCount = (Integer) validationResult.get("eamsVerifiedCount");
+            Integer eamsNotVerifiedCount = (Integer) validationResult.get("eamsNotVerifiedCount");
+            Integer notVerifiedCount = (Integer) validationResult.get("notVerifiedCount");
 
-            try {
-                singleBillingPage.enableHcfaToggle();
-                test.info("✓ HCFA Toggle enabled");
-                System.out.println("✓ HCFA Toggle enabled successfully");
+            // Step 8: Validate that we have at least some EAMS processed invoices
+            int eamsProcessedTotal = eamsVerifiedCount + eamsNotVerifiedCount;
 
-            } catch (Exception e) {
-                test.fail("❌ Failed to enable HCFA Toggle: " + e.getMessage());
-                System.err.println("❌ HCFA Toggle enable failed: " + e.getMessage());
-                throw e;
-            }
+            test.info("Step 3: Checking minimum requirements");
+            System.out.println("\n✅ Step 3: Checking minimum requirements...");
 
-            // Step 4: Click EMC submission button (selecting all ready invoices)
-            test.info("Step 2: Clicking EMC submission button");
-            System.out.println("\n🖱️ Step 2: Submitting multiple invoices via EMC...");
+            Assert.assertTrue(eamsProcessedTotal > 0,
+                    "No EAMS Verified or EAMS Not Verified invoices found. " +
+                            "Please ensure there are invoices that have been processed through EAMS.");
 
-            singleBillingPage.clickEmcSubmissionButton();
-            WaitUtils.sleep(5000);
+            test.info("✓ Found " + eamsProcessedTotal + " EAMS processed invoices");
+            System.out.println("✓ Found " + eamsProcessedTotal + " EAMS processed invoices");
 
-            test.pass("✓ EMC submission button clicked");
-            System.out.println("✓ EMC submission initiated");
+            // Step 9: Log detailed summary
+            test.info("========================================");
+            test.info("VALIDATION SUMMARY:");
+            test.info("Total Invoices Validated: " + totalInvoices);
+            test.info("- EAMS Verified: " + eamsVerifiedCount + " (all have valid comments ✓)");
+            test.info("- EAMS Not Verified: " + eamsNotVerifiedCount + " (all have valid comments ✓)");
+            test.info("- Not Verified: " + notVerifiedCount + " (all correctly have no comments ✓)");
+            test.info("========================================");
 
-            test.pass("✓ Multiple invoices submitted successfully via EMC");
-            System.out.println("✓ Multiple invoices submitted successfully via EMC");
-
-            // Summary
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_SB_012 Summary:");
-            System.out.println("   ✓ " + invoicesAdded + " invoices added");
-            System.out.println("   ✓ EMC submission button clicked");
-            System.out.println("   ✓ Multiple invoices submitted via EMC successfully");
+            System.out.println("📊 VALIDATION SUMMARY:");
             System.out.println("========================================");
+            System.out.println("Total Invoices Validated: " + totalInvoices);
+            System.out.println();
+            System.out.println("✅ EAMS Verified: " + eamsVerifiedCount);
+            System.out.println("   → All have valid scrubbing comments");
+            System.out.println();
+            System.out.println("✅ EAMS Not Verified: " + eamsNotVerifiedCount);
+            System.out.println("   → All have valid scrubbing comments");
+            System.out.println();
+            System.out.println("✅ Not Verified: " + notVerifiedCount);
+            System.out.println("   → All correctly have NO comments");
+            System.out.println("========================================");
+
+            // Step 10: Log business rules validated
+            test.info("Business Rules Validated:");
+            test.info("✓ All 'EAMS Verified' invoices have valid comments");
+            test.info("✓ All 'EAMS Not Verified' invoices have valid comments");
+            test.info("✓ All comments match the 8 valid EAMS comments");
+            test.info("✓ All 'Not Verified' invoices have no comments");
+
+            System.out.println("\n✅ Business Rules Validated:");
+            System.out.println("   ✓ All 'EAMS Verified' invoices have valid comments");
+            System.out.println("   ✓ All 'EAMS Not Verified' invoices have valid comments");
+            System.out.println("   ✓ All comments match the 8 valid EAMS comments");
+            System.out.println("   ✓ All 'Not Verified' invoices have no comments");
+            System.out.println();
 
         } catch (AssertionError e) {
             test.fail("❌ SMOKE_SB_012 FAILED - " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED: " + e.getMessage());
+            System.out.println("\n❌ TEST FAILED");
+            System.out.println("Failure Reason: " + e.getMessage());
+            System.out.println("\n💡 Troubleshooting:");
+            System.out.println("   1. Check validation error details above");
+            System.out.println("   2. Ensure EAMS verified invoices have scrubbing comments");
+            System.out.println("   3. Ensure 'Not Verified' invoices do not have comments");
             throw e;
         } catch (Exception e) {
             test.fail("❌ SMOKE_SB_012 FAILED - Unexpected error: " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
+            System.out.println("\n❌ TEST FAILED - Unexpected error");
+            System.out.println("Error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
@@ -1777,29 +1831,42 @@ public class SingleBillingTest extends SmokeBaseTest {
                             singleBillingPage.selectFirstDos();
                             WaitUtils.sleep(5000);
                             invoicesAdded++;
-                            System.out.println("✓ Invoice " + (i + 1) + " added");
+                            System.out.println("✓ Invoice " + (i + 1) + " added successfully");
+                            test.pass("Invoice " + (i + 1) + " added: " + applicantId);
+                        } else {
+                            System.out.println("⚠ No DOS available for applicant " + applicantId + " - skipping");
+                            test.info("No DOS available for " + applicantId + " - skipped");
                         }
+                    } else {
+                        System.out.println("⚠ Applicant " + applicantId + " not found - skipping");
+                        test.info("Applicant " + applicantId + " not found - skipped");
                     }
+
                 } catch (Exception e) {
-                    System.err.println("⚠ Error adding invoice " + (i + 1));
+                    System.err.println("⚠ Error adding invoice " + (i + 1) + ": " + e.getMessage());
+                    test.info("Error adding invoice " + (i + 1) + " - continuing with next");
                 }
             }
 
 
-            System.out.println("\n✅ Total invoices added: " + invoicesAdded);
+            System.out.println("\n✅ Finished adding invoices");
+            System.out.println("Total invoices added: " + invoicesAdded);
             test.info("Total invoices added: " + invoicesAdded);
 
-            Assert.assertTrue(invoicesAdded >= 2,
-                    "Minimum 2 invoices required. Only " + invoicesAdded + " added.");
+            Assert.assertTrue(invoicesAdded >= 4,
+                    "Minimum 4 invoices required for this test. Only " + invoicesAdded + " invoices were added. " +
+                            "Please ensure test data has valid applicant IDs with available DOS.");
 
-            test.pass("✓ Multiple invoices added: " + invoicesAdded);
+            test.pass("✓ Added " + invoicesAdded + " invoices (minimum 4 required)");
 
-            // Step 3: Wait for table to settle
+            // Step 4: Wait for table to settle
             WaitUtils.sleep(3000);
             singleBillingPage.waitForInvoiceTableLoad();
 
             int maxInvoices = 4; // Select maximum 4 invoices (or all on page if less)
-            selectedInvoiceNumbers1 = singleBillingPage.selectMultipleEamsVerifiedInvoiceCheckboxes(maxInvoices);
+            test.info("Step 2: Selecting invoices with Manual EAMS workflow");
+            System.out.println("\n🖱️ Step 2: Selecting invoices with Manual EAMS workflow...");
+            selectedInvoiceNumbers1 = singleBillingPage.selectInvoicesWithManualEamsWorkflow(maxInvoices);
 
             Assert.assertTrue(selectedInvoiceNumbers1.size() >= 2,
                     "Failed to select at least 2 invoices with 'EAMS Verified' or 'EAMS Not Verified' status. " +
@@ -1943,7 +2010,9 @@ public class SingleBillingTest extends SmokeBaseTest {
             singleBillingPage.waitForInvoiceTableLoad();
 
             int maxInvoices = 4; // Select maximum 4 invoices (or all on page if less)
-            selectedInvoiceNumbers1 = singleBillingPage.selectMultipleEamsVerifiedInvoiceCheckboxes(maxInvoices);
+            test.info("Step 2: Selecting invoices with Manual EAMS workflow");
+            System.out.println("\n🖱️ Step 2: Selecting invoices with Manual EAMS workflow...");
+            selectedInvoiceNumbers1 = singleBillingPage.selectInvoicesWithManualEamsWorkflow(maxInvoices);
 
             Assert.assertTrue(selectedInvoiceNumbers1.size() >= 2,
                     "Failed to select at least 2 invoices with 'EAMS Verified' or 'EAMS Not Verified' status. " +

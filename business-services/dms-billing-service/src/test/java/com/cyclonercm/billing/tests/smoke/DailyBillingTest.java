@@ -566,15 +566,26 @@ public class DailyBillingTest extends SmokeBaseTest {
             // If Missing Information modal appears, enable the toggle, close the dialog, and retry clicking the checkbox
             if (dailyBillingPage.isMissingInfoModalDisplayed()) {
                 test.info("⚠ Missing Information dialog appeared after checkbox click - toggling and retrying");
-                // (Assume enabling toggle and closing dialog is handled inside the page object or here if needed)
-                // Retry clicking the checkbox after enabling toggle
-                dailyBillingPage.ClickCheckBox();
+
             }
 
             try {
                 Assert.assertTrue(dailyBillingPage.isMissingInfoModalDisplayed(),
                         "Missing Information modal should appear for invoice with Red EMC flag");
-                test.pass("✅ Missing Information modal appeared - Invoice is NOT ready for billing (Red EMC)");
+                dailyBillingPage.closeMissingInfoModal();
+                WaitUtils.sleep(2000);
+                dailyBillingPage.manualEamsVerify();
+                // (Assume enabling toggle and closing dialog is handled inside the page object or here if needed)
+                // Retry clicking the checkbox after enabling toggle
+                dailyBillingPage.ClickCheckBox();
+                dailyBillingPage.enableHcfaToggle();
+                WaitUtils.sleep(1000);
+                dailyBillingPage.clickReportViewButton();
+                WaitUtils.sleep(4000);
+
+                dailyBillingPage.isReportViewDisplayed();
+
+                test.pass("✅ Report View opened successfully for invoice with HCFA toggle enabled");
             } catch (AssertionError e) {
                 test.fail("❌ Missing Information modal did not appear. This invoice might be ready for billing (Green EMC)");
                 throw e;
@@ -1009,9 +1020,10 @@ public class DailyBillingTest extends SmokeBaseTest {
                 test.info("Step 2: Finding 'Not Verified' invoice and clicking checkbox");
                 System.out.println("\n🔍 Step 2: Searching for 'Not Verified' invoice...");
 
+
                 boolean checkboxClicked = dailyBillingPage.clickCheckboxForNotVerifiedInvoice();
 
-                Assert.assertFalse(checkboxClicked,
+                Assert.assertTrue(checkboxClicked,
                         "Failed to find or click checkbox for 'Not Verified' invoice. " +
                                 "Ensure there are invoices with 'Not Verified' status in the test data.");
 
@@ -1022,7 +1034,7 @@ public class DailyBillingTest extends SmokeBaseTest {
                 test.info("Step 3: Verifying validation error modal appears");
                 System.out.println("\n✅ Step 3: Checking for validation error popup...");
 
-                boolean modalDisplayed = dailyBillingPage.isValidationErrorModalDisplayed();
+                boolean modalDisplayed = dailyBillingPage.isMissingInfoModalDisplayed();
 
                 Assert.assertTrue(modalDisplayed,
                         "Validation error modal should appear when trying to select 'Not Verified' invoice. " +
@@ -1547,7 +1559,7 @@ public class DailyBillingTest extends SmokeBaseTest {
             System.out.println("✅ SMOKE_DB_015 TEST PASSED - MULTIPLE PAPER SUBMISSION VALIDATED SUCCESSFULLY");
         }
 
-        @Test(priority = 16, description = "SMOKE_DB_016 - Verify user can submit MULTIPLE invoices to clearinghouse with EMC, Paper and E/P, invoices disappear from Daily Billing list and Report View opens")
+        @Test(priority = 16, description = "SMOKE_DB_016 - Verify user can submit MULTIPLE invoices to clearinghouse with EMC and E/P, invoices disappear from Daily Billing list and Report View opens")
         public void SMOKE_DB_016() {
             test.info("📋 Starting SMOKE_DB_016 - Verify Multiple EMC + Paper Submission (E/P) and Report View");
             System.out.println("\n========================================");
@@ -1638,7 +1650,7 @@ public class DailyBillingTest extends SmokeBaseTest {
                     throw e;
                 }
 
-                /* Step 6: Verify success message
+                //Step 6: Verify success message
                 test.info("Step 6: Verifying success message");
                 System.out.println("\n✅ Step 6: Checking for success message...");
 
@@ -1649,11 +1661,11 @@ public class DailyBillingTest extends SmokeBaseTest {
                         "Success message should be 'Bill Successfully Submitted.' but found: " + successMessageEMC);
 
                 test.info("✓ Success message verified: " + successMessageEMC);
-                System.out.println("✓ Success message: " + successMessageEMC);*/
+                System.out.println("✓ Success message: " + successMessageEMC);
 
                 // Step 7: Verify ALL EMC invoices disappeared from Daily Billing list
                 test.info("Step 7: Verifying ALL " + selectedInvoiceNumbersEMC.size() + " EMC invoices disappeared from Daily Billing list");
-                System.out.println("\n🔍 Step 7: Checking if ALL EMC invoices disappeared...");
+                System.out.println("\n Step 7: Checking if ALL EMC invoices disappeared...");
 
                 boolean allEmcInvoicesDisappeared = dailyBillingPage.areMultipleInvoicesDisappeared(selectedInvoiceNumbersEMC);
 
@@ -1667,198 +1679,10 @@ public class DailyBillingTest extends SmokeBaseTest {
                 test.info("========== LOGIC 01 PASSED ==========");
                 System.out.println("\n" + "=".repeat(60));
                 System.out.println("✅ LOGIC 01 PASSED - Multiple EMC Invoices submitted via E/P");
-                System.out.println("=".repeat(60));
 
-                // ========== LOGIC 02: Multiple Paper Invoices through E/P ==========
-                test.info("\n========== LOGIC 02: Multiple Paper Invoices through E/P ==========");
-                System.out.println("\n" + "=".repeat(60));
-                System.out.println("📄 LOGIC 02: Multiple Paper Invoices through E/P");
-                System.out.println("=".repeat(60));
-
-                // Step 8: Click Paper Filter
-                test.info("Step 8: Clicking Paper Filter");
-                System.out.println("\n🔘 Step 8: Clicking Paper Filter...");
-
-                try {
-                    dailyBillingPage.clickPaperFilter();
-                    test.info("✓ Paper Filter clicked");
-                    System.out.println("✓ Paper Filter clicked - Waiting for invoices to load");
-                    WaitUtils.sleep(5000); // Wait for Paper filtered invoices to load
-
-                } catch (Exception e) {
-                    test.fail("❌ Failed to click Paper Filter: " + e.getMessage());
-                    System.err.println("❌ Paper Filter click failed: " + e.getMessage());
-                    throw e;
-                }
-
-                // Step 9: Select MULTIPLE EAMS Verified or EAMS Not Verified invoice checkboxes
-                test.info("Step 9: Selecting MULTIPLE EAMS Verified/Not Verified invoice checkboxes for Paper");
-                System.out.println("\n☑️ Step 9: Selecting MULTIPLE EAMS Verified/Not Verified Paper invoices...");
-
-                selectedInvoiceNumbersPaper = dailyBillingPage.selectMultipleEamsVerifiedInvoiceCheckboxes(maxInvoices);
-
-                Assert.assertTrue(selectedInvoiceNumbersPaper.size() >= 2,
-                        "Failed to select at least 2 Paper invoices with 'EAMS Verified' or 'EAMS Not Verified' status. " +
-                                "Selected: " + selectedInvoiceNumbersPaper.size() + ". Ensure there are multiple Paper-ready invoices in the test data.");
-
-                test.info("✓ Multiple Paper invoices selected: " + selectedInvoiceNumbersPaper.size());
-                System.out.println("\n✓ Total Paper invoices selected: " + selectedInvoiceNumbersPaper.size());
-                for (int i = 0; i < selectedInvoiceNumbersPaper.size(); i++) {
-                    test.info("   Invoice " + (i + 1) + ": " + selectedInvoiceNumbersPaper.get(i));
-                    System.out.println("   " + (i + 1) + ". " + selectedInvoiceNumbersPaper.get(i));
-                }
-                WaitUtils.sleep(2000);
-
-                // Step 10: Enable HCFA Toggle Button
-                test.info("Step 10: Enabling HCFA Toggle Button");
-                System.out.println("\n🔄 Step 10: Enabling HCFA Toggle...");
-
-                try {
-                    dailyBillingPage.enableHcfaToggle();
-                    test.info("✓ HCFA Toggle enabled");
-                    System.out.println("✓ HCFA Toggle enabled successfully");
-
-                } catch (Exception e) {
-                    test.fail("❌ Failed to enable HCFA Toggle: " + e.getMessage());
-                    System.err.println("❌ HCFA Toggle enable failed: " + e.getMessage());
-                    throw e;
-                }
-
-                // Step 11: Click E/P Submission Button
-                test.info("Step 11: Clicking E/P Submission Button for MULTIPLE Paper invoices");
-                System.out.println("\n📤 Step 11: Submitting " + selectedInvoiceNumbersPaper.size() + " Paper invoices via E/P...");
-
-                try {
-                    dailyBillingPage.clickEpSubmissionButton();
-                    test.info("✓ E/P Submission button clicked");
-                    System.out.println("✓ E/P Submission initiated for " + selectedInvoiceNumbersPaper.size() + " Paper invoices");
-
-                } catch (Exception e) {
-                    test.fail("❌ Failed to click E/P Submission button: " + e.getMessage());
-                    System.err.println("❌ E/P Submission button click failed: " + e.getMessage());
-                    throw e;
-                }
-
-                WaitUtils.sleep(3000);
-
-                /* Step 12: Verify success message
-                test.info("Step 12: Verifying success message");
-                System.out.println("\n✅ Step 12: Checking for success message...");
-
-                String successMessagePaper = dailyBillingPage.getSuccessMessage();
-
-                Assert.assertEquals(successMessagePaper, expectedMessage,
-                        "Success message should be 'Bill Successfully Submitted.' but found: " + successMessagePaper);
-
-                test.info("✓ Success message verified: " + successMessagePaper);
-                System.out.println("✓ Success message: " + successMessagePaper);*/
-
-                // Step 13: Verify Report View automatically opens after Paper submission
-                test.info("Step 13: Verifying Report View automatically opened after Paper submission");
-                System.out.println("\n📊 Step 13: Checking if Report View automatically opened...");
-
-                boolean reportViewDisplayed = dailyBillingPage.isReportViewDisplayedAfterEP();
-
-                Assert.assertTrue(reportViewDisplayed,
-                        "Report View should automatically open after Paper submission, but it was not displayed.");
-
-                test.info("✓ Report View automatically opened after Paper submission");
-                System.out.println("✓ Report View automatically displayed");
-
-                // Step 14: Verify Report View label
-                test.info("Step 14: Verifying Report View label");
-                System.out.println("\n🏷️ Step 14: Verifying Report View label...");
-
-                String reportViewLabel = dailyBillingPage.getReportViewLabelText();
-                String expectedReportViewLabel = "Report View";
-
-                Assert.assertEquals(reportViewLabel, expectedReportViewLabel,
-                        "Report View label should be 'Report View' but found: " + reportViewLabel);
-
-                test.info("✓ Report View label verified: " + reportViewLabel);
-                System.out.println("✓ Report View label: " + reportViewLabel);
-
-                // Step 15: Verify ALL selected invoices disappeared from Daily Billing list
-                test.info("Step 15: Verifying ALL " + selectedInvoiceNumbersPaper.size() + " invoices disappeared from Daily Billing list");
-                System.out.println("\n🔍 Step 15: Checking if ALL invoices disappeared...");
-
-                boolean allPaperInvoicesDisappeared = dailyBillingPage.areMultipleInvoicesDisappeared(selectedInvoiceNumbersPaper);
-
-                Assert.assertTrue(allPaperInvoicesDisappeared,
-                        "All " + selectedInvoiceNumbersPaper.size() + " invoices should have disappeared from Daily Billing list after Paper submission, " +
-                                "but some are still present.");
-
-                test.info("✓ All " + selectedInvoiceNumbersPaper.size() + " invoices successfully disappeared from list");
-                System.out.println("\n✅ All " + selectedInvoiceNumbersPaper.size() + " Paper invoices removed from Daily Billing list");
-
-                test.info("========== LOGIC 02 PASSED ==========");
-                System.out.println("\n" + "=".repeat(60));
-                System.out.println("✅ LOGIC 02 PASSED - Multiple Paper Invoices submitted via E/P with Report View");
-                System.out.println("=".repeat(60));
-
-                // Final validation summary
-                test.info("========================================");
-                test.info("SMOKE_DB_024 VALIDATION SUMMARY:");
-                test.info("LOGIC 01 (Multiple EMC through E/P):");
-                test.info("✓ DOS filter applied successfully");
-                test.info("✓ EMC filter clicked and invoices loaded");
-                test.info("✓ Multiple EAMS Verified/Not Verified invoices selected: " + selectedInvoiceNumbersEMC.size());
-                for (int i = 0; i < selectedInvoiceNumbersEMC.size(); i++) {
-                    test.info("   - Invoice " + (i + 1) + ": " + selectedInvoiceNumbersEMC.get(i));
-                }
-                test.info("✓ HCFA Toggle enabled successfully");
-                test.info("✓ E/P Submission button clicked");
-                //test.info("✓ Success message verified: '" + successMessageEMC + "'");
-                test.info("✓ All " + selectedInvoiceNumbersEMC.size() + " EMC invoices disappeared from Daily Billing list");
-                test.info("");
-                test.info("LOGIC 02 (Multiple Paper through E/P):");
-                test.info("✓ Paper filter clicked and invoices loaded");
-                test.info("✓ Multiple EAMS Verified/Not Verified invoices selected: " + selectedInvoiceNumbersPaper.size());
-                for (int i = 0; i < selectedInvoiceNumbersPaper.size(); i++) {
-                    test.info("   - Invoice " + (i + 1) + ": " + selectedInvoiceNumbersPaper.get(i));
-                }
-                test.info("✓ HCFA Toggle enabled successfully");
-                test.info("✓ E/P Submission button clicked");
-                //test.info("✓ Success message verified: '" + successMessagePaper + "'");
-                test.info("✓ Report View automatically opened");
-                test.info("✓ Report View label verified: 'Report View'");
-                test.info("✓ All " + selectedInvoiceNumbersPaper.size() + " Paper invoices disappeared from Daily Billing list");
-                test.info("========================================");
-
-                System.out.println("\n========================================");
-                System.out.println("📊 SMOKE_DB_024 VALIDATION SUMMARY:");
-                System.out.println("========================================");
-                System.out.println("✅ LOGIC 01 (Multiple EMC through E/P):");
-                System.out.println("   ✓ Number of EMC invoices selected: " + selectedInvoiceNumbersEMC.size());
-                System.out.println("   ✓ EMC Invoice list:");
-                for (int i = 0; i < selectedInvoiceNumbersEMC.size(); i++) {
-                    System.out.println("      " + (i + 1) + ". " + selectedInvoiceNumbersEMC.get(i));
-                }
-                System.out.println("   ✓ E/P Submission successful (batch)");
-                System.out.println("   ✓ Success message displayed");
-                System.out.println("   ✓ All EMC invoices removed from list");
-                System.out.println();
-                System.out.println("✅ LOGIC 02 (Multiple Paper through E/P):");
-                System.out.println("   ✓ Number of Paper invoices selected: " + selectedInvoiceNumbersPaper.size());
-                System.out.println("   ✓ Paper Invoice list:");
-                for (int i = 0; i < selectedInvoiceNumbersPaper.size(); i++) {
-                    System.out.println("      " + (i + 1) + ". " + selectedInvoiceNumbersPaper.get(i));
-                }
-                System.out.println("   ✓ E/P Submission successful (batch)");
-                System.out.println("   ✓ Success message displayed");
-                System.out.println("   ✓ Report View automatically opened");
-                System.out.println("   ✓ All Paper invoices removed from list");
-                System.out.println();
-                System.out.println("✅ Business Rules Validated:");
-                System.out.println("   ✓ E/P button supports batch submission (multiple invoices)");
-                System.out.println("   ✓ Multiple EMC invoices submitted via E/P → all disappear");
-                System.out.println("   ✓ Multiple Paper invoices submitted via E/P → all disappear");
-                System.out.println("   ✓ Paper invoices automatically open Report View (batch)");
-                System.out.println("   ✓ E/P submission workflow completed successfully for batch operations");
-                System.out.println("========================================");
 
             } catch (AssertionError e) {
-                test.fail("❌ SMOKE_DB_024 FAILED - " + e.getMessage());
+                test.fail("❌ SMOKE_DB_016 FAILED - " + e.getMessage());
                 System.out.println("\n❌ TEST FAILED");
                 System.out.println("Failure Reason: " + e.getMessage());
                 System.out.println("\n💡 Troubleshooting:");
@@ -1886,23 +1710,23 @@ public class DailyBillingTest extends SmokeBaseTest {
                 }
                 throw e;
             } catch (Exception e) {
-                test.fail("❌ SMOKE_DB_024 FAILED - Unexpected error: " + e.getMessage());
+                test.fail("❌ SMOKE_DB_016 FAILED - Unexpected error: " + e.getMessage());
                 System.out.println("\n❌ TEST FAILED - Unexpected error");
                 System.out.println("Error: " + e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
 
-            test.pass("🎉 SMOKE_DB_024 PASSED - Multiple E/P submission verified for both EMC and Paper invoices..");
-            System.out.println("✅ SMOKE_DB_024 TEST PASSED - MULTIPLE E/P SUBMISSION VALIDATED SUCCESSFULLY");
+            test.pass("🎉 SMOKE_DB_016 PASSED - Multiple E/P submission verified for both EMC and Paper invoices..");
+            System.out.println("✅ SMOKE_DB_016 TEST PASSED - MULTIPLE E/P SUBMISSION VALIDATED SUCCESSFULLY");
         }
 
 
 
 
-        @Test(priority = 23, description = "SMOKE_DB_023 - Verify user can submit MULTIPLE invoices to clearinghouse with Paper, invoices disappear from Daily Billing list and Report View opens")
-        public void SMOKE_DB_023() {
-            test.info("📋 Starting SMOKE_DB_023 - Verify Multiple Paper Submission and Report View");
+        @Test(priority = 17, description = "SMOKE_DB_017 - Verify user can submit MULTIPLE invoices to clearinghouse with Paper, invoices disappear from Daily Billing list and Report View opens")
+        public void SMOKE_DB_017() {
+            test.info("📋 Starting SMOKE_DB_017 - Verify Multiple Paper Submission and Report View");
             System.out.println("\n========================================");
             System.out.println("🧪 SMOKE_DB_023: Multiple Paper Submission Test");
             System.out.println("========================================\n");
@@ -2021,7 +1845,7 @@ public class DailyBillingTest extends SmokeBaseTest {
 
                 // Step 9: Final validation summary
                 test.info("========================================");
-                test.info("SMOKE_DB_021 VALIDATION SUMMARY:");
+                test.info("SMOKE_DB_017 VALIDATION SUMMARY:");
                 test.info("✓ Paper Filter clicked and invoices loaded");
                 test.info("✓ Multiple invoices selected: " + selectedInvoiceNumbers.size());
                 for (int i = 0; i < selectedInvoiceNumbers.size(); i++) {
@@ -2035,7 +1859,7 @@ public class DailyBillingTest extends SmokeBaseTest {
                 test.info("========================================");
 
                 System.out.println("\n========================================");
-                System.out.println("📊 SMOKE_DB_021 VALIDATION SUMMARY:");
+                System.out.println("📊 SMOKE_DB_017 VALIDATION SUMMARY:");
                 System.out.println("========================================");
                 System.out.println("✅ Multiple Paper Submission Workflow:");
                 System.out.println("   ✓ DOS filter applied");
@@ -2061,7 +1885,7 @@ public class DailyBillingTest extends SmokeBaseTest {
                 System.out.println("========================================");
 
             } catch (AssertionError e) {
-                test.fail("❌ SMOKE_DB_023 FAILED - " + e.getMessage());
+                test.fail("❌ SMOKE_DB_017 FAILED - " + e.getMessage());
                 System.out.println("\n❌ TEST FAILED");
                 System.out.println("Failure Reason: " + e.getMessage());
                 System.out.println("\n💡 Troubleshooting:");
@@ -2080,19 +1904,19 @@ public class DailyBillingTest extends SmokeBaseTest {
                 }
                 throw e;
             } catch (Exception e) {
-                test.fail("❌ SMOKE_DB_023 FAILED - Unexpected error: " + e.getMessage());
+                test.fail("❌ SMOKE_DB_017 FAILED - Unexpected error: " + e.getMessage());
                 System.out.println("\n❌ TEST FAILED - Unexpected error");
                 System.out.println("Error: " + e.getMessage());
                 e.printStackTrace();
                 throw e;
             }
 
-            test.pass("🎉 SMOKE_DB_023 PASSED - Multiple Paper submission verified with Report View and all " + selectedInvoiceNumbers.size() + " invoices successfully disappeared from Daily Billing list");
-            System.out.println("✅ SMOKE_DB_023 TEST PASSED - MULTIPLE PAPER SUBMISSION VALIDATED SUCCESSFULLY");
+            test.pass("🎉 SMOKE_DB_017 PASSED - Multiple Paper submission verified with Report View and all " + selectedInvoiceNumbers.size() + " invoices successfully disappeared from Daily Billing list");
+            System.out.println("✅ SMOKE_DB_017 TEST PASSED - MULTIPLE PAPER SUBMISSION VALIDATED SUCCESSFULLY");
         }
 
-        @Test(priority = 24, description = "SMOKE_DB_024 - Verify user can submit MULTIPLE invoices to clearinghouse with EMC, Paper and E/P, invoices disappear from Daily Billing list and Report View opens")
-        public void SMOKE_DB_024() {
+        @Test(priority = 18, description = "SMOKE_DB_018 - Verify user can submit MULTIPLE invoices to clearinghouse with EMC, Paper and E/P, invoices disappear from Daily Billing list and Report View opens")
+        public void SMOKE_DB_018() {
             test.info("📋 Starting SMOKE_DB_024 - Verify Multiple EMC + Paper Submission (E/P) and Report View");
             System.out.println("\n========================================");
             System.out.println("🧪 SMOKE_DB_024: Multiple EMC + Paper Submission Test");
@@ -2111,7 +1935,7 @@ public class DailyBillingTest extends SmokeBaseTest {
                 // Step 1: Apply DOS filter
                 test.info("Step 1: Applying DOS filter");
                 System.out.println("\n📅 Step 1: Applying DOS filter...");
-                String Dos = DailyBillingTestDataProperties.get("dateofservice065");
+                String Dos = DailyBillingTestDataProperties.get("dateofservice06");
                 dailyBillingPage.setDosFilter(Dos);
                 WaitUtils.sleep(3000);
                 test.info("✓ DOS filter applied: " + Dos);

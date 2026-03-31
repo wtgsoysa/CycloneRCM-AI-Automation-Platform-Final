@@ -10,9 +10,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import com.cyclonercm.ai.agents.SelfHealingAgent; // ← ADD THIS IMPORT
 
 public class DailyBillingPage {
@@ -22,6 +25,17 @@ public class DailyBillingPage {
         private WebDriver driver;
         private WebDriverWait wait;
         private SelfHealingAgent healer;
+        private static final Set<String> EMC_ELIGIBLE_STATUSES = new HashSet<>(Arrays.asList(
+                "EAMS Verified",
+                "EAMS Not Verified",
+                "Multiple Carrier",
+                "No Carrier in EAMS",
+                "No Carrier In EAMS",
+                "Address requires verification",
+                "EAMS Carrier",
+                "No Carrier; Employer Bill",
+                "Nothing Match"
+        ));
 
     public DailyBillingPage(WebDriver driver) {
             this.driver = driver;
@@ -146,8 +160,10 @@ public class DailyBillingPage {
         private final By invoiceNumberFilter = By.xpath("//input[@placeholder='Search by inv #']");
 
         //Checkbox
-        private final By checkbox = By.xpath("//tr[contains(@class,'p-highlight')]//div[contains(@class,'check-box') and contains(@class,'cus-button01')]");
-        private final By informationMessageModal = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/p-dialog/div/div/div[2]/div");
+        private final By checkbox = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[1]/div/p-checkbox");
+        private final By informationMessageModal = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/p-dialog/div/div/div[2]");
+        private final By closetheMessageModal = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/p-dialog/div/div/div[2]/div/div[1]/p-toolbar/div/div[2]/button");
+        private final By clickManualEamsToggle = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[7]/div/span/p-inputswitch/div/span");
 
         //========== FILTER METHODS ==========
         public void setDosFilter(String dos) {
@@ -1226,7 +1242,7 @@ public class DailyBillingPage {
                             try {
                                 WebElement checkbox = row.findElement(By.xpath(".//td[1]//div"));
                                 // Use retry helper that will toggle the Missing Info switch on dialog and retry
-                                boolean clicked = retryClickCheckbox(checkbox, row);
+                                boolean clicked = retryClickCheckbox(checkbox, row, i + 1);
                                 if (!clicked) {
                                     System.out.println("   ⏭ Skipping row " + (i + 1) + " - Could not reliably select checkbox after retries");
                                     continue;
@@ -1342,11 +1358,27 @@ public class DailyBillingPage {
 
         public boolean isMissingInfoModalDisplayed() {
             try {
-                return driver.findElement(informationMessageModal).isDisplayed();
+                return  driver.findElement(informationMessageModal).isDisplayed();
             } catch (Exception e) {
                 return false;
             }
 
+        }
+
+        public void closeMissingInfoModal() {
+            try {
+                driver.findElement(closetheMessageModal).click();
+            } catch (Exception e) {
+                System.err.println("❌ Failed to close Missing Information modal: " + e.getMessage());
+            }
+        }
+
+        public void manualEamsVerify(){
+            try{
+                driver.findElement(clickManualEamsToggle).click();
+            } catch (Exception e) {
+                System.err.println("❌ Failed to click Manual EAMS toggle: " + e.getMessage());
+            }
         }
 
         // ========== SMOKE_DB_009: EAMS VERIFICATION METHODS ==========
@@ -1933,9 +1965,9 @@ public class DailyBillingPage {
 
                                 // Find the primary checkbox element in column 1 (td[1])
                                 try {
-                                    WebElement checkbox = row.findElement(By.xpath(".//td[1]//div[@role='checkbox' or contains(@class, 'checkbox')]"));
+                                    WebElement checkbox = row.findElement(By.xpath("p-checkbox[class='p-element ng-untouched ng-pristine']"));
 
-                                    // NEW: If the checkbox element or its wrapper indicates a disabled state,
+                                    /* NEW: If the checkbox element or its wrapper indicates a disabled state,
                                     // treat it as not clickable and return false (expected behavior).
                                     String cls = "";
                                     try {
@@ -1955,7 +1987,7 @@ public class DailyBillingPage {
                                     if (cls.contains("p-checkbox-disabled") || ariaDisabled.equalsIgnoreCase("true") || disabledAttr.equalsIgnoreCase("true")) {
                                         System.out.println("ℹ Checkbox is DISABLED for this 'Not Verified' invoice (class='" + cls + "', aria-disabled='" + ariaDisabled + "', disabled='" + disabledAttr + "') - treating as not clickable");
                                         return false;
-                                    }
+                                    }*/
 
                                     WaitUtils.sleep(1000);
                                     checkbox.click();
@@ -2387,27 +2419,25 @@ public class DailyBillingPage {
          */
         private boolean clickCheckboxInRow(WebElement row, int rowNumber) {
             try {
-                // Try primary checkbox locator
                 WebElement checkbox = row.findElement(By.xpath(".//td[1]//div[@role='checkbox' or contains(@class, 'checkbox')]"));
-                WaitUtils.sleep(500);
-                checkbox.click();
-                System.out.println("   ✓ Checkbox clicked");
-                return true;
-
-            } catch (Exception e1) {
-                // Try alternative checkbox locator
+                if (retryClickCheckbox(checkbox, row, rowNumber)) {
+                    System.out.println("   ✓ Checkbox clicked");
+                    return true;
+                }
+                System.err.println("   ❌ Checkbox in row " + rowNumber + " could not be selected after retries");
+            } catch (Exception primaryEx) {
                 try {
                     WebElement checkboxAlt = row.findElement(By.xpath(".//td[1]/div"));
-                    WaitUtils.sleep(500);
-                    checkboxAlt.click();
-                    System.out.println("   ✓ Checkbox clicked (alt)");
-                    return true;
-
-                } catch (Exception e2) {
-                    System.err.println("   ❌ Failed to click checkbox at row " + rowNumber);
-                    return false;
+                    if (retryClickCheckbox(checkboxAlt, row, rowNumber)) {
+                        System.out.println("   ✓ Checkbox clicked (alt locator)");
+                        return true;
+                    }
+                    System.err.println("   ❌ Alt checkbox in row " + rowNumber + " still failed after retries");
+                } catch (Exception altEx) {
+                    System.err.println("   ❌ Failed to click checkbox at row " + rowNumber + ": " + altEx.getMessage());
                 }
             }
+            return false;
         }
 
         /**
@@ -2516,7 +2546,7 @@ public class DailyBillingPage {
         private final By emcSubmissionButton = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[1]/p-toolbar/div/div[2]/cyclone-billing-print-option/div/div/div/div/div/div/button[1]");
 
         // Success Message Toast
-        private final By successMessageToast = By.xpath("/html/body/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div/p");
+        private final By successMessageToast = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/ui-message/p-toast[2]/div/p-toastitem/div/div/div/div/div/p");
 
         // ========== SMOKE_DB_019: E/P SUBMISSION LOCATORS ==========
 
@@ -2614,7 +2644,7 @@ public class DailyBillingPage {
                             String statusText = statusBadge.getText().trim();
 
                             // Check if this invoice is "EAMS Verified" or "EAMS Not Verified"
-                            if (statusText.equals("EAMS Verified") || statusText.equals("Address requires verification") || statusText.equals("No Carrier in EAMS") || statusText.equals("Multiple Carrier") || statusText.equals("EAMS Carrier") || statusText.equals("No Carrier; Employer Bill") || statusText.equals("EAMS Not Verified") || statusText.equals("Nothing Match")) {
+                            if (statusText.equals("EAMS Verified") || statusText.equals("Multiple Carrier") || statusText.equals("No Carrier In EAMS") || statusText.equals("EAMS Not Verified")) {
                                 System.out.println("✓ Found invoice with status: " + statusText + " at row " + (i + 1));
 
                                 // Find and click the invoice number link in column 2 (td[2])
@@ -2788,16 +2818,11 @@ public class DailyBillingPage {
                 // Strategy 4: Check the hidden input inside the toggle
                 try {
                     WebElement hiddenInput = toggle.findElement(By.xpath(".//input[@type='checkbox']"));
-                    if (hiddenInput != null) {
-                        boolean checked = hiddenInput.isSelected();
-                        System.out.println("Hidden checkbox isSelected: " + checked);
-                        if (checked) {
-                            enabled = true;
-                            System.out.println("✓ Detected via hidden checkbox isSelected()");
-                        }
+                    if (hiddenInput != null && hiddenInput.isSelected()) {
+                        enabled = true;
                     }
                 } catch (Exception ex) {
-                    System.out.println("No hidden checkbox found");
+                    // No hidden checkbox found
                 }
 
                 System.out.println("\nFinal EMC Toggle State: " + (enabled ? "ENABLED ✓" : "DISABLED ✗"));
@@ -2931,16 +2956,11 @@ public class DailyBillingPage {
                 // Strategy 4: Check the hidden input inside the toggle
                 try {
                     WebElement hiddenInput = toggle.findElement(By.xpath(".//input[@type='checkbox']"));
-                    if (hiddenInput != null) {
-                        boolean checked = hiddenInput.isSelected();
-                        System.out.println("Hidden checkbox isSelected: " + checked);
-                        if (checked) {
-                            enabled = true;
-                            System.out.println("✓ Detected via hidden checkbox isSelected()");
-                        }
+                    if (hiddenInput != null && hiddenInput.isSelected()) {
+                        enabled = true;
                     }
                 } catch (Exception ex) {
-                    System.out.println("No hidden checkbox found");
+                    // No hidden checkbox found
                 }
 
                 System.out.println("\nFinal EMAIL Toggle State: " + (enabled ? "ENABLED ✓" : "DISABLED ✗"));
@@ -3059,19 +3079,16 @@ public class DailyBillingPage {
                 // Strategy 1: aria-checked attribute
                 if ("true".equalsIgnoreCase(ariaChecked)) {
                     enabled = true;
-                    System.out.println("✓ Detected via aria-checked='true'");
                 }
 
                 // Strategy 2: class contains checked
                 if (className != null && className.contains("p-inputswitch-checked")) {
                     enabled = true;
-                    System.out.println("✓ Detected via class contains 'p-inputswitch-checked'");
                 }
 
                 // Strategy 3: ng-reflect-model (Angular binding)
                 if ("true".equalsIgnoreCase(ngReflectModel)) {
                     enabled = true;
-                    System.out.println("✓ Detected via ng-reflect-model='true'");
                 }
 
                 // Strategy 4: Check the hidden input inside the toggle
@@ -3151,7 +3168,6 @@ public class DailyBillingPage {
          * 1. FAX Toggle is enabled (MANDATORY)
          * 2. Bill Reviewer FAX Number is not blank (MANDATORY)
          * Business Rule: FAX Toggle enabled AND FAX Number required for FAX submission
-         * Note: Bill Reviewer Email is OPTIONAL
          */
         public boolean isFaxReadyInvoice() {
             try {
@@ -3467,7 +3483,7 @@ public class DailyBillingPage {
                                     invoiceNumber = invoiceElement.getText().trim();
                                     System.out.println("✓ Invoice Number: " + invoiceNumber);
                                 } catch (Exception e) {
-                                    System.err.println("⚠ Could not get invoice number");
+                                    System.err.println("   ⚠ Could not get invoice number");
                                     continue;
                                 }
 
@@ -3475,7 +3491,7 @@ public class DailyBillingPage {
                                 try {
                                     WebElement checkbox = row.findElement(By.xpath(".//td[1]//div"));
                                     WaitUtils.sleep(500);
-                                    boolean clicked = retryClickCheckbox(checkbox, row);
+                                    boolean clicked = retryClickCheckbox(checkbox, row, i + 1);
                                     if (!clicked) {
                                         System.err.println("❌ Could not reliably select checkbox after retries for invoice: " + invoiceNumber);
                                         continue;
@@ -3768,6 +3784,8 @@ public class DailyBillingPage {
          * Returns a list of invoice numbers that were selected
          * @param maxCount Maximum number of invoices to select (minimum 2)
          */
+
+
         public List<String> selectMultipleEamsVerifiedInvoiceCheckboxes(int maxCount) {
             List<String> selectedInvoices = new ArrayList<>();
 
@@ -3793,8 +3811,9 @@ public class DailyBillingPage {
                             WebElement statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
                             String statusText = statusBadge.getText().trim();
 
-                            // Check if status is "EAMS Verified" or "EAMS Not Verified"
-                            if (statusText.equals("EAMS Verified") || statusText.equals("EAMS Not Verified")) {
+                            // Check if status is eligible for EMC submission
+                            if (isEamsEligibleStatus(statusText)) {
+
                                 System.out.println("   Row " + (i + 1) + " - Status: '" + statusText + "'");
 
                                 // Get invoice number from column 2 (td[2])
@@ -3808,18 +3827,12 @@ public class DailyBillingPage {
                                     continue;
                                 }
 
-                                // Click checkbox in column 1 (td[1])
-                                try {
-                                    WebElement checkbox = row.findElement(By.xpath(".//td[1]//div"));
-                                    WaitUtils.sleep(500);
-                                    checkbox.click();
+                                // Click checkbox to select invoice
+                                boolean checkboxClicked = clickCheckboxInRow(row, i + 1);
+
+                                if (checkboxClicked) {
                                     selectedCount++;
                                     selectedInvoices.add(invoiceNumber);
-                                    System.out.println("   ✓ Checkbox " + selectedCount + " selected: " + invoiceNumber + " (Status: " + statusText + ")");
-                                    WaitUtils.sleep(500); // Small delay between selections
-
-                                } catch (Exception checkboxError) {
-                                    System.err.println("   ❌ Could not find or click checkbox: " + checkboxError.getMessage());
                                 }
                             }
 
@@ -3828,7 +3841,7 @@ public class DailyBillingPage {
                         }
 
                     } catch (Exception e) {
-                        // Skip this row and continue
+                        // Skip problematic rows
                     }
                 }
 
@@ -3848,9 +3861,26 @@ public class DailyBillingPage {
                 e.printStackTrace();
                 return selectedInvoices;
             }
-        }
+            }
 
-        /**
+            private boolean isEamsEligibleStatus(String statusText) {
+                if (statusText == null || statusText.trim().isEmpty()) {
+                    return false;
+                }
+                String trimmedStatus = statusText.trim();
+                for (String allowedStatus : EMC_ELIGIBLE_STATUSES) {
+                    if (allowedStatus.equalsIgnoreCase(trimmedStatus)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+         private boolean isToggleEnabled() {
+             return driver.findElement(By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[7]/div/span/p-inputswitch/div/span")).isSelected();
+         }
+
+    /**
          * SMOKE_DB_023: Verify multiple invoices disappeared from the list
          * Returns true if ALL invoices are no longer in the Daily Billing list
          */
@@ -3955,10 +3985,43 @@ public class DailyBillingPage {
         }
 
         /**
+         * Helper: Find invoice row by its 1-based index (rowNumber)
+         */
+        private WebElement findInvoiceRowByIndex(int rowNumber) {
+            try {
+                List<WebElement> rows = driver.findElements(By.xpath("//p-table//tbody/tr[contains(@class,'ng-star-inserted')]"));
+                if (rowNumber > 0 && rowNumber <= rows.size()) {
+                    return rows.get(rowNumber - 1);
+                }
+            } catch (Exception e) {
+                System.err.println("⚠ Unable to refind row " + rowNumber + ": " + e.getMessage());
+            }
+            return null;
+        }
+
+        /**
+         * Helper: Resolve the checkbox element in a given row
+         */
+        private WebElement resolveCheckboxInRow(WebElement row) {
+            if (row == null) {
+                return null;
+            }
+            try {
+                return row.findElement(By.xpath(".//td[1]//div[@role='checkbox' or contains(@class,'checkbox')]"));
+            } catch (Exception primary) {
+                try {
+                    return row.findElement(By.xpath(".//td[1]/div"));
+                } catch (Exception ignored) {
+                    return null;
+                }
+            }
+        }
+
+        /**
          * Helper: Retry clicking checkbox with toggle logic
          * If Missing Information dialog appears, toggle the switch and retry
          */
-        private boolean retryClickCheckbox(WebElement checkbox, WebElement row) {
+        private boolean retryClickCheckbox(WebElement checkbox, WebElement row, int rowIndex) {
             int attempts = 0;
             while (attempts < 3) {
                 try {
@@ -3974,12 +4037,12 @@ public class DailyBillingPage {
                     // If Missing Information dialog appears, try toggle and retry
                     if (isMissingInfoDialogDisplayed()) {
                         System.out.println("   ⚠ Missing Information dialog appeared after checkbox click - toggling and retrying");
-                        // close the modal if it shows up immediately
                         try { closeMissingInfoDialog(); } catch (Exception ignore) {}
                         toggleMissingInfoSwitch(row);
                         WaitUtils.sleep(700);
-                        // Re-locate checkbox in case DOM refreshed
-                        try { checkbox = row.findElement(By.xpath(".//td[1]//div")); } catch (Exception ignore) {}
+                        // Refetch row and checkbox after toggling
+                        row = findInvoiceRowByIndex(rowIndex);
+                        checkbox = resolveCheckboxInRow(row);
                         attempts++;
                         continue;
                     }
@@ -3987,9 +4050,12 @@ public class DailyBillingPage {
                     return true;
                 } catch (org.openqa.selenium.StaleElementReferenceException staleEx) {
                     // Re-find and retry
-                    try {
-                        checkbox = row.findElement(By.xpath(".//td[1]//div"));
-                    } catch (Exception ignore) {}
+                    if (rowIndex > 0) {
+                        row = findInvoiceRowByIndex(rowIndex);
+                        checkbox = resolveCheckboxInRow(row);
+                    }
+                    attempts++;
+                    continue;
                 } catch (org.openqa.selenium.ElementClickInterceptedException interceptedEx) {
                     // If click intercepted, wait and retry
                     WaitUtils.sleep(400);
