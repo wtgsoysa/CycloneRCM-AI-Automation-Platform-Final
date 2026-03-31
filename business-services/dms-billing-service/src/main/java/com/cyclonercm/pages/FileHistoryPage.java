@@ -82,7 +82,135 @@ public class FileHistoryPage {
     }
 
     public void clickEditInvoiceIcon() {
-        driver.findElement(invoiceEditIcon).click();
+        List<WebElement> rows = getInvoiceListRows();
+        if (rows.isEmpty()) {
+            throw new RuntimeException("No invoices available in the Invoice List panel");
+        }
+
+        for (int i = 0; i < rows.size(); i++) {
+            WebElement row = rows.get(i);
+            String status = getInvoiceRowStatus(row);
+
+            if (shouldSkipInvoiceEdit(status)) {
+                System.out.println("⏭ Skipping invoice row[" + (i + 1) + "] - status '" + status + "' has no edit action");
+                continue;
+            }
+
+            WebElement editIconElement = findEditIconInRow(row);
+            if (editIconElement == null) {
+                System.out.println("⏭ Skipping invoice row[" + (i + 1) + "] - edit icon not present");
+                continue;
+            }
+
+            try {
+                WaitUtils.waitForVisibility(driver, editIconElement, 5);
+            } catch (Exception ignored) { }
+
+            try {
+                ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", editIconElement);
+            } catch (Exception ignored) { }
+
+            try {
+                editIconElement.click();
+                System.out.println("✓ Clicked Edit icon on invoice row[" + (i + 1) + "] (status: " + status + ")");
+                return;
+            } catch (Exception e) {
+                System.out.println("⚠ Failed to click Edit icon on invoice row[" + (i + 1) + "] - " + e.getMessage());
+            }
+        }
+
+        throw new RuntimeException("No invoice rows exposed an editable icon after scanning all rows");
+    }
+
+    private boolean shouldSkipInvoiceEdit(String status) {
+        if (status == null) {
+            return false;
+        }
+        String normalized = status.trim().toLowerCase();
+        return normalized.contains("deleted") || normalized.contains("duplicate");
+    }
+
+    private WebElement findEditIconInRow(WebElement row) {
+        By[] candidates = new By[]{
+                By.xpath(".//button[@ptooltip='Edit Invoice']"),
+                By.xpath(".//button[@icon='pi pi-pencil']"),
+                By.xpath(".//button[contains(@class,'pi-pencil')]"),
+                By.xpath(".//button[contains(@aria-label,'Edit')]"),
+                By.xpath(".//button[contains(@title,'Edit')]")
+        };
+
+        for (By locator : candidates) {
+            List<WebElement> icons = row.findElements(locator);
+            if (!icons.isEmpty()) {
+                WebElement icon = icons.get(0);
+                if (icon.isDisplayed()) {
+                    return icon;
+                }
+            }
+        }
+        return null;
+    }
+
+    private WebElement findFileIconInRow(WebElement row) {
+        By[] candidates = new By[]{
+                By.xpath(".//button[@ptooltip='View Invoice']"),
+                By.xpath(".//button[@icon='pi pi-file']"),
+                By.xpath(".//button[contains(@class,'pi-file')]")
+        };
+
+        for (By locator : candidates) {
+            List<WebElement> icons = row.findElements(locator);
+            if (!icons.isEmpty() && icons.get(0).isDisplayed()) {
+                return icons.get(0);
+            }
+        }
+        return null;
+    }
+
+    public boolean hasFileIconInRow(int rowIndex) {
+        List<WebElement> rows = getInvoiceListRows();
+        if (rowIndex < 1 || rowIndex > rows.size()) {
+            return false;
+        }
+        return findFileIconInRow(rows.get(rowIndex - 1)) != null;
+    }
+
+    public void clickFileIconInRow(int rowIndex) {
+        List<WebElement> rows = getInvoiceListRows();
+        if (rowIndex < 1 || rowIndex > rows.size()) {
+            throw new IllegalArgumentException("Invalid invoice row index: " + rowIndex);
+        }
+        WebElement icon = findFileIconInRow(rows.get(rowIndex - 1));
+        if (icon == null) {
+            throw new RuntimeException("File icon not present in row " + rowIndex);
+        }
+        try {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", icon);
+        } catch (Exception ignored) { }
+        icon.click();
+    }
+
+    public boolean hasEditIconInRow(int rowIndex) {
+        List<WebElement> rows = getInvoiceListRows();
+        if (rowIndex < 1 || rowIndex > rows.size()) {
+            return false;
+        }
+        return findEditIconInRow(rows.get(rowIndex - 1)) != null;
+    }
+
+    public void clickEditIconInRow(int rowIndex) {
+        List<WebElement> rows = getInvoiceListRows();
+        if (rowIndex < 1 || rowIndex > rows.size()) {
+            throw new IllegalArgumentException("Invalid invoice row index: " + rowIndex);
+        }
+        WebElement icon = findEditIconInRow(rows.get(rowIndex - 1));
+        if (icon == null) {
+            throw new RuntimeException("Edit icon not present in row " + rowIndex);
+        }
+        try {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", icon);
+        } catch (Exception ignored) { }
+        icon.click();
     }
 
     public String getMastersTabText() {
@@ -764,6 +892,7 @@ public class FileHistoryPage {
     }
 
     public void clickFirstFile() {
+
         driver.findElements(fileCard).get(0).click();
     }
 

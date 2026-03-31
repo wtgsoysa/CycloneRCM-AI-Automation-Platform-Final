@@ -146,7 +146,7 @@ public class DailyBillingPage {
         private final By invoiceNumberFilter = By.xpath("//input[@placeholder='Search by inv #']");
 
         //Checkbox
-        private final By checkbox = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/div/div[3]/p-table/div/div/table/tbody/tr[3]/td[1]/div/p-checkbox");
+        private final By checkbox = By.xpath("//tr[contains(@class,'p-highlight')]//div[contains(@class,'check-box') and contains(@class,'cus-button01')]");
         private final By informationMessageModal = By.xpath("/html/body/ng-component/div/div/div[2]/billing-app/div/div/div[2]/div/div/billing-list/p-dialog/div/div/div[2]/div");
 
         //========== FILTER METHODS ==========
@@ -761,7 +761,7 @@ public class DailyBillingPage {
                     java.util.List<WebElement> labels = driver.findElements(claimAdminDropdownLabel);
                     if (!labels.isEmpty()) {
                         String val = labels.get(0).getText().trim();
-                        if (!val.isEmpty() && !val.equalsIgnoreCase("Claim Admin")) {
+                        if (!val.isEmpty() && !val.equals("Select") && !val.equalsIgnoreCase("Claim Admin")) {
                             System.out.println("✓ Claim Admin filter value from dropdown label: " + val);
                             return val;
                         }
@@ -1101,7 +1101,7 @@ public class DailyBillingPage {
 
             System.out.println("📊 Header Counts:");
             System.out.println("   Total Record Count: " + totalHeader);
-            System.out.println("   EAMS Non-Verified Count: " + eamsHeader);
+            System.out.println("   EAMS Non-Verified Record Count: " + eamsHeader);
 
             // Actual counts
             int actualRows = getActualRowCount();
@@ -2995,8 +2995,8 @@ public class DailyBillingPage {
                 System.out.println("\n" + "=".repeat(60));
                 System.out.println("📊 EMAIL READY VALIDATION");
                 System.out.println("=".repeat(60));
-                System.out.println("   EMAIL Toggle Enabled: " + (emailEnabled ? "YES ✓ (MANDATORY)" : "NO ✗ (MANDATORY)"));
-                System.out.println("   Bill Reviewer Email Not Blank: " + (emailNotBlank ? "YES ✓ (MANDATORY)" : "NO ✗ (MANDATORY)"));
+                System.out.println("   EMAIL Toggle Enabled: " + (emailEnabled ? "YES ✓" : "NO ✗"));
+                System.out.println("   Bill Reviewer Email Not Blank: " + (emailNotBlank ? "YES ✓" : "NO ✗"));
                 System.out.println("   Bill Reviewer Email Value: " + (billReviewerEmail.isEmpty() ? "BLANK" : billReviewerEmail));
                 System.out.println("   Invoice EMAIL Ready: " + (isReady ? "YES ✓" : "NO ✗"));
                 System.out.println("   Business Rule: EMAIL Toggle ENABLED + Bill Reviewer Email NOT BLANK (BOTH MANDATORY)");
@@ -3077,20 +3077,16 @@ public class DailyBillingPage {
                 // Strategy 4: Check the hidden input inside the toggle
                 try {
                     WebElement hiddenInput = toggle.findElement(By.xpath(".//input[@type='checkbox']"));
-                    if (hiddenInput != null) {
-                        boolean checked = hiddenInput.isSelected();
-                        System.out.println("Hidden checkbox isSelected: " + checked);
-                        if (checked) {
-                            enabled = true;
-                            System.out.println("✓ Detected via hidden checkbox isSelected()");
-                        }
+                    if (hiddenInput != null && hiddenInput.isSelected()) {
+                        enabled = true;
                     }
                 } catch (Exception ex) {
-                    System.out.println("No hidden checkbox found");
+                    // No hidden checkbox found
                 }
 
-                System.out.println("\nFinal FAX Toggle State: " + (enabled ? "ENABLED ✓" : "DISABLED ✗"));
-                return enabled;
+                boolean disabled = !enabled;
+                System.out.println("FAX Toggle State: " + (disabled ? "DISABLED ✓ (Required for Paper)" : "ENABLED ✗ (Should be disabled)"));
+                return disabled;
 
             } catch (Exception e) {
                 System.err.println("❌ Error detecting FAX toggle: " + e.getMessage());
@@ -3171,8 +3167,8 @@ public class DailyBillingPage {
                 System.out.println("\n" + "=".repeat(60));
                 System.out.println("📊 FAX READY VALIDATION");
                 System.out.println("=".repeat(60));
-                System.out.println("   FAX Toggle Enabled: " + (faxEnabled ? "YES ✓ (MANDATORY)" : "NO ✗ (MANDATORY)"));
-                System.out.println("   Bill Reviewer FAX Not Blank: " + (faxNotBlank ? "YES ✓ (MANDATORY)" : "NO ✗ (MANDATORY)"));
+                System.out.println("   FAX Toggle Enabled: " + (faxEnabled ? "YES ✓" : "NO ✗"));
+                System.out.println("   Bill Reviewer FAX Not Blank: " + (faxNotBlank ? "YES ✓" : "NO ✗"));
                 System.out.println("   Bill Reviewer FAX Value: " + (billReviewerFax.isEmpty() ? "BLANK" : billReviewerFax));
 
 
@@ -3419,9 +3415,9 @@ public class DailyBillingPage {
                 System.out.println("\n" + "=".repeat(60));
                 System.out.println("📊 PAPER READY VALIDATION");
                 System.out.println("=".repeat(60));
-                System.out.println("   EMC Toggle DISABLED: " + (emcDisabled ? "YES ✓ (MANDATORY)" : "NO ✗ (MANDATORY - Should be disabled)"));
-                System.out.println("   EMAIL Toggle DISABLED: " + (emailDisabled ? "YES ✓ (MANDATORY)" : "NO ✗ (MANDATORY - Should be disabled)"));
-                System.out.println("   FAX Toggle DISABLED: " + (faxDisabled ? "YES ✓ (MANDATORY)" : "NO ✗ (MANDATORY - Should be disabled)"));
+                System.out.println("   EMC Toggle DISABLED: " + (emcDisabled ? "YES ✓" : "NO ✗"));
+                System.out.println("   EMAIL Toggle DISABLED: " + (emailDisabled ? "YES ✓" : "NO ✗"));
+                System.out.println("   FAX Toggle DISABLED: " + (faxDisabled ? "YES ✓" : "NO ✗"));
                 System.out.println("   Invoice Paper Ready: " + (isReady ? "YES ✓" : "NO ✗"));
                 System.out.println("   Business Rule: EMC + EMAIL + FAX Toggles ALL DISABLED (ALL MANDATORY)");
                 System.out.println("=".repeat(60) + "\n");
@@ -3460,8 +3456,6 @@ public class DailyBillingPage {
                             WebElement statusBadge = row.findElement(By.xpath(".//td[5]//p-badge/span"));
                             String statusText = statusBadge.getText().trim();
 
-                            System.out.println("   Row " + (i + 1) + " - Status: '" + statusText + "'");
-
                             // Check if status is "EAMS Verified" or "EAMS Not Verified"
                             if (statusText.equals("EAMS Verified") || statusText.equals("Multiple Carrier") || statusText.equals("No Carrier In EAMS")) {
                                 System.out.println("✓ Found invoice with status: " + statusText + " at row " + (i + 1));
@@ -3474,6 +3468,7 @@ public class DailyBillingPage {
                                     System.out.println("✓ Invoice Number: " + invoiceNumber);
                                 } catch (Exception e) {
                                     System.err.println("⚠ Could not get invoice number");
+                                    continue;
                                 }
 
                                 // Click checkbox in column 1 (td[1])

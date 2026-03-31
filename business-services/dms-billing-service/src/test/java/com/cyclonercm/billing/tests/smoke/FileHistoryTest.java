@@ -8,9 +8,12 @@ import com.cyclonercm.utils.HistoryTestDataProperties;
 import com.cyclonercm.utils.LocatorConstants;
 import com.cyclonercm.utils.HistoryBillingTestDataProperties;
 import com.cyclonercm.utils.WaitUtils;
+import org.openqa.selenium.WebElement;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 public class FileHistoryTest extends SmokeBaseTest {
 
@@ -331,7 +334,7 @@ public class FileHistoryTest extends SmokeBaseTest {
                     }
                 }
                 if (allMatch) {
-                    test.pass("✅ RIGHT: All " + invoiceRows.size() + " invoice(s) have Fail or Fail/Manually Corrected status");
+                    test.pass("✅ RIGHT: All invoices have Fail or Fail/Manually Corrected status");
                     Assert.assertTrue(true);
                 } else {
                     String errorDetails = "Found invoices with unexpected statuses: " + mismatchedStatuses;
@@ -1113,15 +1116,22 @@ public class FileHistoryTest extends SmokeBaseTest {
             historyPage.clickFirstFile();
             WaitUtils.sleep(2000);
 
-            Assert.assertTrue(historyPage.isInvoiceFileIconDisplayed(), "Invoice File icon should be displayed");
-            test.pass("Invoice File icon is displayed");
+            List<WebElement> invoiceRows = historyPage.getInvoiceListRows();
+            Assert.assertFalse(invoiceRows.isEmpty(), "Invoice List should display at least one invoice row");
 
-            historyPage.clickFirstInvoiceFileIcon();
+            int targetRowIndex = findFirstActionableInvoiceRow(invoiceRows);
+            if (targetRowIndex == -1) {
+                verifyNonActionableRowsHideIcons(invoiceRows, true);
+                test.pass("All invoices are Duplicate/Deleted and File icon is correctly hidden");
+                return;
+            }
+
+            Assert.assertTrue(historyPage.hasFileIconInRow(targetRowIndex), "Invoice File icon should be displayed");
+            historyPage.clickFileIconInRow(targetRowIndex);
             WaitUtils.sleep(3000);
-            test.pass("Clicked on File icon");
+            test.pass("Clicked File icon for invoice row " + targetRowIndex);
 
-            boolean isDocumentViewDisplayed = historyPage.documentView();
-            Assert.assertTrue(isDocumentViewDisplayed, "Document View should be displayed after clicking File icon");
+            Assert.assertTrue(historyPage.documentView(), "Document View should be displayed after clicking File icon");
             test.pass("Document View is displayed successfully");
 
             test.pass("SMOKE_FH_024 passed");
@@ -1137,12 +1147,20 @@ public class FileHistoryTest extends SmokeBaseTest {
             historyPage.clickFirstFile();
             WaitUtils.sleep(2000);
 
-            Assert.assertTrue(historyPage.isInvoiceEditIconDisplayed(), "Invoice Edit icon should be displayed");
-            test.pass("Invoice Edit icon is displayed");
+            List<WebElement> invoiceRows = historyPage.getInvoiceListRows();
+            Assert.assertFalse(invoiceRows.isEmpty(), "Invoice List should display at least one invoice row");
 
-            historyPage.clickFirstInvoiceEditIcon();
+            int targetRowIndex = findFirstActionableInvoiceRow(invoiceRows);
+            if (targetRowIndex == -1) {
+                verifyNonActionableRowsHideIcons(invoiceRows, false);
+                test.pass("All invoices are Duplicate/Deleted and Edit icon is correctly hidden");
+                return;
+            }
+
+            Assert.assertTrue(historyPage.hasEditIconInRow(targetRowIndex), "Invoice Edit icon should be displayed");
+            historyPage.clickEditIconInRow(targetRowIndex);
             WaitUtils.sleep(3000);
-            test.pass("Edit icon opens the Edit-Invoice section");
+            test.pass("Edit icon opens the Edit-Invoice section for invoice row " + targetRowIndex);
 
             test.pass("SMOKE_FH_025 passed");
         } catch (AssertionError e) {
@@ -1270,7 +1288,38 @@ public class FileHistoryTest extends SmokeBaseTest {
         }
     }
 
+    private int findFirstActionableInvoiceRow(List<WebElement> invoiceRows) {
+        for (int i = 0; i < invoiceRows.size(); i++) {
+            String status = historyPage.getInvoiceRowStatus(invoiceRows.get(i));
+            if (status == null) {
+                status = "";
+            }
+            test.info("Invoice row[" + (i + 1) + "] status: '" + status + "'");
+            if (!isStatusWithoutActionIcons(status)) {
+                return i + 1;
+            }
+        }
+        return -1;
+    }
 
+    private boolean isStatusWithoutActionIcons(String status) {
+        if (status == null) {
+            return false;
+        }
+        String normalized = status.trim().toLowerCase();
+        return normalized.contains("duplicate") || normalized.contains("deleted");
+    }
 
-
+    private void verifyNonActionableRowsHideIcons(List<WebElement> invoiceRows, boolean checkFileIcon) {
+        for (int i = 0; i < invoiceRows.size(); i++) {
+            String status = historyPage.getInvoiceRowStatus(invoiceRows.get(i));
+            Assert.assertTrue(isStatusWithoutActionIcons(status),
+                    "Invoice row " + (i + 1) + " has actionable status '" + status + "' but should not");
+            boolean iconPresent = checkFileIcon
+                    ? historyPage.hasFileIconInRow(i + 1)
+                    : historyPage.hasEditIconInRow(i + 1);
+            Assert.assertFalse(iconPresent,
+                    (checkFileIcon ? "File" : "Edit") + " icon should be hidden for Duplicate/Deleted invoices (row " + (i + 1) + ")");
+        }
+    }
 }

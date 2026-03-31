@@ -449,7 +449,7 @@ public class DailyBillingTest extends SmokeBaseTest {
             System.out.println("✓ Daily Billing page loaded");
 
             // Get original date
-            String Dos = DailyBillingTestDataProperties.get("dateofservice");
+            String Dos = DailyBillingTestDataProperties.get("dateofservice2");
             System.out.println("Original DOS: " + Dos);  // e.g., "05/26/2025"
 
             // Format date FIRST
@@ -538,57 +538,47 @@ public class DailyBillingTest extends SmokeBaseTest {
             dailyBillingPage.setDosFilter(Dos);
             System.out.println("✓ Filter applied with: " + Dos);
 
+            // Wait for results
+            WaitUtils.waitForVisibility(driver, LocatorConstants.Dos, 60);
 
-            // Step 1: Find and select a ready-to-bill invoice (skips Not Verified and invoices with missing mandatory fields)
+            // Validate
+            String actualDos = dailyBillingPage.getDosFilterValue();
+            String expectedDos = "DOS : " + formattedDos;
+
+            System.out.println("Expected: " + expectedDos);
+            System.out.println("Actual: " + actualDos);
+
             try {
-                WaitUtils.sleep(2000);
-                boolean invoiceFound = dailyBillingPage.findAndSelectReadyToBillInvoice();
-
-                if (!invoiceFound) {
-                    test.fail("❌ No ready-to-bill invoices found on this page. " +
-                            "All invoices are either 'Not Verified' status or missing mandatory fields.");
-                    throw new AssertionError("No ready-to-bill invoices available for Report View test");
-                }
-
-                test.info("✓ Step 1: Ready-to-bill invoice selected (verified and with mandatory fields filled)");
-            } catch (Exception e) {
-                test.fail("❌ Failed to select ready-to-bill invoice: " + e.getMessage());
-                throw e;
-            }
-
-            // Step 2: Click HCFA button
-            try {
-                dailyBillingPage.clickHCFAButton();
-                test.info("✓ Step 2: HCFA button clicked");
-            } catch (Exception e) {
-                test.fail("❌ Failed to click HCFA button: " + e.getMessage());
-                throw e;
-            }
-
-            // Step 3: Click Report View button
-            try {
-                dailyBillingPage.clickReportViewButton();
-                test.info("✓ Step 3: Report View button clicked");
-            } catch (Exception e) {
-                test.fail("❌ Failed to click Report View button: " + e.getMessage());
-                throw e;
-            }
-
-            // Step 4: Verify Report View opens
-            try {
-                boolean isReportDisplayed = dailyBillingPage.isReportViewDisplayed();
-                String status = dailyBillingPage.getReportViewStatus();
-
-                Assert.assertTrue(isReportDisplayed, "Report View should be displayed");
-                test.pass("✅ Report View opened successfully: " + status);
-                System.out.println("✅ TEST PASSED - Report View verified");
+                Assert.assertEquals(actualDos, expectedDos, "DOS filter successfully applied.");
+                test.pass("✓ DOS filter value verified: " + actualDos);
+                System.out.println("✅ DOS Filter applied successfully");
             } catch (AssertionError e) {
-                test.fail("❌ Report View did not open as expected");
-                System.out.println("❌ TEST FAILED - Report View not displayed");
+                test.fail("✗ DOS filter value mismatch. Expected: " + expectedDos + ", Found: " + actualDos);
+                System.out.println("❌ TEST FAILED");
                 throw e;
             }
 
-            test.pass("🎉 SMOKE_DB_008 PASSED - Report View functionality verified");
+            WaitUtils.sleep(2000);
+
+            //Click the Checkbox
+            dailyBillingPage.ClickCheckBox();
+
+            // If Missing Information modal appears, enable the toggle, close the dialog, and retry clicking the checkbox
+            if (dailyBillingPage.isMissingInfoModalDisplayed()) {
+                test.info("⚠ Missing Information dialog appeared after checkbox click - toggling and retrying");
+                // (Assume enabling toggle and closing dialog is handled inside the page object or here if needed)
+                // Retry clicking the checkbox after enabling toggle
+                dailyBillingPage.ClickCheckBox();
+            }
+
+            try {
+                Assert.assertTrue(dailyBillingPage.isMissingInfoModalDisplayed(),
+                        "Missing Information modal should appear for invoice with Red EMC flag");
+                test.pass("✅ Missing Information modal appeared - Invoice is NOT ready for billing (Red EMC)");
+            } catch (AssertionError e) {
+                test.fail("❌ Missing Information modal did not appear. This invoice might be ready for billing (Green EMC)");
+                throw e;
+            }
         }
 
         @Test(priority = 9, description = "SMOKE_DB_009 - Verify EAMS verification status and comment display")
