@@ -20,7 +20,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
     @BeforeMethod
     public void setUp() {
-      //((JavascriptExecutor) driver).executeScript("document.body.style.zoom='80%'");
+     // ((JavascriptExecutor) driver).executeScript("document.body.style.zoom='80%'");
      //WaitUtils.sleep(1000);
 
         loginPage = new AuthenticationPage(driver);
@@ -126,9 +126,9 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
     @Test(priority = 1, description = "SMOKE_SEI_001 - Verify Edit Invoice screen opens when click the invoice number in Daily Billing")
     public void SMOKE_SEI_001() {
-        test.info("📋 Starting SMOKE_DEI_001 - Verify Edit Invoice Screen Opens");
+        test.info("📋 Starting SMOKE_SEI_001 - Verify Edit Invoice Screen Opens");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_001: Verify Edit Invoice Screen Opens");
+        System.out.println("🧪 SMOKE_SEI_001: Verify Edit Invoice Screen Opens");
         System.out.println("========================================\n");
 
         try {
@@ -147,13 +147,13 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_001 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_001 VALIDATION SUMMARY:");
             test.info("✓ Edit Invoice screen opened successfully");
             test.info("✓ Edit Invoice label displayed: '" + editInvoiceLabel + "'");
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_001 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_001 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ Navigation Verification:");
             System.out.println("   ✓ Clicked invoice number from Daily Billing");
@@ -162,25 +162,25 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_001 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_001 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_001 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_001 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_001 PASSED - Edit Invoice screen verified successfully");
-        System.out.println("✅ SMOKE_DEI_001 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_001 PASSED - Edit Invoice screen verified successfully");
+        System.out.println("✅ SMOKE_SEI_001 TEST PASSED");
     }
 
     @Test(priority = 2, description = "SMOKE_SEI_002 - Verify the Mandatory fields are present (Claim Administrator, Employer, CASE#, APPLICANT, CLAIM#, Services, DOS, Invoice#, Invoice Date)")
     public void SMOKE_SEI_002() {
-        test.info("📋 Starting SMOKE_DEI_002 - Verify Mandatory Fields Present");
+        test.info("📋 Starting SMOKE_SEI_002 - Verify Mandatory Fields Present");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_002: Verify Mandatory Fields Present");
+        System.out.println("🧪 SMOKE_SEI_002: Verify Mandatory Fields Present");
         System.out.println("========================================\n");
 
         try {
@@ -248,7 +248,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_002 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_002 VALIDATION SUMMARY:");
             test.info("✓ All 10 mandatory fields verified:");
             test.info("   1. Claim Administrator - Present");
             test.info("   2. Employer - Present");
@@ -263,7 +263,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_002 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_002 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ All Mandatory Fields Verified (9/9):");
             System.out.println("   ✓ Claim Administrator");
@@ -279,25 +279,25 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_002 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_002 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_002 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_002 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_002 PASSED - All mandatory fields verified successfully");
-        System.out.println("✅ SMOKE_DEI_002 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_002 PASSED - All mandatory fields verified successfully");
+        System.out.println("✅ SMOKE_SEI_002 TEST PASSED");
     }
 
     @Test(priority = 3, description = "SMOKE_SEI_003 - Verify the edit and save Claim Administrator successfully")
     public void SMOKE_SEI_003() {
-        test.info("📋 Starting SMOKE_DEI_003 - Edit and Save Claim Administrator");
+        test.info("📋 Starting SMOKE_SEI_003 - Edit and Save Claim Administrator");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_003: Edit and Save Claim Administrator");
+        System.out.println("🧪 SMOKE_SEI_003: Edit and Save Claim Administrator");
         System.out.println("========================================\n");
 
         try {
@@ -358,7 +358,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_003 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_003 VALIDATION SUMMARY:");
             test.info("✓ Edit button clicked");
             test.info("✓ Claim Administrator popup opened");
             test.info("✓ Name field edited: " + testName);
@@ -368,7 +368,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_003 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_003 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ Claim Administrator Edit Workflow:");
             System.out.println("   ✓ Edit mode enabled");
@@ -379,25 +379,25 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_003 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_003 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_003 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_003 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_003 PASSED - Claim Administrator edited and saved successfully");
-        System.out.println("✅ SMOKE_DEI_003 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_003 PASSED - Claim Administrator edited and saved successfully");
+        System.out.println("✅ SMOKE_SEI_003 TEST PASSED");
     }
 
-    @Test(priority = 4, description = "SMOKE_DEI_004 - Verify the edit and save Employer successfully")
-    public void SMOKE_DEI_004() {
-        test.info("📋 Starting SMOKE_DEI_004 - Edit and Save Employer");
+    @Test(priority = 4, description = "SMOKE_SEI_004 - Verify the edit and save Employer successfully")
+    public void SMOKE_SEI_004() {
+        test.info("📋 Starting SMOKE_SEI_004 - Edit and Save Employer");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_004: Edit and Save Employer");
+        System.out.println("🧪 SMOKE_SEI_004: Edit and Save Employer");
         System.out.println("========================================\n");
 
         try {
@@ -466,7 +466,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_004 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_004 VALIDATION SUMMARY:");
             test.info("✓ Edit button clicked");
             test.info("✓ Employer popup opened");
             test.info("✓ Name field edited: " + testName);
@@ -476,7 +476,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_004 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_004 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ Employer Edit Workflow:");
             System.out.println("   ✓ Edit mode enabled");
@@ -487,25 +487,25 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_004 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_004 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_004 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_004 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_004 PASSED - Employer edited and saved successfully");
-        System.out.println("✅ SMOKE_DEI_004 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_004 PASSED - Employer edited and saved successfully");
+        System.out.println("✅ SMOKE_SEI_004 TEST PASSED");
     }
 
-    @Test(priority = 5, description = "SMOKE_DEI_005 - Verify the edit and save Case successfully")
-    public void SMOKE_DEI_005() {
-        test.info("📋 Starting SMOKE_DEI_005 - Edit and Save Case");
+    @Test(priority = 5, description = "SMOKE_SEI_005 - Verify the edit and save Case successfully")
+    public void SMOKE_SEI_005() {
+        test.info("📋 Starting SMOKE_SEI_005 - Edit and Save Case");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_005: Edit and Save Case");
+        System.out.println("🧪 SMOKE_SEI_005: Edit and Save Case");
         System.out.println("========================================\n");
 
         try {
@@ -575,7 +575,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_005 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_005 VALIDATION SUMMARY:");
             test.info("✓ Edit button clicked");
             test.info("✓ Case popup opened");
             test.info("✓ File No field edited: " + testFileNo);
@@ -586,7 +586,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_005 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_005 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ Case Edit Workflow:");
             System.out.println("   ✓ Edit mode enabled");
@@ -598,145 +598,181 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_005 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_005 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_005 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_005 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_005 PASSED - Case edited and saved successfully");
-        System.out.println("✅ SMOKE_DEI_005 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_005 PASSED - Case edited and saved successfully");
+        System.out.println("✅ SMOKE_SEI_005 TEST PASSED");
     }
 
-    @Test(priority = 6, description = "SMOKE_DEI_006 - Verify the edit and save Applicant successfully")
-    public void SMOKE_DEI_006() {
-        test.info("📋 Starting SMOKE_DEI_006 - Edit and Save Applicant");
+    @Test(priority = 6, description = "SMOKE_SEI_006 - Verify the edit and save Applicant successfully")
+    public void SMOKE_SEI_006() {
+        test.info("\ud83d\udccb Starting SMOKE_SEI_006 - Edit and Save Applicant");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_006: Edit and Save Applicant");
+        System.out.println("\ud83e\uddea SMOKE_SEI_006: Edit and Save Applicant");
         System.out.println("========================================\n");
+
+        String originalFirstName = null;
+        String originalLastName = null;
+        boolean applicantUpdated = false;
+        Throwable failure = null;
 
         try {
             // Step 1: Click Edit button
             test.info("Step 1: Clicking Edit button");
-            System.out.println("🔘 Step 1: Clicking Edit button...");
+            System.out.println("\ud83d\udd18 Step 1: Clicking Edit button...");
             dailyEditInvoicePage.clickEditButton();
-            test.info("✓ Edit button clicked");
+            test.info("\u2713 Edit button clicked");
 
             // Step 2: Click Applicant link
             test.info("Step 2: Clicking Applicant link");
-            System.out.println("\n🔗 Step 2: Clicking Applicant link...");
+            System.out.println("\n\ud83d\udd17 Step 2: Clicking Applicant link...");
             dailyEditInvoicePage.clickApplicantLink();
-            test.info("✓ Applicant link clicked");
+            test.info("\u2713 Applicant link clicked");
 
             // Step 3: Verify Applicant popup label
             test.info("Step 3: Verifying Applicant popup");
-            System.out.println("\n🏷️ Step 3: Verifying Applicant popup...");
+            System.out.println("\n\ud83c\udff7\ufe0f Step 3: Verifying Applicant popup...");
             String popupLabel = dailyEditInvoicePage.getApplicantPopupLabel();
             Assert.assertEquals(popupLabel, "Applicant",
                     "Popup label should be 'Applicant' but found: " + popupLabel);
-            test.info("✓ Applicant popup verified: " + popupLabel);
-            System.out.println("✓ Popup label: " + popupLabel);
+            test.info("\u2713 Applicant popup verified: " + popupLabel);
+            System.out.println("\u2713 Popup label: " + popupLabel);
 
             // Step 4: Click Edit button in popup
             test.info("Step 4: Clicking Edit button in popup");
-            System.out.println("\n🔘 Step 4: Clicking Edit button in popup...");
+            System.out.println("\n\ud83d\udd18 Step 4: Clicking Edit button in popup...");
             dailyEditInvoicePage.clickApplicantEditButton();
-            test.info("✓ Edit button clicked");
+            test.info("\u2713 Edit button clicked");
+
+            // Capture original applicant name before overriding for this test
+            originalLastName = dailyEditInvoicePage.getApplicantLastNameValue();
+            originalFirstName = dailyEditInvoicePage.getApplicantFirstNameValue();
+            if (originalFirstName == null || originalLastName == null) {
+                String configuredApplicant = SingleBillingTestDataProperties.get("singleBilling.applicantName");
+                if (configuredApplicant != null && !configuredApplicant.trim().isEmpty()) {
+                    String[] nameParts = configuredApplicant.trim().split("\\s+", 2);
+                    if (originalFirstName == null && nameParts.length > 0) {
+                        originalFirstName = nameParts[0];
+                    }
+                    if (originalLastName == null) {
+                        originalLastName = nameParts.length > 1 ? nameParts[1] : "";
+                    }
+                }
+            }
 
             // Step 5: Edit Last Name field
             test.info("Step 5: Editing Last Name field");
-            System.out.println("\n✏️ Step 5: Editing Last Name field...");
+            System.out.println("\n\u270f\ufe0f Step 5: Editing Last Name field...");
             String testLastName = EditInvoiceTestDataProperties.get("editinvoice.applicant.lastname");
             dailyEditInvoicePage.editApplicantLastName(testLastName);
-            test.info("✓ Last Name edited: " + testLastName);
+            test.info("\u2713 Last Name edited: " + testLastName);
 
             // Step 6: Edit First Name field
             test.info("Step 6: Editing First Name field");
-            System.out.println("\n✏️ Step 6: Editing First Name field...");
+            System.out.println("\n\u270f\ufe0f Step 6: Editing First Name field...");
             String testFirstName = EditInvoiceTestDataProperties.get("editinvoice.applicant.firstname");
             dailyEditInvoicePage.editApplicantFirstName(testFirstName);
-            test.info("✓ First Name edited: " + testFirstName);
+            test.info("\u2713 First Name edited: " + testFirstName);
 
             // Step 7: Click Applicant Save button
             test.info("Step 7: Clicking Applicant Save button");
-            System.out.println("\n💾 Step 7: Clicking Applicant Save button...");
+            System.out.println("\n\ud83d\udcbe Step 7: Clicking Applicant Save button...");
             dailyEditInvoicePage.clickApplicantSaveButton();
-            test.info("✓ Applicant Save button clicked");
+            test.info("\u2713 Applicant Save button clicked");
 
             // Step 8: Verify first success message
             test.info("Step 8: Verifying first success message");
-            System.out.println("\n✅ Step 8: Verifying first success message...");
+            System.out.println("\n\u2705 Step 8: Verifying first success message...");
             String successMessage1 = dailyEditInvoicePage.getSuccessMessage();
             Assert.assertEquals(successMessage1, "Record successfully updated",
                     "First success message should be 'Record successfully updated' but found: " + successMessage1);
-            test.info("✓ First success message verified: " + successMessage1);
-            System.out.println("✓ First success message: " + successMessage1);
+            applicantUpdated = true;
+            test.info("\u2713 First success message verified: " + successMessage1);
+            System.out.println("\u2713 First success message: " + successMessage1);
 
             // Step 9: Click Edit Form Save button
             test.info("Step 9: Clicking Edit Form Save button");
-            System.out.println("\n💾 Step 9: Clicking Edit Form Save button...");
+            System.out.println("\n\ud83d\udcbe Step 9: Clicking Edit Form Save button...");
             dailyEditInvoicePage.clickSaveButton();
-            test.info("✓ Edit Form Save button clicked");
+            test.info("\u2713 Edit Form Save button clicked");
 
             // Step 10: Verify second success message
             test.info("Step 10: Verifying second success message");
-            System.out.println("\n✅ Step 10: Verifying second success message...");
+            System.out.println("\n\u2705 Step 10: Verifying second success message...");
             String successMessage2 = dailyEditInvoicePage.getSuccessMessage();
             Assert.assertEquals(successMessage2, "Form updated successfully.",
                     "Second success message should be 'Form updated successfully.' but found: " + successMessage2);
-            test.info("✓ Second success message verified: " + successMessage2);
-            System.out.println("✓ Second success message: " + successMessage2);
+            test.info("\u2713 Second success message verified: " + successMessage2);
+            System.out.println("\u2713 Second success message: " + successMessage2);
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_006 VALIDATION SUMMARY:");
-            test.info("✓ Edit button clicked");
-            test.info("✓ Applicant popup opened");
-            test.info("✓ Last Name edited: " + testLastName);
-            test.info("✓ First Name edited: " + testFirstName);
-            test.info("✓ Applicant saved successfully");
-            test.info("✓ First success message: 'Record successfully updated'");
-            test.info("✓ Edit Form saved successfully");
-            test.info("✓ Second success message: 'Record successfully updated'");
+            test.info("SMOKE_SEI_006 VALIDATION SUMMARY:");
+            test.info("\u2713 Edit button clicked");
+            test.info("\u2713 Applicant popup opened");
+            test.info("\u2713 Last Name edited: " + testLastName);
+            test.info("\u2713 First Name edited: " + testFirstName);
+            test.info("\u2713 Applicant saved successfully");
+            test.info("\u2713 First success message: 'Record successfully updated'");
+            test.info("\u2713 Edit Form saved successfully");
+            test.info("\u2713 Second success message: 'Record successfully updated'");
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_006 VALIDATION SUMMARY:");
+            System.out.println("\ud83d\udcca SMOKE_SEI_006 VALIDATION SUMMARY:");
             System.out.println("========================================");
-            System.out.println("✅ Applicant Edit Workflow:");
-            System.out.println("   ✓ Edit mode enabled");
-            System.out.println("   ✓ Popup opened and verified");
-            System.out.println("   ✓ Last Name updated: " + testLastName);
-            System.out.println("   ✓ First Name updated: " + testFirstName);
-            System.out.println("   ✓ Applicant record saved (1st save)");
-            System.out.println("   ✓ Edit Form saved (2nd save)");
-            System.out.println("   ✓ Both success messages confirmed");
+            System.out.println("\u2705 Applicant Edit Workflow:");
+            System.out.println("   \u2713 Edit mode enabled");
+            System.out.println("   \u2713 Popup opened and verified");
+            System.out.println("   \u2713 Last Name updated: " + testLastName);
+            System.out.println("   \u2713 First Name updated: " + testFirstName);
+            System.out.println("   \u2713 Applicant record saved (1st save)");
+            System.out.println("   \u2713 Edit Form saved (2nd save)");
+            System.out.println("   \u2713 Both success messages confirmed");
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_006 FAILED - " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED: " + e.getMessage());
+            failure = e;
+            test.fail("\u274c SMOKE_SEI_006 FAILED - " + e.getMessage());
+            System.out.println("\n\u274c TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_006 FAILED - Unexpected error: " + e.getMessage());
-            System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
+            failure = e;
+            test.fail("\u274c SMOKE_SEI_006 FAILED - Unexpected error: " + e.getMessage());
+            System.out.println("\n\u274c TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
+        } finally {
+            if (applicantUpdated) {
+                try {
+                    restoreOriginalApplicant(originalFirstName, originalLastName);
+                } catch (RuntimeException cleanupEx) {
+                    if (failure != null) {
+                        failure.addSuppressed(cleanupEx);
+                    } else {
+                        throw cleanupEx;
+                    }
+                }
+            }
         }
 
-        test.pass("🎉 SMOKE_DEI_006 PASSED - Applicant edited and saved successfully");
-        System.out.println("✅ SMOKE_DEI_006 TEST PASSED");
+        test.pass("\ud83c\udf89 SMOKE_SEI_006 PASSED - Applicant edited and saved successfully");
+        System.out.println("\u2705 SMOKE_SEI_006 TEST PASSED");
     }
 
-    @Test(priority = 7, description = "SMOKE_DEI_007 - Verify the edit and save Interpreter successfully")
-    public void SMOKE_DEI_007() {
-        test.info("📋 Starting SMOKE_DEI_007 - Edit and Save Interpreter");
+    @Test(priority = 7, description = "SMOKE_SEI_007 - Verify the edit and save Interpreter successfully")
+    public void SMOKE_SEI_007() {
+        test.info("📋 Starting SMOKE_SEI_007 - Edit and Save Interpreter");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_007: Edit and Save Interpreter");
+        System.out.println("🧪 SMOKE_SEI_007: Edit and Save Interpreter");
         System.out.println("========================================\n");
 
         try {
@@ -808,7 +844,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_007 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_007 VALIDATION SUMMARY:");
             test.info("✓ Edit button clicked");
             test.info("✓ Interpreter popup opened");
             test.info("✓ Interpreter Name field edited: " + testInterpreterName);
@@ -819,7 +855,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_007 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_007 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ Interpreter Edit Workflow:");
             System.out.println("   ✓ Edit mode enabled");
@@ -831,25 +867,25 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_007 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_007 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_007 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_007 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_007 PASSED - Interpreter edited and saved successfully");
-        System.out.println("✅ SMOKE_DEI_007 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_007 PASSED - Interpreter edited and saved successfully");
+        System.out.println("✅ SMOKE_SEI_007 TEST PASSED");
     }
 
-    @Test(priority = 8, description = "SMOKE_DEI_008 - Verify the edit and save Services successfully")
-    public void SMOKE_DEI_008() {
-        test.info("📋 Starting SMOKE_DEI_008 - Edit and Save Services");
+    @Test(priority = 8, description = "SMOKE_SEI_008 - Verify the edit and save Services successfully")
+    public void SMOKE_SEI_008() {
+        test.info("📋 Starting SMOKE_SEI_008 - Edit and Save Services");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_008: Edit and Save Services");
+        System.out.println("🧪 SMOKE_SEI_008: Edit and Save Services");
         System.out.println("========================================\n");
 
         String serviceDescription = null;
@@ -925,7 +961,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_008 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_008 VALIDATION SUMMARY:");
             test.info("✓ Edit button clicked");
             test.info("✓ Services popup opened");
             test.info("✓ Service selected: " + serviceDescription);
@@ -936,7 +972,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_008 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_008 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ Services Edit Workflow:");
             System.out.println("   ✓ Edit mode enabled");
@@ -947,26 +983,26 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_008 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_008 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             if (serviceDescription != null) {
                 System.out.println("   Selected service: " + serviceDescription);
             }
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_008 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_008 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_008 PASSED - Services edited and saved successfully");
-        System.out.println("✅ SMOKE_DEI_008 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_008 PASSED - Services edited and saved successfully");
+        System.out.println("✅ SMOKE_SEI_008 TEST PASSED");
     }
 
-    @Test(priority = 9, description = "SMOKE_DEI_009 - Verify Interpreter Invoice Details validation")
-    public void SMOKE_DEI_009() {
-        test.info("📋 Starting SMOKE_DEI_009 - Interpreter Invoice Details Validation");
+    @Test(priority = 9, description = "SMOKE_SEI_009 - Verify Interpreter Invoice Details validation")
+    public void SMOKE_SEI_009() {
+        test.info("📋 Starting SMOKE_SEI_009 - Interpreter Invoice Details Validation");
         System.out.println("\n========================================");
         System.out.println("🧪 SMOKE_DEI_008A: Interpreter Invoice Details Validation");
         System.out.println("========================================\n");
@@ -1099,7 +1135,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_009 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_009 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ Interpreter Invoice Details Workflow:");
             System.out.println("   ✓ Popup link clicked");
@@ -1110,27 +1146,27 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_009  FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_009  FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             System.out.println("   Original Language: " + originalLanguage);
             System.out.println("   Original Service Rate: " + originalServiceRate);
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_009  FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_009  FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_009 PASSED - Interpreter Invoice Details validated successfully");
-        System.out.println("✅ SMOKE_DEI_009 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_009 PASSED - Interpreter Invoice Details validated successfully");
+        System.out.println("✅ SMOKE_SEI_009 TEST PASSED");
     }
 
-    @Test(priority = 10, description = "SMOKE_DEI_010 - Verify edit and save Invoice# successfully")
-    public void SMOKE_DEI_010() {
-        test.info("📋 Starting SMOKE_DEI_010 - Edit and Save Invoice Number");
+    @Test(priority = 10, description = "SMOKE_SEI_010 - Verify edit and save Invoice# successfully")
+    public void SMOKE_SEI_010() {
+        test.info("📋 Starting SMOKE_SEI_010 - Edit and Save Invoice Number");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_010: Edit and Save Invoice Number");
+        System.out.println("🧪 SMOKE_SEI_010: Edit and Save Invoice Number");
         System.out.println("========================================\n");
 
         String originalInvoiceNumber = null;
@@ -1182,7 +1218,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_010 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_010 VALIDATION SUMMARY:");
             test.info("✓ Original invoice number: " + originalInvoiceNumber);
             test.info("✓ New invoice number: " + newInvoiceNumber);
             test.info("✓ Suffix appended: " + suffix);
@@ -1191,7 +1227,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_010 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_010 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ Invoice Number Edit Workflow:");
             System.out.println("   ✓ Original: " + originalInvoiceNumber);
@@ -1201,7 +1237,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_010 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_010 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             if (originalInvoiceNumber != null) {
                 System.out.println("   Original invoice: " + originalInvoiceNumber);
@@ -1211,21 +1247,21 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             }
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_010 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_010 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_010 PASSED - Invoice number edited and saved successfully");
-        System.out.println("✅ SMOKE_DEI_010 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_010 PASSED - Invoice number edited and saved successfully");
+        System.out.println("✅ SMOKE_SEI_010 TEST PASSED");
     }
 
-    @Test(priority = 11, description = "SMOKE_DEI_011 - Verify edit and save Invoice Date successfully")
-    public void SMOKE_DEI_011() {
-        test.info("📋 Starting SMOKE_DEI_011 - Edit and Save Invoice Date");
+    @Test(priority = 11, description = "SMOKE_SEI_011 - Verify edit and save Invoice Date successfully")
+    public void SMOKE_SEI_011() {
+        test.info("📋 Starting SMOKE_SEI_011 - Edit and Save Invoice Date");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_011: Edit and Save Invoice Date");
+        System.out.println("🧪 SMOKE_SEI_011: Edit and Save Invoice Date");
         System.out.println("========================================\n");
 
         try {
@@ -1270,7 +1306,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_011 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_011 VALIDATION SUMMARY:");
             test.info("✓ Edit button clicked");
             test.info("✓ Invoice Date selector clicked");
             test.info("✓ Date picker displayed");
@@ -1279,7 +1315,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_011 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_011 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ Invoice Date Edit Workflow:");
             System.out.println("   ✓ Edit mode enabled");
@@ -1288,25 +1324,25 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_011 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_011 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_011 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_011 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_011 PASSED - Invoice Date edited and saved successfully");
-        System.out.println("✅ SMOKE_DEI_011 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_011 PASSED - Invoice Date edited and saved successfully");
+        System.out.println("✅ SMOKE_SEI_011 TEST PASSED");
     }
 
-    @Test(priority = 12, description = "SMOKE_DEI_012 - Verify edit and save DOS successfully")
-    public void SMOKE_DEI_012() {
-        test.info("📋 Starting SMOKE_DEI_012 - Edit and Save DOS");
+    @Test(priority = 12, description = "SMOKE_SEI_012 - Verify edit and save DOS successfully")
+    public void SMOKE_SEI_012() {
+        test.info("📋 Starting SMOKE_SEI_012 - Edit and Save DOS");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_012: Edit and Save DOS");
+        System.out.println("🧪 SMOKE_SEI_012: Edit and Save DOS");
         System.out.println("========================================\n");
 
         try {
@@ -1351,7 +1387,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_012 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_012 VALIDATION SUMMARY:");
             test.info("✓ Edit button clicked");
             test.info("✓ DOS selector clicked");
             test.info("✓ Date picker displayed");
@@ -1360,7 +1396,7 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_012 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_012 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ DOS Edit Workflow:");
             System.out.println("   ✓ Edit mode enabled");
@@ -1369,25 +1405,25 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_012 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_012 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_012 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_012 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_012 PASSED - DOS edited and saved successfully");
-        System.out.println("✅ SMOKE_DEI_012 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_012 PASSED - DOS edited and saved successfully");
+        System.out.println("✅ SMOKE_SEI_012 TEST PASSED");
     }
 
-    @Test(priority = 13, description = "SMOKE_DEI_013 - Verify the left side display invoice is correct (Invoice PDF)")
-    public void SMOKE_DEI_013() {
-        test.info("📋 Starting SMOKE_DEI_013 - Verify Left Side Invoice PDF Display");
+    @Test(priority = 13, description = "SMOKE_SEI_013 - Verify the left side display invoice is correct (Invoice PDF)")
+    public void SMOKE_SEI_013() {
+        test.info("📋 Starting SMOKE_SEI_013 - Verify Left Side Invoice PDF Display");
         System.out.println("\n========================================");
-        System.out.println("🧪 SMOKE_DEI_013: Verify Left Side Invoice PDF Display");
+        System.out.println("🧪 SMOKE_SEI_013: Verify Left Side Invoice PDF Display");
         System.out.println("========================================\n");
 
         try {
@@ -1413,14 +1449,14 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
 
             // Validation summary
             test.info("========================================");
-            test.info("SMOKE_DEI_013 VALIDATION SUMMARY:");
+            test.info("SMOKE_SEI_013 VALIDATION SUMMARY:");
             test.info("✓ Left side invoice PDF verified");
             test.info("✓ PDF element is displayed");
             test.info("✓ PDF element is accessible");
             test.info("========================================");
 
             System.out.println("\n========================================");
-            System.out.println("📊 SMOKE_DEI_013 VALIDATION SUMMARY:");
+            System.out.println("📊 SMOKE_SEI_013 VALIDATION SUMMARY:");
             System.out.println("========================================");
             System.out.println("✅ Invoice PDF Display Verification:");
             System.out.println("   ✓ Left side panel displayed");
@@ -1433,19 +1469,46 @@ public class SingleBillingEditInvoiceTest extends SmokeBaseTest {
             System.out.println("========================================");
 
         } catch (AssertionError e) {
-            test.fail("❌ SMOKE_DEI_013 FAILED - " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_013 FAILED - " + e.getMessage());
             System.out.println("\n❌ TEST FAILED: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            test.fail("❌ SMOKE_DEI_013 FAILED - Unexpected error: " + e.getMessage());
+            test.fail("❌ SMOKE_SEI_013 FAILED - Unexpected error: " + e.getMessage());
             System.out.println("\n❌ TEST FAILED - Unexpected error: " + e.getMessage());
             e.printStackTrace();
             throw e;
         }
 
-        test.pass("🎉 SMOKE_DEI_013 PASSED - Invoice PDF display verified successfully");
-        System.out.println("✅ SMOKE_DEI_013 TEST PASSED");
+        test.pass("🎉 SMOKE_SEI_013 PASSED - Invoice PDF display verified successfully");
+        System.out.println("✅ SMOKE_SEI_013 TEST PASSED");
+    }
+
+    private void restoreOriginalApplicant(String firstName, String lastName) {
+        if ((firstName == null || firstName.trim().isEmpty()) && (lastName == null || lastName.trim().isEmpty())) {
+            System.out.println("↩ No original applicant name captured; skipping restore step.");
+            return;
+        }
+
+        System.out.println("↩ Restoring original applicant name...");
+        try {
+            dailyEditInvoicePage.clickEditButton();
+            dailyEditInvoicePage.clickApplicantLink();
+            dailyEditInvoicePage.clickApplicantEditButton();
+
+            if (lastName != null && !lastName.trim().isEmpty()) {
+                dailyEditInvoicePage.editApplicantLastName(lastName);
+            }
+            if (firstName != null && !firstName.trim().isEmpty()) {
+                dailyEditInvoicePage.editApplicantFirstName(firstName);
+            }
+
+            dailyEditInvoicePage.clickApplicantSaveButton();
+            WaitUtils.sleep(1500);
+            dailyEditInvoicePage.clickSaveButton();
+            WaitUtils.sleep(1500);
+            System.out.println("↩ Applicant name restored to original values.");
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to restore original applicant name", ex);
+        }
     }
 }
-
-

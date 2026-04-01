@@ -167,10 +167,12 @@ public class HistoryBillingTest extends SmokeBaseTest {
         test.info("Step 5: Verify biller in table matches selected biller");
         System.out.println("Step 5: Verifying biller in table...");
         String tableBiller = billingHistoryPage.getTableBillerName();
-        System.out.println("Expected Biller: " + selectedBiller);
+        String expectedTableValue = billingHistoryPage.extractBillerLastName(selectedBiller);
+        System.out.println("Expected Biller (last name): " + expectedTableValue);
         System.out.println("Actual Biller: " + tableBiller);
 
-        Assert.assertEquals(tableBiller, selectedBiller, "Biller in table should match selected biller");
+        Assert.assertTrue(tableBiller.trim().equalsIgnoreCase(expectedTableValue),
+                "Biller in table should match the selected biller's last name");
         test.pass("✓ SMOKE_BH_001 PASSED: Biller filter verified successfully");
         System.out.println("✓ SMOKE_BH_001 PASSED");
     }

@@ -51,27 +51,27 @@ public class BillingHistoryPage {
     private final By datatableBody =
             By.xpath("/html/body/ng-component/div/div/div[2]/billing-history-app/div/div/div/div/div/div[2]/div/div/div/div/billing-history-injury-list/p-table/div/div/table/tbody");
     private final By firstParentRow =
-            By.xpath("/html/body/ng-component/div/div/div[2]/billing-history-app/div/div/div/div/div/div[2]/div/div/div/div/billing-history-injury-list/p-table/div/div/table/tbody/tr[1]");
+            By.xpath("/html/body/ng-component/div/div/div[2]/billing-history-app/div/div/div/div/div/div[2]/div/div/div/div/billing-history-injury-list/p-table/div/div/table/tbody/tr[1]/td[5]/div");
 
     // Account filter
     private final By accountDropdownButton =
             By.xpath("/html/body/ng-component/div/div/div[2]/billing-history-app/div/div/div/div/div/div[1]/div/div[2]/p-toolbar/div/div/div[5]/div/p-dropdown/div/div[2]");
     private final By accountSearchField =
-            By.xpath("/html/body/div[3]/div[1]/div/input");
+            By.xpath("/html/body/div[2]/div[1]/div/input");
     private final By accountSearchButton =
-            By.xpath("/html/body/div[3]/div[1]/div/span");
+            By.xpath("/html/body/div[2]/div[1]/div/span");
     private final By accountResults =
-            By.xpath("/html/body/div[3]/div[2]/ul/li");
+            By.xpath("/html/body/div[2]/div[2]/ul/p-dropdownitem/li");
 
     // Applicant filter
     private final By applicantDropdownButton =
             By.xpath("/html/body/ng-component/div/div/div[2]/billing-history-app/div/div/div/div/div/div[1]/div/div[2]/p-toolbar/div/div/div[6]/div/p-dropdown/div/div[2]");
     private final By applicantSearchField =
-            By.xpath("/html/body/div[3]/div[1]/div/input");
+            By.xpath("/html/body/div[2]/div[1]/div/input");
     private final By applicantSearchButton =
-            By.xpath("/html/body/div[3]/div[1]/div/span");
+            By.xpath("/html/body/div[2]/div[1]/div/span");
     private final By applicantResults =
-            By.xpath("/html/body/div[3]/div[2]/ul/li");
+            By.xpath("/html/body/div[2]/div[2]/ul/p-dropdownitem[1]/li");
 
     // Invoice details
     private final By subNumber =
@@ -93,7 +93,7 @@ public class BillingHistoryPage {
     private final By paperRadioButton =
             By.xpath("/html/body/ng-component/div/div/div[2]/billing-history-app/div/div/div/div/div/div[1]/div/div[2]/p-toolbar/div/div/div[8]/div/div/label[2]/p-radiobutton/div/div[2]");
     private final By billingTypeStatus =
-            By.xpath("/html/body/ng-component/div/div/div[2]/billing-history-app/div/div/div/div/div/div[2]/div/div/div/div/billing-history-injury-list/p-table/div/div/table/tbody/tr[2]/td/p-table/div/div/table/tbody/tr[3]/td[8]/span[1]/p-badge/span");
+            By.xpath("/html/body/ng-component/div/div/div[2]/billing-history-app/div/div/div/div/div/div[2]/div/div/div/div/billing-history-injury-list/p-table/div/div/table/tbody/tr[1]/td[8]/div/span");
 
     // Re-submit
     private final By fileSelectButton =
@@ -172,6 +172,14 @@ public class BillingHistoryPage {
         return driver.findElement(tableBillerColumn).getText().trim();
     }
 
+    public String extractBillerLastName(String fullName) {
+        if (fullName == null) {
+            return "";
+        }
+        String[] parts = fullName.trim().split("\\s+");
+        return parts.length == 0 ? "" : parts[parts.length - 1].trim();
+    }
+
     // ======================== INVOICE SEARCH ========================
 
     public void enterInvoiceNumber(String invoiceNumber) {
@@ -195,23 +203,12 @@ public class BillingHistoryPage {
         WaitUtils.sleep(3000);
     }
 
-    public String getTableInvoiceNumber() {
-        String baseXPath =
-                "/html/body/ng-component/div/div/div[2]/billing-history-app/div/div/div/div/div/div[2]/div/div/div/div/billing-history-injury-list/p-table/div/div/table/tbody/tr[2]/td/p-table/div/div/table/tbody";
+    private final By expandedInvoiceNumberLocator = By.xpath("/html/body/ng-component/div/div/div[2]/billing-history-app/div/div/div/div/div/div[2]/div/div/div/div/billing-history-injury-list/p-table/div/div/table/tbody/tr[2]/td/p-table/div/div/table/tbody/tr[3]/td[2]");
 
-        List<WebElement> rows = driver.findElements(By.xpath(baseXPath + "/tr"));
-        for (int i = 1; i <= rows.size(); i++) {
-            for (int j = 1; j <= 8; j++) {
-                By cell = By.xpath(baseXPath + "/tr[" + i + "]/td[" + j + "]");
-                if (!driver.findElements(cell).isEmpty()) {
-                    String text = driver.findElement(cell).getText().trim();
-                    if (!text.isEmpty() && text.matches(".*\\d{5,}-.*")) {
-                        return text;
-                    }
-                }
-            }
-        }
-        return "";
+    public String getTableInvoiceNumber() {
+        String invoiceNumber  = driver.findElement(expandedInvoiceNumberLocator).getText().trim();
+
+        return invoiceNumber;
     }
 
     // ======================== ACCOUNT FILTER ========================
